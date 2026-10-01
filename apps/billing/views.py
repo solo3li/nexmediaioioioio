@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Plan, Payment, ManualPaymentMethod
+from .models import Plan, Payment, ManualPaymentMethod, Invoice
 from .services import BillingService, PaymobService, PayPalService
 
 logger = logging.getLogger(__name__)

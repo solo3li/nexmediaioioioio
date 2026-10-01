@@ -10,6 +10,7 @@ class ApplicationUser(AbstractUser):
     with Dual-Wallet system (Standard & Premium Credits).
     """
     full_name = models.CharField(max_length=255, blank=True)
+    phone_number = models.CharField(max_length=30, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True)
     is_verified = models.BooleanField(default=False)
     last_verification_email_sent_at = models.DateTimeField(null=True, blank=True)
