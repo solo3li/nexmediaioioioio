@@ -41,7 +41,7 @@
         <nav class="studio-tools-nav">
             {% for tool in all_tools %}
             <a href="{% url 'studio_tool' tool.slug %}" class="studio-tool-link {% if tool.slug == current_tool.slug %}active-tool{% endif %}">
-                <span class="tool-icon">{{ tool.icon }}</span>
+                <span class="tool-icon">{{ tool.icon|safe }}</span>
                 <div class="tool-info">
                     <span class="tool-title-ar">{{ tool.name_ar }}</span>
                     <span class="tool-title-en">{{ tool.name_en }}</span>
@@ -55,7 +55,9 @@
         <div class="sidebar-wallet-card">
             <div class="wallet-header">
                 <span class="wallet-title">رصيد الاستوديو الحي</span>
-                <a href="/profile/" class="wallet-settings-link" title="إدارة المحفظة">⚙</a>
+                <a href="/profile/" class="wallet-settings-link" title="إدارة المحفظة">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </a>
             </div>
             
             <div class="wallet-balances">
@@ -81,14 +83,18 @@
         <!-- Sidebar User Footer -->
         <div class="sidebar-user-footer">
             <a href="{% url 'profile' %}" class="sidebar-user-card" title="الملف الشخصي والمحفظة">
-                <div class="user-avatar-crown">👑</div>
+                <div class="user-avatar-crown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
                 <div class="user-details">
                     <span class="user-display-name">{{ request.user.username|default:"الضيف" }}</span>
                     <span class="user-status-pill">{% if request.user.is_authenticated %}عضو نشط{% else %}غير مسجل{% endif %}</span>
                 </div>
             </a>
             <div class="sidebar-action-buttons">
-                <a href="{% url 'profile' %}" class="btn-sidebar-icon" title="الإعدادات والمحفظة">⚙</a>
+                <a href="{% url 'profile' %}" class="btn-sidebar-icon" title="الإعدادات والمحفظة">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </a>
                 {% if request.user.is_authenticated %}
                 <a href="{% url 'logout' %}" class="btn-sidebar-icon logout" title="تسجيل الخروج">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -108,7 +114,7 @@
         <!-- Tool Header Banner -->
         <div class="tool-header-banner">
             <div class="tool-meta-wrapper">
-                <div class="tool-hero-icon">{{ current_tool.icon }}</div>
+                <div class="tool-hero-icon">{{ current_tool.icon|safe }}</div>
                 <div>
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
                         <h1 class="tool-main-heading">{{ current_tool.name_ar }}</h1>
@@ -138,7 +144,7 @@
 
                     <div class="viewport-media-stage" id="viewport-media-stage">
                         <div class="viewport-idle-state" id="viewport-idle">
-                            <div class="idle-icon">{{ current_tool.icon }}</div>
+                            <div class="idle-icon">{{ current_tool.icon|safe }}</div>
                             <div class="idle-title">جاهز لبدء الإنتاج</div>
                             <div class="idle-desc">قم بضبط الإعدادات في اللوحة المجاورة ثم اضغط على زر بدء التوليد.</div>
                         </div>
@@ -168,10 +174,10 @@
 
                     <div class="viewport-actions" id="viewport-actions" style="display: none;">
                         <a id="btn-download-result" href="#" download class="btn-royal-download" target="_blank">
-                            ⬇ تحميل النتيجة الأصلية (Download 4K)
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-left:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>تحميل النتيجة الأصلية (Download 4K)
                         </a>
                         <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('btn-download-result').href); alert('تم نسخ رابط الملف!');" class="btn-share-media">
-                            🔗 نسخ الرابط
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-left:6px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>نسخ الرابط
                         </button>
                     </div>
                 </div>
@@ -186,7 +192,7 @@
                                 {% if item.thumbnail_url %}
                                 <img src="{{ item.thumbnail_url }}" alt="thumb">
                                 {% else %}
-                                <div class="thumb-placeholder">{{ current_tool.icon }}</div>
+                                <div class="thumb-placeholder">{{ current_tool.icon|safe }}</div>
                                 {% endif %}
                             </div>
                             <div class="history-item-meta">
@@ -215,32 +221,33 @@
     height: 100vh;
     max-height: 100vh;
     overflow: hidden;
-    background: #08140E;
-    color: #FAF7F0;
+    background: #FAF7F0;
+    color: #1C120B;
     direction: rtl;
+    font-family: 'Amiri', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Sidebar */
 .studio-sidebar {
     width: 310px;
     height: 100vh;
-    background: #0B1A12;
-    border-left: 1px solid rgba(197, 160, 89, 0.22);
+    background: #F3EEDF;
+    border-left: 1px solid rgba(197, 160, 89, 0.35);
     display: flex;
     flex-direction: column;
-    padding: 16px 14px;
+    padding: 18px 14px;
     flex-shrink: 0;
     box-sizing: border-box;
     overflow: hidden;
-    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+    box-shadow: -4px 0 20px rgba(44, 30, 16, 0.05);
 }
 
 .studio-brand-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 6px 14px 6px;
-    border-bottom: 1px solid rgba(197, 160, 89, 0.18);
+    padding: 2px 6px 14px 6px;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.28);
     margin-bottom: 8px;
 }
 
@@ -272,24 +279,26 @@
     font-family: 'Cinzel', serif;
     font-size: 15px;
     font-weight: 700;
-    color: #FFFDF9;
+    color: #1C120B;
     letter-spacing: 0.5px;
 }
 
 .studio-brand-title .ai-badge {
-    background: #C5A059;
-    color: #0E3A1F;
-    font-size: 10px;
-    padding: 1px 5px;
+    background: #0E3A1F;
+    color: #FAF7F0;
+    font-size: 9.5px;
+    padding: 1px 6px;
     border-radius: 4px;
     margin-left: 4px;
     font-weight: 800;
+    border: 1px solid #C5A059;
 }
 
 .studio-brand-subtitle {
     font-family: 'Amiri', serif;
     font-size: 11px;
-    color: #C5A059;
+    color: #8C6820;
+    font-weight: 600;
 }
 
 .btn-home-shortcut {
@@ -299,30 +308,31 @@
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    background: rgba(197, 160, 89, 0.1);
-    border: 1px solid rgba(197, 160, 89, 0.22);
-    color: #C5A059;
+    background: rgba(197, 160, 89, 0.15);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    color: #0E3A1F;
     transition: all 0.2s ease;
 }
 
 .btn-home-shortcut:hover {
-    background: #C5A059;
-    color: #0E3A1F;
+    background: #0E3A1F;
+    color: #FAF7F0;
+    border-color: #0E3A1F;
 }
 
 .sidebar-section-divider {
-    font-size: 10.5px;
-    color: rgba(197, 160, 89, 0.7);
+    font-size: 11px;
+    color: #8C6820;
     text-transform: uppercase;
     letter-spacing: 0.6px;
-    padding: 4px 8px 8px 8px;
+    padding: 6px 8px 8px 8px;
     font-weight: 700;
 }
 
 .studio-tools-nav {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     flex: 1;
     overflow-y: auto;
     padding-right: 2px;
@@ -332,19 +342,196 @@
     width: 4px;
 }
 .studio-tools-nav::-webkit-scrollbar-thumb {
-    background: rgba(197, 160, 89, 0.2);
+    background: rgba(197, 160, 89, 0.35);
     border-radius: 4px;
 }
 
+.studio-tool-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 13px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #362A1F;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.studio-tool-link .tool-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8C6820;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.studio-tool-link .tool-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.studio-tool-link:hover {
+    background: rgba(197, 160, 89, 0.16);
+    color: #1C120B;
+    border-color: rgba(197, 160, 89, 0.35);
+}
+
+.studio-tool-link:hover .tool-icon {
+    transform: scale(1.08);
+    color: #0E3A1F;
+}
+
+.studio-tool-link.active-tool {
+    background: #0E3A1F;
+    border: 1.5px solid #C5A059;
+    color: #FFFDF9;
+    box-shadow: 0 4px 14px rgba(14, 58, 31, 0.22);
+}
+
+.studio-tool-link.active-tool .tool-icon {
+    color: #C5A059;
+}
+
+.studio-tool-link.active-tool .tool-title-ar {
+    color: #FAF7F0;
+    font-weight: 700;
+}
+
+.studio-tool-link.active-tool .tool-title-en {
+    color: #A3C9AE;
+}
+
+.tool-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-title-ar {
+    font-size: 13.5px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.tool-title-en {
+    font-size: 10px;
+    color: #6A5847;
+}
+
+.tool-badge {
+    font-size: 9.5px;
+    padding: 2px 7px;
+    border-radius: 8px;
+    background: rgba(197, 160, 89, 0.12);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    color: #6A5847;
+    font-weight: 600;
+}
+
+.active-tool .tool-badge {
+    border-color: #C5A059;
+    color: #FAF7F0;
+    background: rgba(197, 160, 89, 0.25);
+}
+
+/* Wallet Widget */
+.sidebar-wallet-card {
+    background: #FFFDF9;
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 12px;
+    box-shadow: 0 2px 10px rgba(44, 30, 16, 0.04);
+}
+
+.wallet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: #5C4A3A;
+    font-weight: 600;
+}
+
+.wallet-settings-link {
+    color: #8C6820;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.wallet-settings-link:hover {
+    color: #0E3A1F;
+}
+
+.wallet-balances {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.wallet-pill {
+    padding: 7px 9px;
+    border-radius: 8px;
+    font-size: 11px;
+}
+
+.wallet-pill.standard {
+    background: rgba(14, 58, 31, 0.07);
+    border: 1px solid rgba(14, 58, 31, 0.22);
+    color: #0E3A1F;
+}
+
+.wallet-pill.premium {
+    background: rgba(197, 160, 89, 0.15);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    color: #8C6820;
+}
+
+.wallet-val {
+    display: block;
+    font-size: 15px;
+    margin-top: 2px;
+    font-weight: 700;
+    color: #1C120B;
+}
+
+.btn-recharge-credits {
+    display: block;
+    text-align: center;
+    background: #0E3A1F;
+    color: #FAF7F0;
+    border: 1px solid #C5A059;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-recharge-credits:hover {
+    background: #154e2b;
+    box-shadow: 0 2px 8px rgba(14, 58, 31, 0.25);
+}
+
+/* Sidebar User Footer */
 .sidebar-user-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 8px 10px;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(197, 160, 89, 0.2);
+    background: #FFFDF9;
+    border: 1px solid rgba(197, 160, 89, 0.35);
     border-radius: 12px;
     margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(44, 30, 16, 0.04);
 }
 
 .sidebar-user-card {
@@ -359,12 +546,12 @@
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(197, 160, 89, 0.15);
+    background: rgba(14, 58, 31, 0.08);
     border: 1px solid #C5A059;
+    color: #0E3A1F;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
     flex-shrink: 0;
 }
 
@@ -376,8 +563,8 @@
 
 .user-display-name {
     font-size: 12.5px;
-    font-weight: 600;
-    color: #FFF;
+    font-weight: 700;
+    color: #1C120B;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -385,7 +572,8 @@
 
 .user-status-pill {
     font-size: 9.5px;
-    color: #2ECC71;
+    color: #0E3A1F;
+    font-weight: 600;
 }
 
 .sidebar-action-buttons {
@@ -401,202 +589,99 @@
     width: 28px;
     height: 28px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(197, 160, 89, 0.2);
-    color: #C5A059;
+    background: rgba(197, 160, 89, 0.12);
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    color: #0E3A1F;
     text-decoration: none;
     font-size: 12px;
     transition: all 0.2s ease;
 }
 
 .btn-sidebar-icon:hover {
-    background: rgba(197, 160, 89, 0.2);
-    color: #FFF;
+    background: #0E3A1F;
+    color: #FAF7F0;
+    border-color: #0E3A1F;
+}
+
+.btn-sidebar-icon.logout {
+    color: #8C2A2A;
 }
 
 .btn-sidebar-icon.logout:hover {
-    background: rgba(255, 87, 87, 0.2);
-    color: #FF7676;
-    border-color: rgba(255, 87, 87, 0.4);
-}
-
-.studio-workspace-area {
-    flex: 1;
-    height: 100vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-.studio-tool-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #D1DED5;
-    background: transparent;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-}
-.studio-tool-link:hover {
-    background: rgba(255, 255, 255, 0.04);
-    color: #FFF;
-    border-color: rgba(197, 160, 89, 0.2);
-}
-.studio-tool-link.active-tool {
-    background: linear-gradient(135deg, rgba(14, 58, 31, 0.8), rgba(20, 40, 28, 0.9));
-    border: 1px solid #C5A059;
-    color: #FFF;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-.studio-tool-link.active-tool .tool-title-ar {
-    color: #C5A059;
-    font-weight: bold;
-}
-.tool-icon {
-    font-size: 20px;
-}
-.tool-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-.tool-title-ar {
-    font-size: 13.5px;
-    line-height: 1.3;
-}
-.tool-title-en {
-    font-size: 10.5px;
-    color: #8EBA9A;
-}
-.tool-badge {
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #A0B2A6;
-}
-.active-tool .tool-badge {
-    border-color: #C5A059;
-    color: #C5A059;
-    background: rgba(197, 160, 89, 0.15);
-}
-
-/* Wallet Widget */
-.sidebar-wallet-card {
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(197, 160, 89, 0.3);
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 15px;
-}
-.wallet-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    font-size: 12px;
-    color: #A0B2A6;
-}
-.wallet-settings-link {
-    color: #C5A059;
-    text-decoration: none;
-    font-size: 14px;
-}
-.wallet-balances {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.wallet-pill {
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 11px;
-}
-.wallet-pill.standard {
-    background: rgba(76, 175, 80, 0.12);
-    border: 1px solid rgba(76, 175, 80, 0.3);
-    color: #8EBA9A;
-}
-.wallet-pill.premium {
-    background: rgba(197, 160, 89, 0.12);
-    border: 1px solid rgba(197, 160, 89, 0.3);
-    color: #C5A059;
-}
-.wallet-val {
-    display: block;
-    font-size: 16px;
-    margin-top: 3px;
-    color: #FFF;
-}
-.btn-recharge-credits {
-    display: block;
-    text-align: center;
-    background: linear-gradient(135deg, #C5A059, #9E7D3B);
-    color: #0E2218;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 8px;
-    border-radius: 6px;
-    transition: opacity 0.2s;
+    background: rgba(166, 28, 28, 0.15);
+    color: #A61C1C;
+    border-color: rgba(166, 28, 28, 0.4);
 }
 
 /* Workspace Area */
 .studio-workspace-area {
     flex: 1;
-    padding: 30px 40px;
+    padding: 28px 36px;
     overflow-y: auto;
+    background: #FAF7F0;
 }
+
 .tool-header-banner {
-    background: rgba(14, 25, 20, 0.95);
-    border: 1px solid rgba(197, 160, 89, 0.3);
+    background: #FFFDF9;
+    border: 1px solid rgba(197, 160, 89, 0.35);
     border-radius: 16px;
-    padding: 24px 30px;
-    margin-bottom: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    padding: 22px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(44, 30, 16, 0.04);
 }
+
 .tool-meta-wrapper {
     display: flex;
     align-items: center;
     gap: 20px;
 }
+
 .tool-hero-icon {
-    width: 60px;
-    height: 60px;
+    width: 58px;
+    height: 58px;
     border-radius: 14px;
-    background: rgba(197, 160, 89, 0.15);
-    border: 1px solid #C5A059;
-    font-size: 30px;
+    background: rgba(14, 58, 31, 0.08);
+    border: 1.5px solid #C5A059;
+    color: #0E3A1F;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
+
+.tool-hero-icon svg {
+    width: 30px;
+    height: 30px;
+    stroke: currentColor;
+}
+
 .tool-main-heading {
     margin: 0;
     font-family: 'Amiri', 'Cinzel', serif;
-    font-size: 26px;
-    color: #C5A059;
+    font-size: 25px;
+    color: #0E3A1F;
+    font-weight: 700;
 }
+
 .tool-tag-pill {
-    font-size: 12px;
-    padding: 2px 8px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 4px;
-    color: #A0B2A6;
+    font-size: 11px;
+    padding: 3px 9px;
+    background: rgba(197, 160, 89, 0.15);
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    border-radius: 6px;
+    color: #8C6820;
+    font-weight: 600;
 }
+
 .tool-active-status {
     font-size: 11px;
-    color: #4CAF50;
+    color: #0E3A1F;
     font-weight: bold;
 }
+
 .tool-desc-text {
     margin: 0;
-    color: #A0B2A6;
+    color: #5C4A3A;
     font-size: 13.5px;
     line-height: 1.6;
 }
@@ -605,109 +690,228 @@
 .tool-workspace-grid {
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
-    gap: 25px;
+    gap: 24px;
 }
+
 .tool-controls-panel {
-    background: rgba(14, 25, 20, 0.95);
-    border: 1px solid rgba(197, 160, 89, 0.25);
+    background: #FFFDF9;
+    border: 1px solid rgba(197, 160, 89, 0.35);
     border-radius: 16px;
-    padding: 28px;
+    padding: 26px;
+    box-shadow: 0 4px 20px rgba(44, 30, 16, 0.04);
 }
+
 .tool-output-panel {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
+/* Form Controls Inside Tool Panel (Unified Luxury Cream) */
+.tool-controls-panel label {
+    color: #1C120B !important;
+}
+
+.tool-controls-panel input[type="text"],
+.tool-controls-panel input[type="url"],
+.tool-controls-panel textarea,
+.tool-controls-panel select {
+    background: #FAF7F0 !important;
+    border: 1.5px solid rgba(197, 160, 89, 0.4) !important;
+    color: #1C120B !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    font-family: inherit !important;
+}
+
+.tool-controls-panel input[type="text"]:focus,
+.tool-controls-panel input[type="url"]:focus,
+.tool-controls-panel textarea:focus,
+.tool-controls-panel select:focus {
+    border-color: #0E3A1F !important;
+    box-shadow: 0 0 0 3px rgba(14, 58, 31, 0.12) !important;
+    outline: none !important;
+}
+
+.tool-controls-panel textarea::placeholder,
+.tool-controls-panel input::placeholder {
+    color: #8C7B6C !important;
+}
+
+/* Radio button option labels */
+.tool-controls-panel label:has(input[type="radio"]:checked) {
+    background: rgba(14, 58, 31, 0.09) !important;
+    border: 1.5px solid #0E3A1F !important;
+    color: #0E3A1F !important;
+    font-weight: 700 !important;
+}
+
+.tool-controls-panel label:has(input[type="radio"]:not(:checked)) {
+    background: #FAF7F0 !important;
+    border: 1.5px solid rgba(197, 160, 89, 0.32) !important;
+    color: #4A3B2C !important;
+}
+
+/* Generic dark containers in tool forms */
+.tool-controls-panel div[style*="background: rgba(0,0,0"],
+.tool-controls-panel div[style*="background: rgba(0, 0, 0"] {
+    background: #FAF7F0 !important;
+    border: 1px solid rgba(197, 160, 89, 0.3) !important;
+}
+
+.tool-controls-panel input[type="range"] {
+    accent-color: #0E3A1F !important;
+}
+
+/* Primary Action Buttons */
+.tool-controls-panel button[type="submit"] {
+    background: #0E3A1F !important;
+    color: #FAF7F0 !important;
+    border: 1.5px solid #C5A059 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 16px rgba(14, 58, 31, 0.22) !important;
+    transition: all 0.2s ease !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+}
+
+.tool-controls-panel button[type="submit"]:hover {
+    background: #154e2b !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(14, 58, 31, 0.3) !important;
+}
+
 /* Viewport Card */
 .output-viewport-card {
-    background: rgba(14, 25, 20, 0.95);
-    border: 1px solid rgba(197, 160, 89, 0.25);
+    background: #FFFDF9;
+    border: 1px solid rgba(197, 160, 89, 0.35);
     border-radius: 16px;
     padding: 20px;
+    box-shadow: 0 4px 20px rgba(44, 30, 16, 0.04);
 }
+
 .viewport-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 14px;
     font-size: 13px;
 }
+
 .viewport-title {
-    color: #C5A059;
-    font-weight: bold;
+    color: #0E3A1F;
+    font-weight: 700;
 }
+
 .viewport-specs {
     font-size: 11px;
-    color: #8EBA9A;
-    background: rgba(0,0,0,0.3);
+    color: #8C6820;
+    background: rgba(197, 160, 89, 0.15);
+    border: 1px solid rgba(197, 160, 89, 0.35);
     padding: 3px 8px;
     border-radius: 4px;
+    font-weight: 600;
 }
+
 .viewport-media-stage {
     min-height: 380px;
-    background: #050B08;
-    border: 1px solid rgba(255,255,255,0.06);
+    background: #120E0B;
+    border: 1.5px solid rgba(197, 160, 89, 0.4);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
 }
+
 .viewport-idle-state {
     text-align: center;
     padding: 30px;
 }
+
 .idle-icon {
-    font-size: 42px;
     margin-bottom: 12px;
-    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #C5A059;
 }
+
+.idle-icon svg {
+    width: 44px;
+    height: 44px;
+    stroke: currentColor;
+}
+
 .idle-title {
     color: #FAF7F0;
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 6px;
 }
+
 .idle-desc {
-    color: #A0B2A6;
+    color: #B8A99A;
     font-size: 12.5px;
     max-width: 300px;
     margin: 0 auto;
     line-height: 1.5;
 }
+
 .viewport-actions {
     display: flex;
     gap: 10px;
     margin-top: 15px;
 }
+
 .btn-royal-download {
     flex: 1;
-    text-align: center;
-    background: linear-gradient(135deg, #C5A059, #9E7D3B);
-    color: #0E2218;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #0E3A1F;
+    border: 1.5px solid #C5A059;
+    color: #FAF7F0;
     text-decoration: none;
     font-weight: bold;
     font-size: 13.5px;
     padding: 10px;
     border-radius: 8px;
+    transition: all 0.2s ease;
 }
+
+.btn-royal-download:hover {
+    background: #154e2b;
+}
+
 .btn-share-media {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: #FAF7F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #FAF7F0;
+    border: 1.5px solid rgba(197, 160, 89, 0.45);
+    color: #1C120B;
     padding: 10px 16px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-share-media:hover {
+    background: rgba(197, 160, 89, 0.18);
 }
 
 /* Spinner & Progress */
 .generation-progress-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(8, 20, 14, 0.92);
+    background: rgba(18, 14, 11, 0.92);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -715,6 +919,7 @@
     padding: 30px;
     z-index: 10;
 }
+
 .andalus-spinner {
     width: 48px;
     height: 48px;
@@ -724,101 +929,130 @@
     animation: spin 1s infinite linear;
     margin-bottom: 16px;
 }
+
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
 .progress-title {
     color: #C5A059;
     font-size: 15px;
     font-weight: bold;
     margin-bottom: 12px;
 }
+
 .progress-bar-container {
     width: 80%;
     max-width: 320px;
     height: 6px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: 4px;
     overflow: hidden;
     margin-bottom: 10px;
 }
+
 .progress-bar-fill {
     height: 100%;
     background: #C5A059;
     transition: width 0.3s ease;
 }
+
 .progress-status-log {
-    color: #A0B2A6;
+    color: #D1C5B5;
     font-size: 11.5px;
 }
 
 /* Tool History */
 .tool-history-section {
-    background: rgba(14, 25, 20, 0.95);
-    border: 1px solid rgba(197, 160, 89, 0.25);
+    background: #FFFDF9;
+    border: 1px solid rgba(197, 160, 89, 0.35);
     border-radius: 16px;
     padding: 20px;
+    box-shadow: 0 4px 20px rgba(44, 30, 16, 0.04);
 }
+
 .history-heading {
     margin: 0 0 14px 0;
     font-family: 'Amiri', 'Cinzel', serif;
     font-size: 16px;
-    color: #C5A059;
+    color: #0E3A1F;
+    font-weight: 700;
 }
+
 .history-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 10px;
 }
+
 .history-item-card {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.06);
+    background: #FAF7F0;
+    border: 1px solid rgba(197, 160, 89, 0.3);
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.2s, border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
+
 .history-item-card:hover {
     transform: translateY(-2px);
-    border-color: #C5A059;
+    border-color: #0E3A1F;
+    box-shadow: 0 4px 12px rgba(14, 58, 31, 0.12);
 }
+
 .history-thumb-box {
     height: 70px;
-    background: #050B08;
+    background: #120E0B;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 .history-thumb-box img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
+
 .thumb-placeholder {
-    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #C5A059;
 }
+
+.thumb-placeholder svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+}
+
 .history-item-meta {
     padding: 6px 8px;
 }
+
 .history-prompt {
     display: block;
     font-size: 10px;
-    color: #D1DED5;
+    color: #1C120B;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 600;
 }
+
 .history-time {
     display: block;
     font-size: 9px;
-    color: #8EBA9A;
+    color: #6A5847;
     margin-top: 2px;
 }
+
 .history-empty {
     grid-column: 1 / -1;
     text-align: center;
     font-size: 12px;
-    color: #A0B2A6;
+    color: #6A5847;
     padding: 16px 0;
 }
 
@@ -826,17 +1060,22 @@
 @media (max-width: 1080px) {
     .studio-layout-wrapper {
         flex-direction: column;
+        height: auto;
+        max-height: none;
+        overflow-y: auto;
     }
     .studio-sidebar {
         width: 100%;
+        height: auto;
         border-left: none;
-        border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+        border-bottom: 1px solid rgba(197, 160, 89, 0.35);
     }
     .tool-workspace-grid {
         grid-template-columns: 1fr;
     }
     .studio-workspace-area {
         padding: 20px;
+        height: auto;
     }
 }
 </style>
