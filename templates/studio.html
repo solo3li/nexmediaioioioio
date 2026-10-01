@@ -106,9 +106,9 @@
                     <textarea id="studio-prompt-input" rows="4" placeholder="اكتب وصف المشهد الفني بدقة، مثلاً: مشهد سينمائي واقعي بدقة 8K لسيارة رياضية حديثة أثناء الغروب على ساحل البحر، إضاءة ذهبية متقنة..." style="width: 100%; background: #100A07; border: 1px solid rgba(197, 160, 89, 0.4); color: #FFFDF9; border-radius: 8px; padding: 12px; font-size: 0.9375rem; line-height: 1.6; resize: vertical;"></textarea>
                     <!-- Quick Prompt Suggestions -->
                     <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-                        <button type="button" class="prompt-chip-btn" data-text="بورتريه فوتوغرافي واقعي بدقة 8K لشخصية في مكتب حديث بإضاءة سينمائية دافئة">✦ بورتريه سينمائي</button>
-                        <button type="button" class="prompt-chip-btn" data-text="لقطة درون جوية 4K لغابة مطيرة مع ضباب صباحي وأشعة شمس متسللة">✦ طبيعة سينمائية</button>
-                        <button type="button" class="prompt-chip-btn" data-text="إعلان تجاري لمنتج تقني أنيق على منصة رخامية بإضاءة استوديو درامية">✦ إعلان تجاري</button>
+                        <button type="button" class="prompt-chip-btn" data-text="بورتريه فوتوغرافي واقعي بدقة 8K لشخصية في مكتب حديث بإضاءة سينمائية دافئة">بورتريه سينمائي</button>
+                        <button type="button" class="prompt-chip-btn" data-text="لقطة درون جوية 4K لغابة مطيرة مع ضباب صباحي وأشعة شمس متسللة">طبيعة سينمائية</button>
+                        <button type="button" class="prompt-chip-btn" data-text="إعلان تجاري لمنتج تقني أنيق على منصة رخامية بإضاءة استوديو درامية">إعلان تجاري</button>
                     </div>
                 </div>
 
@@ -147,7 +147,7 @@
                 </div>
 
                 <button type="button" class="btn-royal-forest btn-glow-pulse" id="btn-generate-media" style="width: 100%; justify-content: center; font-size: 1.05rem; padding: 14px;">
-                    <span id="btn-gen-text">إطلاق التوليد الآن ✦</span>
+                    <span id="btn-gen-text">إطلاق التوليد الآن</span>
                     <span id="btn-gen-spinner" style="display:none; animation: spin 1s linear infinite;">↻</span>
                 </button>
             </div>
@@ -176,7 +176,7 @@
 
                     <!-- Loading Radar -->
                     <div id="viewport-loading" style="display: none; text-align: center; padding: 40px 20px;">
-                        <div style="font-size: 2.5rem; animation: rotateDial 2s linear infinite; margin-bottom: 14px;">✦</div>
+                        <div style="font-size: 2.2rem; animation: spin 2s linear infinite; margin-bottom: 14px;">⚡</div>
                         <h4 style="font-family: var(--font-arabic-title); font-size: 1.15rem; color: #D4AF37; margin-bottom: 6px;">جاري المعالجة السحابية...</h4>
                         <p style="font-size: 0.8125rem; color: #2ECC71;" id="viewport-task-label">توزيع المهمة على محركات الذكاء الاصطناعي عالية السرعة...</p>
                     </div>
@@ -226,7 +226,7 @@
                         {% if item.thumbnail_url %}
                         <img src="{{ item.thumbnail_url }}" alt="thumb" style="width: 100%; height: 100%; object-fit: cover;">
                         {% else %}
-                        <span style="color: #C5A059; font-size: 1.5rem;">✦</span>
+                        <span style="color: #C5A059; font-size: 1.5rem;">🎬</span>
                         {% endif %}
                     </div>
                     <div style="padding: 10px;">
@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetBtn() {
         btnGenerate.disabled = false;
-        btnGenText.textContent = 'إطلاق التوليد الآن ✦';
+        btnGenText.textContent = 'إطلاق التوليد الآن';
         btnGenSpinner.style.display = 'none';
     }
 
@@ -526,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.cssText = 'background: #110B07; border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 10px; overflow: hidden; cursor: pointer;';
                 card.innerHTML = `
                     <div style="height: 100px; background: #1C120B; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                        ${item.thumbnail_url ? `<img src="${item.thumbnail_url}" style="width:100%;height:100%;object-fit:cover;">` : '<span style="color:#C5A059;font-size:1.5rem;">✦</span>'}
+                        ${item.thumbnail_url ? `<img src="${item.thumbnail_url}" style="width:100%;height:100%;object-fit:cover;">` : '<span style="color:#C5A059;font-size:1.5rem;">🎬</span>'}
                     </div>
                     <div style="padding: 10px;">
                         <span style="font-size: 0.6875rem; background: rgba(14, 58, 31, 0.4); color: #2ECC71; padding: 2px 6px; border-radius: 4px; border: 1px solid #0E3A1F;">${item.tool_type}</span>

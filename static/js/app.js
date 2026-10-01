@@ -275,16 +275,16 @@ function initPipelineSimulator() {
         setTimeout(() => {
             setGauge(25);
             setStepActive('step-worker');
-            if (statusEl) statusEl.textContent = 'المعالجة العصبية (PROCESSING)';
+            if (statusEl) statusEl.textContent = 'معالجة المشهد (PROCESSING)';
             addLog(`[تحليل المشهد] توزيع زوايا الكاميرا ومسارات الإضاءة والعمق البصري.`);
-            addLog(`[محرك التوليد] بدء رندرة الإطارات الأولية بدقة عالية.`);
+            addLog(`[محرك التوليد] بدء رندرة الإطارات بدقة عالية.`);
         }, 800);
 
         setTimeout(() => {
             setGauge(60);
             setStepActive('step-stream');
-            if (statusEl) statusEl.textContent = 'الرندرة السينمائية 4K... 60%';
-            addLog(`[المعالجة البصرية] استكمال سلاسة الحركة وتوليد الإطارات الفائقة (60 FPS).`);
+            if (statusEl) statusEl.textContent = 'رندرة الفيديو 4K... 60%';
+            addLog(`[المعالجة البصرية] ضبط سلاسة الحركة وتوليد الإطارات (60 FPS).`);
             addLog(`[المعالجة الصوتية] دمج وهندسة المؤثرات الصوتية بتردد 48kHz: 60%`);
         }, 1800);
 
@@ -292,7 +292,7 @@ function initPipelineSimulator() {
             setGauge(88);
             setStepActive('step-storage');
             if (statusEl) statusEl.textContent = 'اللمسات النهائية والتصدير... 88%';
-            addLog(`[تصحيح الألوان] تطبيق التدرج اللوني السينمائي وتجهيز ملف الفيديو فائق الجودة.`);
+            addLog(`[تصحيح الألوان] تطبيق التدرج اللوني وتجهيز ملف الفيديو بدقة 4K.`);
         }, 2800);
 
         setTimeout(() => {
