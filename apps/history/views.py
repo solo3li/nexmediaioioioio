@@ -37,34 +37,86 @@ def generate_api(request):
     """
     user = get_active_user(request)
 
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-    except Exception:
-        return JsonResponse({'status': 'error', 'message': 'Invalid JSON payload'}, status=400)
+    if request.content_type == 'application/json':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON payload'}, status=400)
+    else:
+        data = request.POST.dict()
 
     tool_type = data.get('tool_type', 'text_to_image')
-    model_name = data.get('model_name', 'Grok Imagine HD')
     prompt = data.get('prompt', '').strip()
-    options = data.get('options', {})
+    model_identifier = data.get('model') or data.get('model_id') or data.get('model_name')
+    options = {k: v for k, v in data.items() if k not in ['prompt', 'tool_type']}
 
     if not prompt:
         return JsonResponse({'status': 'error', 'message': 'يرجى كتابة وصف أو أمر التوليد (Prompt)'}, status=400)
 
-    # Cost calculation mapping based on tool
-    COST_MAP = {
-        'text_to_image': Decimal('4.0000'),
-        'text_to_video': Decimal('8.0000'),
-        'image_to_video': Decimal('5.0000'),
-        'reference_to_video': Decimal('20.0000'),
-        'lipsync': Decimal('3.0000'),
-        'motion_control': Decimal('10.0000'),
-        'tts': Decimal('1.0000'),
-        'stt': Decimal('1.5000'),
-        'avatar_video': Decimal('6.0000'),
-    }
+    # Dynamic pricing from tool settings
+    from apps.tools.text_to_video.models import TextToVideoModelConfig
+    standard_cost = Decimal('4.0000')
+    premium_cost = Decimal('0.0000')
+    model_name = model_identifier or 'Standard Model'
 
-    standard_cost = COST_MAP.get(tool_type, Decimal('4.0000'))
-    premium_cost = Decimal('1.0000') if tool_type in ['reference_to_video', 'text_to_video'] else Decimal('0.0000')
+    if tool_type == 'text_to_video':
+        cfg = TextToVideoModelConfig.objects.filter(model_id=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = TextToVideoModelConfig.objects.filter(name=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = TextToVideoModelConfig.objects.filter(is_default=True, is_active=True).first() or TextToVideoModelConfig.objects.first()
+
+        if cfg:
+            model_name = cfg.name
+            res = str(data.get('resolution', '1080p')).lower()
+            try:
+                duration = int(data.get('duration', cfg.default_duration))
+            except (ValueError, TypeError):
+                duration = cfg.default_duration
+
+            # Automatic backend mapping for discrete models to ensure 100% Crun AI compatibility
+            api_duration = duration
+            if cfg.duration_type == 'discrete':
+                valid_durations = cfg.get_durations_list()
+                if valid_durations and duration not in valid_durations:
+                    api_duration = min(valid_durations, key=lambda x: abs(x - duration))
+            options['api_duration'] = api_duration
+            options['requested_duration'] = duration
+
+            if '480' in res:
+                rate = cfg.cost_480p
+            elif '720' in res:
+                rate = cfg.cost_720p
+            elif '4k' in res:
+                rate = cfg.cost_4k
+            else:
+                rate = cfg.cost_1080p
+
+            if cfg.pricing_type == 'per_second':
+                calc_cost = rate * Decimal(duration)
+            else:
+                calc_cost = rate
+
+            if cfg.allowed_wallet == 'premium':
+                premium_cost = calc_cost
+                standard_cost = Decimal('0.0000')
+            else:
+                standard_cost = calc_cost
+    else:
+        # Fallback COST_MAP for other tools until updated
+        COST_MAP = {
+            'text_to_image': Decimal('4.0000'),
+            'image_to_video': Decimal('5.0000'),
+            'reference_to_video': Decimal('20.0000'),
+            'lipsync': Decimal('3.0000'),
+            'motion_control': Decimal('10.0000'),
+            'tts': Decimal('1.0000'),
+            'stt': Decimal('1.5000'),
+            'avatar_video': Decimal('6.0000'),
+        }
+        standard_cost = COST_MAP.get(tool_type, Decimal('4.0000'))
+        if tool_type in ['reference_to_video']:
+            premium_cost = Decimal('1.0000')
 
     # Verify and deduct balance
     if not user.has_sufficient_balance(standard_cost, premium_cost):

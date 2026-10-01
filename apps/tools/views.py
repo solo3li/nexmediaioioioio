@@ -135,7 +135,13 @@ def studio_tool_view(request, tool_slug):
 
     # Fetch models for this tool
     model_class = tool_meta.get('model_class')
-    models_list = model_class.objects.filter(is_active=True) if model_class else []
+    if model_class:
+        try:
+            models_list = model_class.objects.filter(is_active=True).order_by('sort_order', '-is_default', 'name')
+        except Exception:
+            models_list = model_class.objects.filter(is_active=True)
+    else:
+        models_list = []
 
     # Extra tool data
     extra_context = {}

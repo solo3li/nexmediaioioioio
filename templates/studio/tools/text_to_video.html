@@ -3,17 +3,42 @@
 {% block tool_controls %}
 <form id="t2v-form" onsubmit="event.preventDefault(); handleT2VSubmit();">
     
-    <!-- Model Selection -->
+    <!-- Model Selection (Name ONLY, no tech leaks) -->
     <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
             نموذج الفيديو (Video Model)
         </label>
-        <select id="t2v-model" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
+        <select id="t2v-model" onchange="onModelChanged();" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; font-weight: 600;">
             {% for m in models %}
-            <option value="{{ m.model_id }}">{{ m.name }} ({{ m.provider }}) - {{ m.cost_1080p }} كريديت/ث</option>
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-cost-480="{{ m.cost_480p }}"
+                    data-cost-720="{{ m.cost_720p }}"
+                    data-cost-1080="{{ m.cost_1080p }}"
+                    data-cost-4k="{{ m.cost_4k }}"
+                    data-pricing-type="{{ m.pricing_type }}"
+                    data-supported-res="{{ m.supported_resolutions }}"
+                    data-duration-type="{{ m.duration_type }}"
+                    data-allowed-durations="{{ m.allowed_durations }}"
+                    data-default-duration="{{ m.default_duration }}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
             {% empty %}
-            <option value="kling-v1.5">Kling v1.5 Pro Cinematic (8.00 كريديت/ث)</option>
-            <option value="google-veo-2">Google Veo 2.0 Ultra (15.00 كريديت/ث - 4K)</option>
+            <option value="kling/v3.0-t2v"
+                    data-name="Kling 3.0 Cinematic Pro"
+                    data-cost-480="3.00"
+                    data-cost-720="6.00"
+                    data-cost-1080="9.00"
+                    data-cost-4k="16.00"
+                    data-pricing-type="per_second"
+                    data-supported-res="480p,720p,1080p,4k"
+                    data-duration-type="discrete"
+                    data-allowed-durations="5,10,15,30"
+                    data-default-duration="5"
+                    selected>
+                Kling 3.0 Cinematic Pro
+            </option>
             {% endfor %}
         </select>
     </div>
@@ -21,94 +46,304 @@
     <!-- Prompt Area -->
     <div style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #C5A059; font-weight: bold;">وصف المشهد (Prompt)</label>
-            <span style="font-size: 11px; color: #8EBA9A;">ادعم المشهد بتفاصيل الإضاءة والزوايا</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">وصف المشهد (Prompt)</label>
+            <span style="font-size: 11px; color: #6A5847;">ادعم المشهد بتفاصيل الإضاءة والزوايا</span>
         </div>
-        <textarea id="t2v-prompt" required rows="4" placeholder="مثال: لقطة سينمائية بدقة 4K لسيارة رياضية حديثة تسير بسرعة على طريق ساحلي متعرج أثناء الغروب، انعكاسات الإضاءة الذهبية على الهيكل الخارجي، حركة كاميرا درون سلسة وديناميكية..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+        <textarea id="t2v-prompt" required rows="4" placeholder="مثال: لقطة سينمائية لسيارة رياضية حديثة تسير بسرعة على طريق ساحلي متعرج أثناء الغروب، انعكاسات الإضاءة الذهبية على الهيكل الخارجي، حركة كاميرا درون سلسة وديناميكية..." style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
     </div>
 
     <!-- Quick Prompt Ideas -->
     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
-        <span onclick="document.getElementById('t2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.1); border: 1px solid rgba(197,160,89,0.25); color: #D1DED5; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer;">
-            لقطة درون جوية سينمائية لغابة مطيرة مع ضباب صباحي وأشعة شمس 4K
+        <span onclick="document.getElementById('t2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            لقطة درون جوية سينمائية لغابة مطيرة مع ضباب صباحي وأشعة شمس
         </span>
-        <span onclick="document.getElementById('t2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.1); border: 1px solid rgba(197,160,89,0.25); color: #D1DED5; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer;">
+        <span onclick="document.getElementById('t2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
             إعلان تجاري لمنتج تقني فاخر على منصة رخامية بإضاءة استوديو درامية
         </span>
     </div>
 
     <!-- Negative Prompt -->
     <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 12.5px; color: #A0B2A6; margin-bottom: 6px;">
+        <label style="display: block; font-size: 12.5px; color: #4A3B2C; margin-bottom: 6px; font-weight: 600;">
             الاستبعاد السلبي (Negative Prompt)
         </label>
-        <input id="t2v-neg-prompt" type="text" placeholder="blurry, distorted, low quality, watermarks, artifacts" style="width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+        <input id="t2v-neg-prompt" type="text" placeholder="blurry, distorted, low quality, artifacts, watermark" style="width: 100%; padding: 10px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
     </div>
 
-    <!-- Quality & Aspect Ratio Options Grid -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-        
-        <!-- Resolution -->
-        <div>
-            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">دقة الفيديو (Resolution)</label>
-            <div style="display: flex; gap: 6px;">
-                <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
-                    <input type="radio" name="res" value="720p" style="display: none;"> 720p
-                </label>
-                <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
-                    <input type="radio" name="res" value="1080p" checked style="display: none;"> 1080p
-                </label>
-                <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
-                    <input type="radio" name="res" value="4k" style="display: none;"> 4K
-                </label>
+    <!-- Dynamic Resolution Selection (480p, 720p, 1080p, 4K) -->
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">دقة الفيديو (Resolution)</label>
+            <span id="res-hint" style="font-size: 11px; color: #6A5847;">الجودات المتاحة لهذا النموذج</span>
+        </div>
+        <div style="display: flex; gap: 8px;" id="t2v-res-container">
+            <label id="res-lbl-480p" class="t2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="480p" onchange="updateLiveCostCalculation();" style="display: none;"> 480p
+            </label>
+            <label id="res-lbl-720p" class="t2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="720p" onchange="updateLiveCostCalculation();" style="display: none;"> 720p
+            </label>
+            <label id="res-lbl-1080p" class="t2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="res" value="1080p" checked onchange="updateLiveCostCalculation();" style="display: none;"> 1080p
+            </label>
+            <label id="res-lbl-4k" class="t2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="4k" onchange="updateLiveCostCalculation();" style="display: none;"> 4K
+            </label>
+        </div>
+    </div>
+
+    <!-- Dynamic Duration Slider Bar (شريط التمرير الزمني - ثانية بثانية) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197, 160, 89, 0.35); padding: 18px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(44, 30, 16, 0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13.5px; color: #1C120B; font-weight: 700; margin: 0;">المدة الزمنية (Duration)</label>
+            <div style="display: flex; align-items: baseline; gap: 5px; background: #FAF7F0; border: 1.5px solid rgba(197, 160, 89, 0.45); padding: 5px 14px; border-radius: 8px;">
+                <span id="duration-display-val" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">5</span>
+                <span style="font-size: 12px; color: #6A5847; font-weight: 600;">ثوانٍ</span>
             </div>
         </div>
 
-        <!-- Duration -->
-        <div>
-            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">المدة الزمنية (Duration)</label>
-            <div style="display: flex; gap: 6px;">
-                <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
-                    <input type="radio" name="duration" value="5" checked style="display: none;"> 5 ثوانٍ
-                </label>
-                <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
-                    <input type="radio" name="duration" value="10" style="display: none;"> 10 ثوانٍ
-                </label>
-            </div>
+        <div style="padding: 6px 2px; margin-bottom: 8px;">
+            <input type="range" 
+                   id="t2v-duration-slider" 
+                   min="2" 
+                   max="30" 
+                   value="5" 
+                   step="1" 
+                   oninput="onDurationSliderInput(this.value);"
+                   style="width: 100%; height: 7px; border-radius: 6px; background: #E8E0D0; accent-color: #0E3A1F; cursor: pointer; outline: none;">
         </div>
 
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #6A5847; font-weight: 600;">
+            <span id="slider-min-label">2 ثوانٍ</span>
+            <span style="color: #8C6820; font-size: 11px;">تغيير المدة ثانية بثانية</span>
+            <span id="slider-max-label">30 ثانية</span>
+        </div>
     </div>
 
     <!-- Aspect Ratio Selection -->
-    <div style="margin-bottom: 25px;">
-        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">أبعاد المشهد (Aspect Ratio)</label>
-        <div style="display: flex; gap: 10px;">
-            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #FFF; font-weight: bold;">
-                <input type="radio" name="aspect" value="16:9" checked style="display: none;"> 16:9 سينمائي
+    <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">أبعاد المشهد (Aspect Ratio)</label>
+        <div style="display: flex; gap: 10px;" id="t2v-aspect-container">
+            <label class="t2v-aspect-pill" style="flex: 1; text-align: center; padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="aspect" value="16:9" checked onchange="updateAspectPillStyles();" style="display: none;"> 16:9 سينمائي
             </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #FFF;">
-                <input type="radio" name="aspect" value="9:16" style="display: none;"> 9:16 تيك توك/ريلز
+            <label class="t2v-aspect-pill" style="flex: 1; text-align: center; padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="aspect" value="9:16" onchange="updateAspectPillStyles();" style="display: none;"> 9:16 تيك توك/ريلز
             </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #FFF;">
-                <input type="radio" name="aspect" value="1:1" style="display: none;"> 1:1 مربع
+            <label class="t2v-aspect-pill" style="flex: 1; text-align: center; padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="aspect" value="1:1" onchange="updateAspectPillStyles();" style="display: none;"> 1:1 مربع
             </label>
+        </div>
+    </div>
+
+    <!-- Live Dynamic Credit Cost Calculator (Directly from Admin Settings) -->
+    <div id="t2v-cost-calculator" style="margin-bottom: 22px; padding: 14px 18px; background: rgba(14, 58, 31, 0.08); border: 1.5px solid rgba(197, 160, 89, 0.4); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <span style="font-size: 13px; color: #1C120B; font-weight: 700;">التكلفة التقديرية للإنتاج:</span>
+            <span id="cost-calc-breakdown" style="display: block; font-size: 11px; color: #6A5847; margin-top: 2px;">
+                قراءة حية للتسعير من إعدادات الأداة
+            </span>
+        </div>
+        <div style="text-align: left; display: flex; align-items: baseline; gap: 4px;">
+            <span id="cost-calc-value" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">40.00</span>
+            <span style="font-size: 12px; color: #8C6820; font-weight: 700;">كريديت</span>
         </div>
     </div>
 
     <!-- Submit Button -->
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35); transition: transform 0.2s;">
-        توليد الفيديو
+    <button type="submit" style="width: 100%; background: #0E3A1F; color: #FAF7F0; border: 1.5px solid #C5A059; font-weight: 700; font-size: 15px; padding: 15px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 16px rgba(14, 58, 31, 0.22); transition: all 0.2s ease;">
+        بدء توليد الفيديو
     </button>
 
 </form>
 
 <script>
+let currentModelMinDuration = 2;
+let currentModelMaxDuration = 30;
+let currentSelectedDuration = 5;
+
+function getSelectedModelOption() {
+    const sel = document.getElementById('t2v-model');
+    return sel.options[sel.selectedIndex];
+}
+
+function onModelChanged() {
+    const opt = getSelectedModelOption();
+    if (!opt) return;
+
+    const supportedRes = (opt.getAttribute('data-supported-res') || '720p,1080p').toLowerCase();
+    const durationType = opt.getAttribute('data-duration-type') || 'discrete';
+    const allowedDurationsStr = opt.getAttribute('data-allowed-durations') || '5,10';
+    const defaultDuration = parseInt(opt.getAttribute('data-default-duration') || '5');
+
+    // 1. Update Resolution Pills Availability
+    const resMap = {
+        '480p': document.getElementById('res-lbl-480p'),
+        '720p': document.getElementById('res-lbl-720p'),
+        '1080p': document.getElementById('res-lbl-1080p'),
+        '4k': document.getElementById('res-lbl-4k'),
+    };
+
+    let firstAvailableRes = null;
+    let currentlyCheckedRes = document.querySelector('input[name="res"]:checked');
+    let currentResVal = currentlyCheckedRes ? currentlyCheckedRes.value : '1080p';
+
+    for (const [rKey, rEl] of Object.entries(resMap)) {
+        if (!rEl) continue;
+        if (supportedRes.includes(rKey)) {
+            rEl.style.display = 'block';
+            rEl.style.opacity = '1';
+            rEl.style.pointerEvents = 'auto';
+            if (!firstAvailableRes) firstAvailableRes = rKey;
+        } else {
+            rEl.style.display = 'none';
+            rEl.style.opacity = '0.3';
+            rEl.style.pointerEvents = 'none';
+        }
+    }
+
+    if (!supportedRes.includes(currentResVal)) {
+        if (supportedRes.includes('1080p')) {
+            document.querySelector('input[name="res"][value="1080p"]').checked = true;
+        } else if (supportedRes.includes('720p')) {
+            document.querySelector('input[name="res"][value="720p"]').checked = true;
+        } else if (firstAvailableRes) {
+            document.querySelector(`input[name="res"][value="${firstAvailableRes}"]`).checked = true;
+        }
+    }
+
+    // 2. Setup Clean Second-by-Second Slider (Step = 1s)
+    let minSec = 2;
+    let maxSec = 30;
+
+    if (durationType === 'discrete') {
+        const dList = allowedDurationsStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+        if (dList.length > 0) {
+            minSec = Math.min(...dList);
+            maxSec = Math.max(...dList);
+        }
+    } else {
+        const parts = allowedDurationsStr.split('-').map(s => parseInt(s.trim()));
+        minSec = parts[0] || 2;
+        maxSec = parts[1] || 30;
+    }
+
+    currentModelMinDuration = minSec;
+    currentModelMaxDuration = maxSec;
+
+    const slider = document.getElementById('t2v-duration-slider');
+    const minLabel = document.getElementById('slider-min-label');
+    const maxLabel = document.getElementById('slider-max-label');
+
+    slider.min = minSec;
+    slider.max = maxSec;
+    slider.step = 1;
+
+    let targetDuration = defaultDuration;
+    if (targetDuration < minSec || targetDuration > maxSec) {
+        targetDuration = minSec;
+    }
+
+    slider.value = targetDuration;
+    currentSelectedDuration = targetDuration;
+
+    minLabel.innerText = `${minSec} ثوانٍ`;
+    maxLabel.innerText = `${maxSec} ثانية`;
+    document.getElementById('duration-display-val').innerText = currentSelectedDuration;
+
+    updateResPillStyles();
+    updateLiveCostCalculation();
+}
+
+function onDurationSliderInput(val) {
+    currentSelectedDuration = parseInt(val);
+    document.getElementById('duration-display-val').innerText = currentSelectedDuration;
+    updateLiveCostCalculation();
+}
+
+function updateResPillStyles() {
+    const checkedRes = document.querySelector('input[name="res"]:checked');
+    if (!checkedRes) return;
+    const val = checkedRes.value;
+
+    ['480p', '720p', '1080p', '4k'].forEach(r => {
+        const lbl = document.getElementById(`res-lbl-${r}`);
+        if (!lbl) return;
+        if (r === val) {
+            lbl.style.borderColor = '#0E3A1F';
+            lbl.style.background = 'rgba(14,58,31,0.09)';
+            lbl.style.color = '#0E3A1F';
+            lbl.style.fontWeight = 'bold';
+        } else {
+            lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+            lbl.style.background = '#FAF7F0';
+            lbl.style.color = '#362A1F';
+            lbl.style.fontWeight = 'normal';
+        }
+    });
+}
+
+function updateAspectPillStyles() {
+    document.querySelectorAll('#t2v-aspect-container label').forEach(lbl => {
+        const inp = lbl.querySelector('input');
+        if (inp.checked) {
+            lbl.style.borderColor = '#0E3A1F';
+            lbl.style.background = 'rgba(14,58,31,0.09)';
+            lbl.style.color = '#0E3A1F';
+            lbl.style.fontWeight = 'bold';
+        } else {
+            lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+            lbl.style.background = '#FAF7F0';
+            lbl.style.color = '#362A1F';
+            lbl.style.fontWeight = 'normal';
+        }
+    });
+}
+
+function updateLiveCostCalculation() {
+    updateResPillStyles();
+    const opt = getSelectedModelOption();
+    if (!opt) return;
+
+    const pricingType = opt.getAttribute('data-pricing-type') || 'per_second';
+    const cost480 = parseFloat(opt.getAttribute('data-cost-480') || '2.5');
+    const cost720 = parseFloat(opt.getAttribute('data-cost-720') || '5.0');
+    const cost1080 = parseFloat(opt.getAttribute('data-cost-1080') || '8.0');
+    const cost4k = parseFloat(opt.getAttribute('data-cost-4k') || '15.0');
+
+    const resInput = document.querySelector('input[name="res"]:checked');
+    const res = resInput ? resInput.value : '1080p';
+    const duration = currentSelectedDuration;
+
+    let rate = cost1080;
+    if (res === '480p') rate = cost480;
+    else if (res === '720p') rate = cost720;
+    else if (res === '4k') rate = cost4k;
+
+    let totalCost = 0;
+    let breakdownText = '';
+
+    if (pricingType === 'per_second') {
+        totalCost = rate * duration;
+        breakdownText = `حساب بالثانية (${rate.toFixed(2)} كريديت/ث × ${duration} ثوانٍ لدقة ${res.toUpperCase()})`;
+    } else {
+        totalCost = rate;
+        breakdownText = `حساب ثابت بالعملية لدقة ${res.toUpperCase()}`;
+    }
+
+    document.getElementById('cost-calc-value').innerText = totalCost.toFixed(2);
+    document.getElementById('cost-calc-breakdown').innerText = breakdownText;
+}
+
 function handleT2VSubmit() {
     const prompt = document.getElementById('t2v-prompt').value;
     const model = document.getElementById('t2v-model').value;
-    const res = document.querySelector('input[name="res"]:checked').value;
-    const duration = document.querySelector('input[name="duration"]:checked').value;
-    const aspect = document.querySelector('input[name="aspect"]:checked').value;
+    const resInput = document.querySelector('input[name="res"]:checked');
+    const aspectInput = document.querySelector('input[name="aspect"]:checked');
+
+    const res = resInput ? resInput.value : '1080p';
+    const duration = currentSelectedDuration;
+    const aspect = aspectInput ? aspectInput.value : '16:9';
 
     const fd = new FormData();
     fd.append('prompt', prompt);
@@ -118,6 +353,14 @@ function handleT2VSubmit() {
     fd.append('aspect_ratio', aspect);
 
     submitGeneration(fd, 'text_to_video');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    onModelChanged();
+});
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    onModelChanged();
 }
 </script>
 {% endblock %}
