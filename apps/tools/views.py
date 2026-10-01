@@ -45,7 +45,7 @@ TOOLS_METADATA = {
         'db_tool_type': 'text_to_image',
         'icon': '🎨',
         'badge': 'Grok & Imagen 3',
-        'description': 'إنتاج تصاميم بصرية ولوحات ملكية أندلسية فائقة الجمال بدقة عالية وواقعية مذهلة.',
+        'description': 'إنتاج تصاميم بصرية ولوحات إعلانية وفنية فائقة الجمال بدقة عالية وواقعية مذهلة.',
         'template': 'studio/tools/text_to_image.html',
         'model_class': TextToImageModelConfig,
     },

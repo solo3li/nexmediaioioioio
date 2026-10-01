@@ -20,7 +20,7 @@ def get_active_user(request):
         admin_user, _ = User.objects.get_or_create(
             username='demo_creator',
             defaults={
-                'full_name': 'تجربة الزائر الأندلسي',
+                'full_name': 'مستخدم تجريبي',
                 'standard_credits': Decimal('100.0000'),
                 'premium_credits': Decimal('20.0000'),
             }

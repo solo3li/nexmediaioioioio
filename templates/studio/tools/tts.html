@@ -6,14 +6,14 @@
     <!-- Voice Selector -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            الصوت الملكي (Neural Voice)
+            نبرة الصوت (Neural Voice)
         </label>
         <select id="tts-voice" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
             {% for v in tts_voices %}
             <option value="{{ v.voice_id }}">{{ v.display_name_ar }} ({{ v.display_name }}) - {{ v.gender }} [{{ v.language_code }}]</option>
             {% empty %}
-            <option value="ar-andalus-male-1">زيد الأندلسي (فصيح وقور - ذكر)</option>
-            <option value="ar-andalus-female-1">ولادة القرطبية (وثائقي شاعري - أنثى)</option>
+            <option value="ar-vocal-male-1">صوت فصيح وقور (إخباري ووثائقي - ذكر)</option>
+            <option value="ar-vocal-female-1">صوت إعلامي احترافي (بودكاست وإعلانات - أنثى)</option>
             {% endfor %}
         </select>
     </div>

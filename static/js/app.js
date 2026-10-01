@@ -262,47 +262,47 @@ function initPipelineSimulator() {
 
         // Reset state
         setGauge(0);
-        if (statusEl) statusEl.textContent = 'جاري التحضير (QUEUED)';
+        if (statusEl) statusEl.textContent = 'استلام طلب التوليد (PROMPT QUEUED)';
         if (badgeEl) {
-            badgeEl.textContent = 'اتصال نشط • SSE Streaming';
+            badgeEl.textContent = 'معالجة مباشرة • Live Rendering';
             badgeEl.style.color = '#4ADE80';
         }
 
         // Highlight Step 1
         setStepActive('step-queue');
-        addLog(`[Client] تم إرسال طلب معالجة جديد بالمعرف: ${randId}`);
+        addLog(`[طلب التوليد] تم استلام تفاصيل المشهد والتحقق من الحصة الائتمانية بالمعرف: ${randId}`);
 
         setTimeout(() => {
             setGauge(25);
             setStepActive('step-worker');
-            if (statusEl) statusEl.textContent = 'استلام الـ Worker (PROCESSING)';
-            addLog(`[Postgres] تم حجز الرصيد وتوثيق المهمة في قاعدة البيانات.`);
-            addLog(`[django-q2] التقط عامل المعالجة Process-4 المهمة من طابور Redis.`);
+            if (statusEl) statusEl.textContent = 'المعالجة العصبية (PROCESSING)';
+            addLog(`[تحليل المشهد] توزيع زوايا الكاميرا ومسارات الإضاءة والعمق البصري.`);
+            addLog(`[محرك التوليد] بدء رندرة الإطارات الأولية بدقة عالية.`);
         }, 800);
 
         setTimeout(() => {
             setGauge(60);
             setStepActive('step-stream');
-            if (statusEl) statusEl.textContent = 'معالجة النموذج الذكي... 60%';
-            addLog(`[API Engine] استدعاء نموذج الذكاء الاصطناعي وجاري استلام دفق البيانات.`);
-            addLog(`[SSE Stream] إرسال نبضة التقدم عبر EventSource للمتصفح: 60%`);
+            if (statusEl) statusEl.textContent = 'الرندرة السينمائية 4K... 60%';
+            addLog(`[المعالجة البصرية] استكمال سلاسة الحركة وتوليد الإطارات الفائقة (60 FPS).`);
+            addLog(`[المعالجة الصوتية] دمج وهندسة المؤثرات الصوتية بتردد 48kHz: 60%`);
         }, 1800);
 
         setTimeout(() => {
             setGauge(88);
             setStepActive('step-storage');
-            if (statusEl) statusEl.textContent = 'حفظ الميديا في MinIO... 88%';
-            addLog(`[MinIO S3] تم الانتهاء من المعالجة وجاري الرفع المشفر لـ Bucket (nexmedia-media).`);
+            if (statusEl) statusEl.textContent = 'اللمسات النهائية والتصدير... 88%';
+            addLog(`[تصحيح الألوان] تطبيق التدرج اللوني السينمائي وتجهيز ملف الفيديو فائق الجودة.`);
         }, 2800);
 
         setTimeout(() => {
             setGauge(100);
-            if (statusEl) statusEl.textContent = 'اكتملت بنجاح (COMPLETED)';
+            if (statusEl) statusEl.textContent = 'جاهز للتنزيل (COMPLETED)';
             if (badgeEl) {
-                badgeEl.textContent = 'اكتملت 100% • SUCCESS';
+                badgeEl.textContent = 'تم الإنتاج 100% • READY';
                 badgeEl.style.color = '#D4AF37';
             }
-            addLog(`[SSE Stream] تم إغلاق تدفق الأحداث بنجاح. رابط الملف متاح الآن!`, true);
+            addLog(`[اكتمل الإنتاج] تم إنتاج العمل بنجاح! رابط المعاينة والتحميل بدقة 4K متاح الآن.`, true);
             startBtn.disabled = false;
             startBtn.style.opacity = '1';
         }, 3800);
@@ -440,21 +440,21 @@ function initPlaygroundStudio() {
 
     const styleMeta = {
         andalusian: {
-            tag: 'طراز أندلسي كلاسيكي',
-            title: 'المخطوطة الفاطمية المذهبة',
-            desc: 'تم التوليد بنموذج التذهيب المتقن، مع طبقات فيكتور وزخرفة مذهبة بدقة 300 DPI.',
+            tag: 'طراز سينمائي واقعي 8K',
+            title: 'بورتريه فوتوغرافي واقعي',
+            desc: 'تم التوليد بنموذج فوتوغرافي متقدم مع إضاءة درامية وعمق ميدان احترافي بدقة 8K.',
             className: 'style-andalusian'
         },
         cinema4k: {
             tag: 'سينمائي 4K UHD',
-            title: 'مشهد قصر الحمراء السينمائي',
-            desc: 'تجسيد فوتوغرافي واقعي فائق الوضوح 4K مع تدرجات إضاءة الشفق الذهبي.',
+            title: 'مشهد إعلاني سينمائي فاخر',
+            desc: 'تجسيد فوتوغرافي واقعي فائق الوضوح 4K مع تدرجات إضاءة الشفق الذهبي والظلال الناعمة.',
             className: 'style-cinema4k'
         },
         gilded: {
-            tag: 'تذهيب ملكي فاخر',
-            title: 'إيوان الفنون الملكي المذهب',
-            desc: 'توليد تشكيلي معاصر بكسوة ذهبية عتيقة وتفاصيل أثرية دقيقة.',
+            tag: 'طراز فني وتصميم إعلاني',
+            title: 'تصميم إعلاني ثلاثي الأبعاد',
+            desc: 'توليد تشكيلي إعلاني معاصر بإضاءة استوديو متقنة وتفاصيل فائقة الجودة.',
             className: 'style-gilded'
         }
     };

@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}نكس ميديا | nexmediaai - بيت الحكمة للوسائط الرقمية الذكية{% endblock %}</title>
+    <title>{% block title %}نكس ميديا | nexmedia.ai — استوديو الإنتاج الإبداعي وصناعة الوسائط بالذكاء الاصطناعي{% endblock %}</title>
     
     <!-- Meta tags for SEO & Aesthetics -->
-    <meta name="description" content="منصة nexmediaai السيادية لمعالجة وتوليد الصوتيات والفيديو والصور بأحدث نماذج الذكاء الاصطناعي بروح الحضارة الإسلامية العريقة.">
+    <meta name="description" content="منصة nexmedia.ai الاحترافية لإنتاج وتوليد الفيديو 4K، استنساخ وهندسة الصوت، والتصميم البصري الفائق بأحدث نماذج الذكاء الاصطناعي.">
     <meta name="theme-color" content="#FAF7F0">
     
     <!-- Google Fonts: Luxury Serif & Royal Arabic Calligraphy -->
@@ -150,52 +150,51 @@
             <div class="footer-brand">
                 <div class="brand-names">
                     <span class="brand-en">nexmedia.ai</span>
-                    <span class="brand-ar">نكس ميديا للوسائط الذكية</span>
+                    <span class="brand-ar">استوديو نكس ميديا للوسائط الذكية</span>
                 </div>
                 <p class="footer-desc">
-                    المنصة السيادية لتوحيد وتطوير نماذج الصوتيات والفيديو والصور فائقة الدقة، مستلهمة من عراقة العصر الذهبي للعلوم الإسلامية وبصريات ابن الهيثم.
+                    المنصة الإبداعية المتكاملة لصناع المحتوى والشركات لإنتاج وتوليد مقاطع الفيديو 4K، استنساخ وهندسة الصوت، وتصميم الصور التوليدية الاحترافية بأحدث نماذج الذكاء الاصطناعي.
                 </p>
-                <div class="footer-creds">
-                    <span>مبني بهندسة:</span>
-                    <span class="badge-tech">Django 5 ASGI</span>
-                    <span class="badge-tech">django-q2</span>
-                    <span class="badge-tech">PostgreSQL 16</span>
-                    <span class="badge-tech">MinIO S3</span>
-                    <span class="badge-tech">SSE Stream</span>
-                </div>
             </div>
 
             <div class="footer-links-grid">
                 <div class="footer-col">
-                    <h4 class="col-title">أدوات الصوت</h4>
-                    <a href="#audio-suite">تفريغ الصوت (STT)</a>
-                    <a href="#audio-suite">استنساخ النبرة</a>
-                    <a href="#audio-suite">عزل الموسيقى والمؤثرات</a>
-                    <a href="#audio-suite">هندسة الترددات الصوتية</a>
+                    <h4 class="col-title">استوديو الصوتيات</h4>
+                    <a href="/studio/tts/">تحويل النص إلى كلام (TTS)</a>
+                    <a href="/studio/stt/">تفريغ الصوت الذكي (STT)</a>
+                    <a href="/#three-portals">استنساخ الأصوات (Voice AI)</a>
+                    <a href="/#three-portals">تنقية وعزل الصوت</a>
                 </div>
                 <div class="footer-col">
-                    <h4 class="col-title">استوديو السينما</h4>
-                    <a href="#cinema-studio">ترقية الفيديو إلى 4K</a>
-                    <a href="#cinema-studio">توليد المشاهد السينمائية</a>
-                    <a href="#cinema-studio">مزامنة الشفاه التلقائية</a>
-                    <a href="#cinema-studio">استكمال الإطارات العالي</a>
+                    <h4 class="col-title">استوديو الفيديو 4K</h4>
+                    <a href="/studio/text-to-video/">توليد الفيديو من النص</a>
+                    <a href="/studio/image-to-video/">تحريك الصور الثابتة</a>
+                    <a href="/studio/lipsync/">مزامنة الشفاه الصوتية</a>
+                    <a href="/studio/reference-to-video/">الفيديو متعدد المراجع</a>
                 </div>
                 <div class="footer-col">
-                    <h4 class="col-title">الفنون البصرية</h4>
-                    <a href="#visual-arts">توليد الصور التشكيلية</a>
-                    <a href="#visual-arts">إزالة الخلفيات المعقدة</a>
-                    <a href="#visual-arts">توسيع الكوادر (Outpainting)</a>
-                    <a href="#visual-arts">المخطوطات المذهبة</a>
+                    <h4 class="col-title">استوديو التصميم والصور</h4>
+                    <a href="/studio/text-to-image/">توليد الصور التشكيلية</a>
+                    <a href="/studio/avatar-video/">استوديو الأفاتار المتكلم</a>
+                    <a href="/studio/motion-control/">التحكم الحركي الموجه</a>
+                    <a href="/#pricing-calculator">باقات الاشتراك والرصيد</a>
+                </div>
+                <div class="footer-col">
+                    <h4 class="col-title">المساعدة والدعم</h4>
+                    <a href="{% url 'support_list' %}">مركز الدعم الفني المباشر</a>
+                    <a href="{% url 'affiliate_dashboard' %}">برنامج التسويق والعمولات</a>
+                    <a href="/#pricing-calculator">حاسبة الرصيد الشهري</a>
+                    <a href="{% url 'profile' %}">إدارة المحفظة والحساب</a>
                 </div>
             </div>
         </div>
 
         <div class="footer-bottom">
             <div class="container footer-bottom-inner">
-                <p class="copyright">© 2026 nexmediaai. جميع الحقوق محفوظة لبيت الحكمة الرقمي.</p>
+                <p class="copyright">© 2026 nexmedia.ai. جميع الحقوق محفوظة.</p>
                 <div class="footer-status-tag">
                     <span class="pulse-indicator"></span>
-                    <span>خوادم المعالجة متصلة وتعمل بكفاءة 100%</span>
+                    <span>محركات الإنتاج والتوليد متصلة وتعمل بكفاءة 100%</span>
                 </div>
             </div>
         </div>
@@ -217,7 +216,7 @@
                 <div class="spec-chip"><span>النموذج:</span> <strong>ESRGAN-4K Pro</strong></div>
                 <div class="spec-chip"><span>زمن المعالجة:</span> <strong>1.4 ثانية</strong></div>
                 <div class="spec-chip"><span>الدقة:</span> <strong>3840x2160 UHD</strong></div>
-                <div class="spec-chip"><span>التخزين:</span> <strong>MinIO Encrypted S3</strong></div>
+                <div class="spec-chip"><span>التخزين:</span> <strong>سحابة مشفرة فائقة الأمان</strong></div>
             </div>
         </div>
     </div>

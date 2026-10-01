@@ -36,8 +36,8 @@ class Command(BaseCommand):
             defaults={
                 'title_en': 'About NexMedia',
                 'title_ar': 'عن منصة نيكس ميديا',
-                'content_en': 'NexMedia is a premier Royal Andalusian-inspired generative AI creative suite, empowering artists, creators, and enterprises with world-class neural models for voice, video, and imagery.',
-                'content_ar': 'نيكس ميديا هي منصة إبداعية متكاملة بالذكاء الاصطناعي مستوحاة من فخامة الطراز الأندلسي، تمكّن الفنانين وصنّاع المحتوى والشركات من إنتاج الفيديو والصوت والصور بأحدث النماذج العصبية العالمية.',
+                'content_en': 'NexMedia is a premier generative AI creative suite, empowering artists, creators, and enterprises with world-class neural models for voice, video, and imagery.',
+                'content_ar': 'نيكس ميديا هي منصة إبداعية متكاملة بالذكاء الاصطناعي، تمكّن الفنانين وصنّاع المحتوى والشركات من إنتاج وتوليد الفيديو والصوت والصور بأحدث النماذج العالمية.',
                 'is_active': True,
             }
         )
@@ -46,9 +46,9 @@ class Command(BaseCommand):
         CustomPage.objects.update_or_create(
             slug='contact',
             defaults={
-                'title_en': 'Contact Concierge',
-                'title_ar': 'تواصل معنا والدعم الملكي',
-                'content_en': 'Have inquiries, custom enterprise requirements, or need dedicated support? Reach out to our concierge team at support@nexmedia.io.',
+                'title_en': 'Contact Support',
+                'title_ar': 'تواصل معنا والدعم الفني',
+                'content_en': 'Have inquiries, custom enterprise requirements, or need dedicated support? Reach out to our team at support@nexmedia.io.',
                 'content_ar': 'هل لديك استفسارات أو متطلبات خاصة بالمؤسسات أو تحتاج لدعم خاص؟ تواصل مع فريق الدعم لدينا عبر support@nexmedia.io.',
                 'is_active': True,
             }
@@ -56,11 +56,11 @@ class Command(BaseCommand):
 
         # 5. Announcement
         SystemAnnouncement.objects.update_or_create(
-            title_en='Welcome to NexMedia Royal Studio',
+            title_en='Welcome to NexMedia Creative Studio',
             defaults={
-                'title_ar': 'مرحباً بكم في استوديو نيكس ميديا الأندلسي',
-                'message_en': 'Experience state-of-the-art cinematic video and voice synthesis powered by Kling, Veo, and ElevenLabs.',
-                'message_ar': 'استمتع بأحدث تقنيات توليد الفيديو السينمائي والأصوات الطبيعية المدعومة بأحدث النماذج.',
+                'title_ar': 'مرحباً بكم في استوديو نيكس ميديا للإنتاج الإبداعي',
+                'message_en': 'Experience state-of-the-art cinematic video and voice synthesis powered by leading AI models.',
+                'message_ar': 'استمتع بأحدث تقنيات توليد الفيديو السينمائي والأصوات الطبيعية والتصاميم البصرية.',
                 'banner_type': 'info',
                 'is_active': True,
             }
@@ -71,10 +71,10 @@ class Command(BaseCommand):
             slug='welcome-to-the-future-of-creative-ai',
             defaults={
                 'category': 'Platform',
-                'title_en': 'The Dawn of Royal AI Media: Introducing NexMedia',
-                'title_ar': 'فجر الإعلام الاصطناعي الراقي: إطلاق منصة نيكس ميديا',
-                'content_en': 'We are thrilled to unveil NexMedia, uniting high-fidelity multi-model synthesis under an Andalusian-crafted luxury creative suite.',
-                'content_ar': 'يسرنا إطلاق منصة نيكس ميديا، التي تجمع بين أحدث نماذج التوليد الفائق للصوت والفيديو والصورة في بيئة إبداعية مستوحاة من الفخامة الأندلسية.',
+                'title_en': 'The Future of AI Media: Introducing NexMedia',
+                'title_ar': 'مستقبل الإنتاج الإبداعي: إطلاق منصة نيكس ميديا',
+                'content_en': 'We are thrilled to unveil NexMedia, uniting high-fidelity multi-model synthesis under a unified, powerful creative suite.',
+                'content_ar': 'يسرنا إطلاق منصة نيكس ميديا، التي تجمع بين أحدث نماذج التوليد الفائق للصوت والفيديو والصورة في استوديو إبداعي موحد وشامل.',
                 'is_published': True,
             }
         )
