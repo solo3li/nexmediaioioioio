@@ -27,7 +27,25 @@ INSTALLED_APPS = [
     # Infrastructure
     'django_q',
     'storages',
+
+    # Project Core Apps
+    'apps.accounts',
+    'apps.billing',
+    'apps.history',
+
+    # Independent AI Tool Apps
+    'apps.tools.tts',
+    'apps.tools.stt',
+    'apps.tools.text_to_video',
+    'apps.tools.image_to_video',
+    'apps.tools.reference_to_video',
+    'apps.tools.lipsync',
+    'apps.tools.motion_control',
+    'apps.tools.text_to_image',
+    'apps.tools.avatar_video',
 ]
+
+AUTH_USER_MODEL = 'accounts.ApplicationUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

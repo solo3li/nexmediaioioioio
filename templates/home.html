@@ -1,108 +1,473 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nexmedia.ai — نكس ميديا للوسائط الذكية</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Reem+Kufi:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body class="islamic-cream-theme">
-    <!-- Ambient Subtle Arabesque Watermark Texture -->
-    <div class="arabesque-watermark" aria-hidden="true"></div>
 
-    <!-- Royal Navigation Header (Mirrors Reference Architecture) -->
-    <header class="royal-header" id="royal-header">
-        <div class="container header-inner">
-            <!-- Brand & Status Identity -->
-            <div style="display: flex; align-items: center; gap: 14px;">
-                <a href="/" class="brand-logo" id="main-brand-logo">
-                    <div class="logo-emblem" aria-hidden="true">
-                        <svg class="star-rosette" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="7" y="7" width="34" height="34" rx="5" transform="rotate(45 24 24)" stroke="#C5A059" stroke-width="2" fill="rgba(197, 160, 89, 0.1)"/>
-                            <rect x="7" y="7" width="34" height="34" rx="5" stroke="#0E3A1F" stroke-width="2"/>
-                            <circle cx="24" cy="24" r="8" fill="#0E3A1F" stroke="#C5A059" stroke-width="1.8"/>
-                            <circle cx="24" cy="24" r="3.5" fill="#C5A059"/>
+{% block title %}نكس ميديا | nexmedia.ai — بيت الحكمة للوسائط الرقمية والذكاء الاصطناعي السيادي{% endblock %}
+
+{% block content %}
+<!-- ========================================================================
+     1. HERO SECTION: Royal Andalusian Split Grid
+     ======================================================================== -->
+<section class="royal-hero-section" id="hero-section">
+    <div class="container">
+        <div class="hero-split-grid">
+            <!-- Right Column: Hero Typography & Actions (RTL) -->
+            <div class="hero-text-col">
+                <div class="hero-brand-kicker">
+                    <span class="brand-kicker-dot"></span>
+                    <span>الوسائط الذكية السيادية • بيت الحكمة الرقمي</span>
+                </div>
+
+                <h1 class="hero-main-title">
+                    الوسائط الذكية السيادية: <br>
+                    <span class="title-brand">مستقبل الإبداع</span> الأندلسي
+                </h1>
+
+                <div class="hero-subtitle-block">
+                    <p class="subtitle-highlight">
+                        منصة إبداع سينمائية بالذكاء الاصطناعي لـ 4K، وصوت فائق الجودة، وفنون بصرية تشكيلية.
+                    </p>
+                    <p class="hero-desc">
+                        توحيد أحدث نماذج توليد ومعالجة الوسائط المتعددة (فيديو 4K، استنساخ وتفريغ الصوت، والترقية البصرية) في بنية تحتية سحابية سيادية فائقة السرعة مع محافظ ائتمانية مزدوجة.
+                    </p>
+                </div>
+
+                <div class="hero-action-buttons">
+                    <a href="#three-portals" class="btn-royal-forest btn-glow-pulse" id="hero-explore-btn">
+                        <span>استكشف البوابات الثلاث</span>
+                        <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
-                    </div>
-                    <div class="brand-names">
-                        <span class="brand-en">nexmedia<span class="ai-badge">.ai</span></span>
-                        <span class="brand-ar">نكس ميديا للوسائط الذكية</span>
-                    </div>
-                </a>
+                    </a>
+                    <a href="#simulator" class="btn-ghost" id="hero-demo-btn">
+                        <span>تجربة المحاكي الحي</span>
+                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+                        </svg>
+                    </a>
+                </div>
 
-                <!-- Live Cloud AI Connection Status Pill (Mirrors Reference 'Connected to Cloud OS') -->
-                <div class="brand-status-pill">
-                    <span class="pulse-indicator"></span>
-                    <span data-i18n="cloud_status">خوادم الذكاء الاصطناعي متصلة</span>
+                <!-- Studio Quality Badges -->
+                <div class="hero-studio-badges">
+                    <div class="hero-studio-badge">
+                        <span class="badge-icon">✦</span>
+                        <span>8K Neural Ready</span>
+                    </div>
+                    <div class="hero-studio-badge">
+                        <span class="badge-icon">✦</span>
+                        <span>96kHz / 24-bit Lossless</span>
+                    </div>
+                    <div class="hero-studio-badge">
+                        <span class="badge-icon">✦</span>
+                        <span>Dual Wallet Economy</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Navigation Links -->
-            <nav class="nav-menu" id="primary-nav" aria-label="التنقل الرئيسي">
-                <a href="#three-portals" class="nav-item">البوابات الثلاث</a>
-                <a href="#cinema-studio" class="nav-item">استوديو السينما 4K</a>
-                <a href="#audio-suite" class="nav-item">هندسة الصوت</a>
-                <a href="#visual-arts" class="nav-item">الفنون البصرية</a>
-                <a href="#pricing-calculator" class="nav-item">حاسبة الرصيد</a>
-            </nav>
+            <!-- Left Column: Interactive Luxury Neural Player Card -->
+            <div class="hero-media-col">
+                <div class="hero-player-card-wrapper">
+                    <div class="player-corner player-corner-tr">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M0 2h22v22" stroke="#C5A059" stroke-width="2"/></svg>
+                    </div>
+                    <div class="player-corner player-corner-tl">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M24 2H2v22" stroke="#C5A059" stroke-width="2"/></svg>
+                    </div>
+                    <div class="player-corner player-corner-br">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M0 22h22V0" stroke="#C5A059" stroke-width="2"/></svg>
+                    </div>
+                    <div class="player-corner player-corner-bl">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M24 22H2V0" stroke="#C5A059" stroke-width="2"/></svg>
+                    </div>
 
-            <!-- Actions & Controls -->
-            <div class="header-actions">
-                <!-- Language Switcher Pill (Mirrors Reference 'SA Arabic | GB EN') -->
-                <div class="lang-toggle-pill" id="lang-switcher">
-                    <button type="button" class="lang-btn active" data-lang="ar">العربية</button>
-                    <button type="button" class="lang-btn" data-lang="en">EN</button>
+                    <div class="hero-player-card">
+                        <div class="player-card-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="player-badge-4k">4K UHD NEURAL</span>
+                                <span style="font-size: 0.8125rem; color: #E8DFC8;">Kling v1.6 + Gemini Speech</span>
+                            </div>
+                            <div class="player-live-tag">
+                                <span class="player-live-dot" style="background: #2ECC71; border-radius: 50%; width: 7px; height: 7px; display: inline-block;"></span>
+                                <span>LIVE ENGINE</span>
+                            </div>
+                        </div>
+
+                        <!-- Neural Waveform Visualizer Screen -->
+                        <div style="padding: 24px 20px; background: radial-gradient(circle at center, #1B291E 0%, #100C09 100%); text-align: center;">
+                            <canvas id="hero-neural-waveform" width="480" height="96" class="hero-waveform-canvas" style="width: 100%; height: 96px;"></canvas>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 0.75rem; color: #C5A059;">
+                                <span>التردد: 48,000 Hz</span>
+                                <span>دقة الإطار: 3840 × 2160 UHD</span>
+                                <span>زمن المعالجة: 0.84 ثانية</span>
+                            </div>
+                        </div>
+
+                        <!-- Player Controls Bar -->
+                        <div style="padding: 14px 20px; background: #16100C; border-top: 1px solid rgba(197, 160, 89, 0.25); display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <button type="button" class="btn-royal-forest" id="hero-player-play-btn" style="padding: 7px 16px; font-size: 0.8125rem;">
+                                    <span class="icon-play-hero" style="display:none;">تشغيل النبض</span>
+                                    <span class="icon-pause-hero">إيقاف التردد</span>
+                                </button>
+                                <span style="font-size: 0.8125rem; color: #FFFDF8;">معاينة الدفق العصبي اللحظي</span>
+                            </div>
+                            <span class="badge-tech" style="background: rgba(197, 160, 89, 0.15); color: #D4AF37; border: 1px solid #C5A059;">MinIO Encrypted S3</span>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Admin Link -->
-                <a href="/admin/" class="btn-ghost" id="admin-login-btn">لوحة المدير</a>
-
-                <!-- Primary CTA in Deep Emerald Forest Green -->
-                <a href="#simulator" class="btn-royal-forest" id="cta-start-btn">
-                    <span data-i18n="cta_start">استكشف المنصة</span>
-                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-
-                <!-- Mobile Menu Button -->
-                <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="فتح القائمة">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="3" y1="12" x2="21" y2="12"/>
-                        <line x1="3" y1="6" x2="21" y2="6"/>
-                        <line x1="3" y1="18" x2="21" y2="18"/>
-                    </svg>
-                </button>
             </div>
         </div>
-    </header>
-
-    <!-- Mobile Navigation Drawer -->
-    <div class="mobile-nav-drawer" id="mobile-drawer" aria-hidden="true">
-        <div class="drawer-header">
-            <span class="drawer-title">نكس ميديا للوسائط الذكية</span>
-            <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="إغلاق القائمة">✕</button>
-        </div>
-        <nav class="drawer-menu">
-            <a href="#three-portals" class="drawer-nav-item">البوابات الثلاث</a>
-            <a href="#cinema-studio" class="drawer-nav-item">استوديو السينما 4K</a>
-            <a href="#audio-suite" class="drawer-nav-item">هندسة الصوت</a>
-            <a href="#visual-arts" class="drawer-nav-item">الفنون البصرية</a>
-            <a href="#pricing-calculator" class="drawer-nav-item">حاسبة الرصيد</a>
-            <a href="/admin/" class="drawer-nav-item">لوحة المدير</a>
-        </nav>
     </div>
+</section>
 
-    <!-- Main Canvas Area: Empty, ready for Hero Section -->
-    <main id="main-content" style="min-height: 70vh;">
-    </main>
+<!-- ========================================================================
+     2. THE THREE PORTALS: 4K Cinema, Audio Suite, Visual Arts
+     ======================================================================== -->
+<section class="portals-section" id="three-portals" style="padding: 90px 0; background: var(--bg-cream-base);">
+    <div class="container">
+        <div class="section-header-block">
+            <span class="section-kicker">البنية الثلاثية السيادية</span>
+            <h2 class="section-title">البوابات الثلاث للإنتاج الفائق</h2>
+            <div class="geometric-divider">
+                <span class="line"></span>
+                <span class="star-icon">✦</span>
+                <span class="line"></span>
+            </div>
+            <p class="section-subtitle">
+                محراب السينما 4K، كونسول الأكوستيك والصوتيات، ورواق الفنون البصرية التشكيلية
+            </p>
+        </div>
 
-    <!-- Scripts -->
-    <script src="{% static 'js/app.js' %}"></script>
-</body>
-</html>
+        <div class="portals-grid">
+            <!-- PORTAL 1: Acoustic & Audio Suite -->
+            <div class="portal-card" id="audio-suite">
+                <div class="portal-arch-header">
+                    <div class="arch-title-badge">
+                        <span class="arch-number">الأولى</span>
+                        <h3 class="arch-name">كونسول الأكوستيك والصوتيات</h3>
+                    </div>
+                    <!-- Moorish Arch Shape Overlay -->
+                    <svg class="arch-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
+                        <path d="M0,20 Q50,-10 100,20 Z" fill="currentColor"/>
+                    </svg>
+                </div>
+
+                <div class="portal-body">
+                    <!-- Interactive Astrolabe & Audio Waveform Widget -->
+                    <div class="interactive-audio-widget">
+                        <div class="astrolabe-dial" style="display: flex; align-items: center; justify-content: center;">
+                            <div class="needle" id="astrolabe-needle" style="width: 2px; height: 32px; background: #C5A059; transform-origin: bottom center; transition: transform 0.05s linear;"></div>
+                        </div>
+                        <canvas id="waveform-canvas" width="280" height="48" style="width: 100%; height: 48px; margin-bottom: 8px;"></canvas>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #C5A059; margin-bottom: 12px;">
+                            <span>48kHz • 24-bit Lossless</span>
+                            <span id="audio-timecode">01:30 / 00:14</span>
+                        </div>
+                        <button type="button" class="btn-royal-forest" id="audio-play-toggle" style="width: 100%; font-size: 0.8125rem; justify-content: center;">
+                            <svg class="icon-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            <svg class="icon-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                            <span>تجربة الموجة الصوتية الحية</span>
+                        </button>
+                    </div>
+
+                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">أدوات الصوت المتاحة:</h4>
+                    <ul class="portal-features" style="list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 8px; font-size: 0.875rem; color: var(--color-mocha-text);">
+                        <li>✦ تفريغ الصوت الذكي إلى نصوص (STT) بدقة Whisper</li>
+                        <li>✦ استنساخ النبرة الصوتية الملكية (Voice Cloning)</li>
+                        <li>✦ عزل الموسيقى والمؤثرات (Vocal Splitter)</li>
+                        <li>✦ تنقية الضجيج ومعالجة الصدى بأعلى نقاء</li>
+                    </ul>
+
+                    <div class="portal-footer" style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(197, 160, 89, 0.2);">
+                        <a href="/admin/tts/ttsmodelconfig/" class="portal-link" style="color: var(--color-forest-green); font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: space-between;">
+                            <span>إدارة نماذج الصوت</span>
+                            <span class="arrow">←</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PORTAL 2: 4K Neural Cinema Studio (FEATURED) -->
+            <div class="portal-card portal-card-featured" id="cinema-studio">
+                <div class="portal-arch-header header-emerald">
+                    <div class="arch-title-badge">
+                        <span class="arch-number">المركزية</span>
+                        <h3 class="arch-name">محراب السينما والفيديو 4K</h3>
+                    </div>
+                    <svg class="arch-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
+                        <path d="M0,20 Q50,-10 100,20 Z" fill="currentColor"/>
+                    </svg>
+                </div>
+
+                <div class="portal-body">
+                    <!-- Interactive 4K Video Widget -->
+                    <div class="interactive-video-widget" style="background: #110B08; border: 1.5px solid var(--color-gold); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 24px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+                        <div style="background: linear-gradient(135deg, #1C120B 0%, #0E3A1F 100%); border-radius: 8px; padding: 34px 16px; position: relative;">
+                            <span class="player-badge-4k" style="position: absolute; top: 10px; right: 10px;">4K UHD NEURAL</span>
+                            <button type="button" class="btn-royal-forest" id="cinema-play-btn" style="margin: 12px auto 0; font-size: 0.8125rem; justify-content: center; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <span>مشاهدة المعاينة السينمائية</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">أدوات استوديو الفيديو:</h4>
+                    <ul class="portal-features" style="list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 8px; font-size: 0.875rem; color: var(--color-mocha-text);">
+                        <li>✦ ترقية جودة الفيديو إلى 4K سينمائي فائق الحواف</li>
+                        <li>✦ توليد المشاهد من النصوص المتقدمة (Text-to-Video)</li>
+                        <li>✦ مزامنة الشفاه الصوتية الدقيقة (Lip Sync)</li>
+                        <li>✦ استكمال سلاسة الإطارات العالية (60 FPS)</li>
+                    </ul>
+
+                    <div class="portal-footer" style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(197, 160, 89, 0.2);">
+                        <a href="/admin/text_to_video/texttovideomodelconfig/" class="portal-link btn-featured" style="color: var(--color-forest-green); font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: space-between;">
+                            <span>دخول استوديو السينما 4K</span>
+                            <span class="arrow">←</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PORTAL 3: Bespoke Visual Arts & Restoration -->
+            <div class="portal-card" id="visual-arts">
+                <div class="portal-arch-header">
+                    <div class="arch-title-badge">
+                        <span class="arch-number">الثالثة</span>
+                        <h3 class="arch-name">رواق الفنون البصرية والصور</h3>
+                    </div>
+                    <svg class="arch-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
+                        <path d="M0,20 Q50,-10 100,20 Z" fill="currentColor"/>
+                    </svg>
+                </div>
+
+                <div class="portal-body">
+                    <!-- Interactive Before/After Comparison Slider -->
+                    <div class="interactive-slider-widget" style="margin-bottom: 24px;">
+                        <div class="comparison-container" id="comparison-slider" style="position: relative; height: 140px; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--color-gold); cursor: ew-resize; background: #1C120B;">
+                            <div class="comparison-layer after-layer" style="position: absolute; inset: 0; background: linear-gradient(135deg, #0E3A1F 0%, #162C1D 100%); display: flex; align-items: center; justify-content: flex-start; padding: 14px;">
+                                <span style="font-size: 0.75rem; background: rgba(0,0,0,0.6); color: #FFF; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--color-gold);">النتيجة (AI Enhancer)</span>
+                            </div>
+                            <div class="comparison-layer before-layer" id="before-layer" style="position: absolute; inset: 0; width: 50%; background: linear-gradient(135deg, #2D1D13 0%, #1B100B 100%); border-left: 2px solid var(--color-gold-bright); display: flex; align-items: center; justify-content: flex-end; padding: 14px; overflow: hidden;">
+                                <span style="font-size: 0.75rem; background: rgba(0,0,0,0.6); color: #C5A059; padding: 2px 8px; border-radius: 4px;">الأصل (Original)</span>
+                            </div>
+                            <div class="slider-handle-bar" id="slider-handle" style="position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #FFF; pointer-events: none;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%; background: var(--color-forest-green); border: 2px solid var(--color-gold); display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 0.7rem;">↔</div>
+                            </div>
+                        </div>
+                        <span style="display: block; text-align: center; font-size: 0.75rem; color: var(--color-mocha-muted); margin-top: 8px;">
+                            اسحب المقبض لمشاهدة قوة إزالة الخلفيات والترقية التشكيلية
+                        </span>
+                    </div>
+
+                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">أدوات الفنون البصرية:</h4>
+                    <ul class="portal-features" style="list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 8px; font-size: 0.875rem; color: var(--color-mocha-text);">
+                        <li>✦ إزالة الخلفيات المعقدة بدقة ميكرونية فائقة</li>
+                        <li>✦ توليد الصور التشكيلية المعاصرة عبر Grok & Imagen</li>
+                        <li>✦ توسيع الكوادر اللانهائي (Outpainting)</li>
+                        <li>✦ تعديل التفاصيل الموجهة وتذهيب المخطوطات</li>
+                    </ul>
+
+                    <div class="portal-footer" style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(197, 160, 89, 0.2);">
+                        <a href="/admin/text_to_image/texttoimagemodelconfig/" class="portal-link" style="color: var(--color-forest-green); font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: space-between;">
+                            <span>تجربة أدوات الصور</span>
+                            <span class="arrow">←</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================================
+     3. REAL-TIME AI PIPELINE SIMULATOR
+     ======================================================================== -->
+<section class="simulator-section" id="simulator" style="padding: 90px 0; background: radial-gradient(circle at 30% 50%, rgba(14, 58, 31, 0.06) 0%, transparent 70%); border-top: var(--border-hairline); border-bottom: var(--border-hairline);">
+    <div class="container">
+        <div class="section-header-block">
+            <span class="section-kicker">المعالجة غير المتزامنة اللحظية</span>
+            <h2 class="section-title">المحاكي الحي لخط المعالجة السحابي</h2>
+            <div class="geometric-divider">
+                <span class="line"></span>
+                <span class="star-icon">✦</span>
+                <span class="line"></span>
+            </div>
+            <p class="section-subtitle">
+                محاكاة مباشرة لتدفق مهام django-q2 وRedis وتخزين MinIO مع قنوات التنبيه الفورية
+            </p>
+        </div>
+
+        <div style="max-width: 860px; margin: 0 auto; background: #130D09; border: 1.5px solid var(--color-gold); border-radius: 20px; overflow: hidden; box-shadow: 0 25px 60px -10px rgba(26, 18, 14, 0.5);">
+            <!-- Console Topbar -->
+            <div style="background: rgba(255, 255, 255, 0.04); padding: 14px 22px; border-bottom: 1px solid rgba(197, 160, 89, 0.25); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #EF4444; display: inline-block;"></span>
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #F59E0B; display: inline-block;"></span>
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+                    <span style="font-family: var(--font-english-display); font-size: 0.8125rem; color: #C5A059; margin-right: 12px;">nexmedia.ai/pipeline-stream</span>
+                </div>
+                <span class="badge-status-ready" id="sim-status-badge" style="font-size: 0.75rem; background: rgba(46, 204, 113, 0.15); color: #2ECC71; border: 1px solid #2ECC71; padding: 2px 10px; border-radius: 20px;">جاهز للتنفيذ</span>
+            </div>
+
+            <div style="padding: 32px 28px; display: grid; grid-template-columns: 240px 1fr; gap: 32px; align-items: center;">
+                <!-- Gauge Circle -->
+                <div style="text-align: center;">
+                    <div style="position: relative; width: 140px; height: 140px; margin: 0 auto 16px;">
+                        <svg viewBox="0 0 120 120" style="transform: rotate(-90deg); width: 140px; height: 140px;">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+                            <circle id="gauge-circle-fill" cx="60" cy="60" r="50" fill="none" stroke="#D4AF37" stroke-width="8" stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round" style="transition: stroke-dashoffset 0.3s ease;"/>
+                        </svg>
+                        <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <span id="sim-percentage" style="font-family: var(--font-english-display); font-size: 2rem; font-weight: 700; color: #FFFDF8;">0%</span>
+                            <span id="sim-task-status" style="font-size: 0.6875rem; color: #C5A059;">في وضع الانتظار</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-royal-forest" id="btn-start-simulation" style="width: 100%; justify-content: center; font-size: 0.875rem;">
+                        <span>إطلاق المحاكاة الحية</span>
+                    </button>
+                </div>
+
+                <!-- Terminal Logs -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #C5A059; margin-bottom: 8px;">
+                        <span>سجل الأحداث اللحظي (SSE Pipeline Logs):</span>
+                        <span id="sim-task-id" style="font-family: monospace; color: #A89F91;">Task: STANDBY</span>
+                    </div>
+                    <div id="terminal-logs" style="height: 180px; background: #0A0705; border: 1px solid rgba(197, 160, 89, 0.25); border-radius: 10px; padding: 14px; font-family: 'Courier New', Courier, monospace; font-size: 0.8125rem; color: #2ECC71; overflow-y: auto; line-height: 1.6;">
+                        <div class="log-line">[SYSTEM] محرك django-q2 متصل بقاعدة Redis v7.0.</div>
+                        <div class="log-line">[STORAGE] قناة تخزين MinIO مشفرة وجاهزة لاستقبال الإطارات.</div>
+                        <div class="log-line text-gold">[READY] اضغط على 'إطلاق المحاكاة الحية' لتشغيل خط المعالجة الفعلي.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========================================================================
+     4. PLANS & CREDITS CALCULATOR (DYNAMIC FROM DATABASE)
+     ======================================================================== -->
+<section class="pricing-calculator-section" id="pricing-calculator" style="padding: 90px 0; background: var(--bg-cream-base);">
+    <div class="container">
+        <div class="section-header-block">
+            <span class="section-kicker">اقتصاد المحافظ المزدوجة</span>
+            <h2 class="section-title">باقات الاشتراك وحاسبة الرصيد</h2>
+            <div class="geometric-divider">
+                <span class="line"></span>
+                <span class="star-icon">✦</span>
+                <span class="line"></span>
+            </div>
+            <p class="section-subtitle">
+                اختر الباقة المناسبة لمستوى إنتاجك، أو استخدم الحاسبة لتقدير استهلاكك من الرصيد القياسي والمميز
+            </p>
+        </div>
+
+        <!-- Dynamic Plans Grid from Database -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 60px;">
+            {% for plan in plans %}
+            <div class="portal-card {% if plan.name == 'Pro Quarterly' or plan.name == 'Basic Monthly' %}portal-card-featured{% endif %}" style="padding: 28px 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                    <span style="font-size: 0.75rem; background: rgba(197, 160, 89, 0.15); color: var(--color-gold); padding: 3px 10px; border-radius: 20px; font-weight: 700;">
+                        {% if plan.is_free_trial %}تجربة مجانية{% else %}{{ plan.duration_days }} يوم{% endif %}
+                    </span>
+                    <span style="font-size: 0.8125rem; color: var(--color-mocha-muted);">{{ plan.price_egp }} EGP</span>
+                </div>
+
+                <h3 style="font-family: var(--font-arabic-title); font-size: 1.4rem; color: var(--color-mocha-deep); margin-bottom: 6px;">
+                    {{ plan.name_ar }}
+                </h3>
+                <p style="font-size: 0.8125rem; color: var(--color-mocha-muted); min-height: 40px; margin-bottom: 16px;">
+                    {{ plan.description_ar|default:plan.description }}
+                </p>
+
+                <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;">
+                    <span style="font-size: 1.25rem; color: var(--color-forest-green); font-weight: 700;">$</span>
+                    <span style="font-family: var(--font-english-display); font-size: 2.25rem; font-weight: 700; color: var(--color-forest-green);">{{ plan.price_usd }}</span>
+                    <span style="font-size: 0.8125rem; color: var(--color-mocha-muted);">/ الفترة</span>
+                </div>
+
+                <div style="background: rgba(197, 160, 89, 0.08); border: 1px dashed var(--color-gold-border); border-radius: 10px; padding: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; margin-bottom: 6px;">
+                        <span>رصيد قياسي:</span>
+                        <strong style="color: var(--color-forest-green);">{{ plan.standard_credits|floatformat:0 }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8125rem;">
+                        <span>رصيد مميز:</span>
+                        <strong style="color: var(--color-gold);">{{ plan.premium_credits|floatformat:0 }}</strong>
+                    </div>
+                </div>
+
+                <a href="/admin/billing/subscription/add/" class="btn-royal-forest" style="width: 100%; justify-content: center; font-size: 0.875rem; text-decoration: none; margin-top: auto;">
+                    <span>اختيار الباقة</span>
+                    <span style="font-size: 0.9rem;">←</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Interactive Credit Estimator -->
+        <div class="calc-split-box" style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; align-items: stretch;">
+            <!-- Sliders Card -->
+            <div class="calc-sliders-card" style="background-color: var(--bg-cream-highlight); border: var(--border-gold-fine); border-radius: 16px; padding: 36px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 28px;">
+                <h3 style="font-family: var(--font-arabic-title); font-size: 1.3rem; color: var(--color-mocha-deep);">
+                    حاسبة الاحتياج الشهري التقديري
+                </h3>
+
+                <!-- Video Slider -->
+                <div class="calc-slider-group">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: var(--color-mocha-deep); margin-bottom: 8px;">
+                        <span>دقائق الفيديو 4K المطلوبة:</span>
+                        <span style="color: var(--color-forest-green);"><strong id="val-video-num">10</strong> دقيقة</span>
+                    </div>
+                    <input type="range" id="slider-video" min="0" max="60" value="10" step="1" style="width: 100%; accent-color: var(--color-forest-green);">
+                </div>
+
+                <!-- Audio Slider -->
+                <div class="calc-slider-group">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: var(--color-mocha-deep); margin-bottom: 8px;">
+                        <span>ساعات الصوت والاستنساخ:</span>
+                        <span style="color: var(--color-forest-green);"><strong id="val-audio-num">5</strong> ساعات</span>
+                    </div>
+                    <input type="range" id="slider-audio" min="0" max="30" value="5" step="1" style="width: 100%; accent-color: var(--color-forest-green);">
+                </div>
+
+                <!-- Images Slider -->
+                <div class="calc-slider-group">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: var(--color-mocha-deep); margin-bottom: 8px;">
+                        <span>الصور المولدة فائقة الدقة:</span>
+                        <span style="color: var(--color-forest-green);"><strong id="val-image-num">50</strong> صورة</span>
+                    </div>
+                    <input type="range" id="slider-image" min="0" max="300" value="50" step="5" style="width: 100%; accent-color: var(--color-forest-green);">
+                </div>
+            </div>
+
+            <!-- Result Card -->
+            <div class="calc-result-card" style="background: linear-gradient(135deg, #1C130E 0%, #152418 60%, #1A120E 100%); border: 2px solid var(--color-gold); border-radius: 16px; padding: 40px 32px; color: #FFFDF9; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <span style="font-size: 0.8125rem; color: #C5A059; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">الرصيد الموصى به:</span>
+                    <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 16px;">
+                        <span id="calc-total-credits" style="font-family: var(--font-english-display); font-size: 2.75rem; font-weight: 900; color: var(--color-gold-bright);">475</span>
+                        <span style="font-size: 0.9375rem; color: #E8DFC8;">رصيد نقطي</span>
+                    </div>
+                    <div style="padding: 10px 14px; background: rgba(255,255,255,0.06); border-radius: 8px; border: 1px solid rgba(197, 160, 89, 0.3); margin-bottom: 20px;">
+                        <span style="font-size: 0.75rem; color: #A89F91;">الباقة الملائمة لاحتياجك:</span>
+                        <div id="calc-tier-name" style="font-family: var(--font-arabic-title); font-size: 1.15rem; color: #2ECC71; font-weight: 700; margin-top: 4px;">باقة الحكمة (Starter)</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(197, 160, 89, 0.25); padding-top: 16px; margin-bottom: 20px;">
+                        <span style="font-size: 0.875rem; color: #E8DFC8;">السعر التقديري:</span>
+                        <div style="text-align: left;">
+                            <span id="calc-price-usd" style="font-family: var(--font-english-display); font-size: 1.5rem; font-weight: 700; color: #FFFDF8;">$29</span>
+                            <span style="font-size: 0.75rem; color: #C5A059; display: block;" id="calc-price-sar">~ 109 SAR</span>
+                        </div>
+                    </div>
+                    <a href="/admin/billing/subscription/add/" class="btn-royal-forest" style="width: 100%; justify-content: center; font-size: 0.9375rem; text-decoration: none;">
+                        <span>تأكيد والاشتراك الفوري</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

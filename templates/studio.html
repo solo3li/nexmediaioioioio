@@ -1,0 +1,606 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}استوديو التوليد الموحد | nexmedia.ai — بيت الحكمة للوسائط الذكية{% endblock %}
+
+{% block content %}
+<div class="studio-wrapper" style="min-height: calc(100vh - 140px); background: #0F0A07; color: #FFFDF9; padding: 24px 0 60px;">
+    <div class="container" style="max-width: 1400px;">
+
+        <!-- Top Studio Bar: User Wallet & Quick Nav -->
+        <div style="background: rgba(28, 19, 14, 0.85); border: 1.5px solid var(--color-gold); border-radius: 16px; padding: 16px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <a href="/" style="display: inline-flex; align-items: center; gap: 6px; color: #C5A059; font-size: 0.875rem; text-decoration: none; font-weight: 700;">
+                    <span>←</span>
+                    <span>الرئيسية</span>
+                </a>
+                <span style="color: rgba(197, 160, 89, 0.4);">|</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-family: var(--font-arabic-title); font-size: 1.25rem; font-weight: 700; color: #FFFDF8;">استوديو التوليد الموحد</span>
+                    <span class="player-badge-4k" id="active-tool-badge" style="font-size: 0.75rem;">Text to Image</span>
+                </div>
+            </div>
+
+            <!-- User Credits Wallet Display -->
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(197, 160, 89, 0.35); padding: 6px 14px; border-radius: 30px;">
+                    <span style="font-size: 0.75rem; color: #E8DFC8;">الرصيد القياسي:</span>
+                    <strong style="color: #2ECC71; font-family: var(--font-english-display); font-size: 1.1rem;" id="wallet-standard-val">
+                        {{ active_user.standard_credits|floatformat:1|default:"100.0" }}
+                    </strong>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(197, 160, 89, 0.35); padding: 6px 14px; border-radius: 30px;">
+                    <span style="font-size: 0.75rem; color: #E8DFC8;">الرصيد المميز:</span>
+                    <strong style="color: #D4AF37; font-family: var(--font-english-display); font-size: 1.1rem;" id="wallet-premium-val">
+                        {{ active_user.premium_credits|floatformat:1|default:"10.0" }}
+                    </strong>
+                </div>
+                <a href="/#pricing-calculator" class="btn-royal-forest" style="padding: 6px 14px; font-size: 0.75rem; text-decoration: none;">
+                    <span>+ شحن الرصيد</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Studio Grid: Sidebar + Config Workspace + Live Preview -->
+        <div style="display: grid; grid-template-columns: 240px 1fr 1fr; gap: 24px; align-items: start;">
+
+            <!-- 1. LEFT SIDEBAR: The 9 AI Tools -->
+            <div style="background: rgba(22, 15, 11, 0.9); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 16px; padding: 16px 12px; display: flex; flex-direction: column; gap: 6px;">
+                <span style="font-size: 0.75rem; color: #C5A059; font-weight: 700; text-transform: uppercase; padding: 4px 10px; margin-bottom: 4px;">بوابات التوليد الـ 9:</span>
+
+                <button type="button" class="studio-tool-btn active" data-tool="text_to_image" data-badge="Text to Image" data-cost="4.0">
+                    <span class="tool-icon">🎨</span>
+                    <span>توليد الصور (T2I)</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="text_to_video" data-badge="Text to Video" data-cost="8.0">
+                    <span class="tool-icon">🎬</span>
+                    <span>توليد الفيديو (T2V)</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="image_to_video" data-badge="Image to Video" data-cost="5.0">
+                    <span class="tool-icon">🎞️</span>
+                    <span>تحريك الصور (I2V)</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="reference_to_video" data-badge="Reference to Video" data-cost="20.0">
+                    <span class="tool-icon">📽️</span>
+                    <span>فيديو متعدد المراجع</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="lipsync" data-badge="Lip Sync" data-cost="3.0">
+                    <span class="tool-icon">👄</span>
+                    <span>مزامنة الشفاه (LipSync)</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="motion_control" data-badge="Motion Control" data-cost="10.0">
+                    <span class="tool-icon">🕺</span>
+                    <span>التحكم بالحركة</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="tts" data-badge="Neural TTS" data-cost="1.0">
+                    <span class="tool-icon">🎙️</span>
+                    <span>استنساخ الصوت (TTS)</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="stt" data-badge="Whisper STT" data-cost="1.5">
+                    <span class="tool-icon">📝</span>
+                    <span>تفريغ الصوت (STT)</span>
+                </button>
+                <button type="button" class="studio-tool-btn" data-tool="avatar_video" data-badge="Avatar Video" data-cost="6.0">
+                    <span class="tool-icon">👤</span>
+                    <span>الأفاتار الرقمي</span>
+                </button>
+            </div>
+
+            <!-- 2. CENTER PANEL: Tool Parameters & Configuration Form -->
+            <div style="background: rgba(22, 15, 11, 0.9); border: 1.5px solid var(--color-gold); border-radius: 16px; padding: 28px 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.875rem; color: #E8DFC8; font-weight: 700; margin-bottom: 8px;">
+                        اختيار النموذج المحرك:
+                    </label>
+                    <select id="studio-model-select" style="width: 100%; background: #100A07; border: 1px solid #C5A059; color: #FFFDF9; border-radius: 8px; padding: 10px 14px; font-size: 0.9375rem;">
+                        <option value="Grok Imagine HD">Grok Imagine HD (4 رصيد)</option>
+                        <option value="Google Imagen 3 Ultra">Google Imagen 3 Ultra (5 رصيد)</option>
+                    </select>
+                </div>
+
+                <!-- Main Prompt Input -->
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.875rem; color: #E8DFC8; font-weight: 700; margin-bottom: 8px;">
+                        الأمر والوصف التوليدي (Prompt):
+                    </label>
+                    <textarea id="studio-prompt-input" rows="4" placeholder="اكتب وصف المشهد الفني بدقة، مثلاً: قصر الحمراء بغرناطة في ليلة مقمرة بأسلوب تصوير سينمائي 8K فائق التفاصيل..." style="width: 100%; background: #100A07; border: 1px solid rgba(197, 160, 89, 0.4); color: #FFFDF9; border-radius: 8px; padding: 12px; font-size: 0.9375rem; line-height: 1.6; resize: vertical;"></textarea>
+                    <!-- Quick Prompt Suggestions -->
+                    <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                        <button type="button" class="prompt-chip-btn" data-text="قصر أندلسي مذهب وسط نافورة مائية رخامية بإضاءة دافئة سينمائية 4K">✦ قصر أندلسي</button>
+                        <button type="button" class="prompt-chip-btn" data-text="فارس عربي على خيل أصيل في صحراء ذهبية عند غروب الشمس بجودة سينمائية">✦ فارس عربي</button>
+                        <button type="button" class="prompt-chip-btn" data-text="مخطوطة قرآنية بخط كوفي مذهب مع زخارف إسلامية نباتية هندسية معقدة">✦ مخطوطة مذهبة</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Option: Aspect Ratio or Resolution -->
+                <div id="dynamic-aspect-ratio" style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.875rem; color: #E8DFC8; font-weight: 700; margin-bottom: 8px;">
+                        أبعاد الكادر (Aspect Ratio):
+                    </label>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" class="ratio-btn active" data-ratio="1:1">1:1 مربع</button>
+                        <button type="button" class="ratio-btn" data-ratio="16:9">16:9 شاشة عريضة</button>
+                        <button type="button" class="ratio-btn" data-ratio="9:16">9:16 ستوري / تيك توك</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Voice Selector (shown when TTS is active) -->
+                <div id="dynamic-tts-options" style="display: none; margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.875rem; color: #E8DFC8; font-weight: 700; margin-bottom: 8px;">
+                        النبرة الصوتية الملكية:
+                    </label>
+                    <select id="studio-voice-select" style="width: 100%; background: #100A07; border: 1px solid #C5A059; color: #FFFDF9; border-radius: 8px; padding: 10px 14px; font-size: 0.9375rem;">
+                        <option value="fatima-ar">فاطمة (فصحى ملكية إذاعية)</option>
+                        <option value="omar-ar">عمر (وقار وثائقي فخم)</option>
+                        <option value="zayd-sa">زيد (لهجة سعودية معاصرة)</option>
+                        <option value="layla-eg">ليلى (لهجة مصرية دافئة)</option>
+                    </select>
+                </div>
+
+                <!-- Cost Summary & Generate Trigger -->
+                <div style="background: rgba(14, 58, 31, 0.25); border: 1px dashed var(--color-gold); border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: #C5A059; display: block;">تكلفة المعالجة:</span>
+                        <strong style="color: #2ECC71; font-size: 1.15rem; font-family: var(--font-english-display);" id="task-cost-display">4.0 رصيد قياسي</strong>
+                    </div>
+                    <span style="font-size: 0.75rem; color: #E8DFC8;">طابور المعالجة: <strong>django-q2</strong></span>
+                </div>
+
+                <button type="button" class="btn-royal-forest btn-glow-pulse" id="btn-generate-media" style="width: 100%; justify-content: center; font-size: 1.05rem; padding: 14px;">
+                    <span id="btn-gen-text">إطلاق التوليد الآن ✦</span>
+                    <span id="btn-gen-spinner" style="display:none; animation: spin 1s linear infinite;">↻</span>
+                </button>
+            </div>
+
+            <!-- 3. RIGHT PANEL: Live Media Viewport & Result Display -->
+            <div style="background: rgba(22, 15, 11, 0.9); border: 1.5px solid var(--color-gold); border-radius: 16px; padding: 24px; min-height: 480px; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span style="font-size: 0.8125rem; font-weight: 700; color: #C5A059;">شاشة المعاينة الفورية (Viewport):</span>
+                    <span id="viewport-status-tag" class="badge-tech" style="background: rgba(46, 204, 113, 0.15); color: #2ECC71; border: 1px solid #2ECC71;">جاهز للعرض</span>
+                </div>
+
+                <!-- Media Display Box -->
+                <div id="media-viewport-container" style="flex: 1; background: #0A0604; border: 1px solid rgba(197, 160, 89, 0.25); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <!-- Standby Placeholder -->
+                    <div id="viewport-standby" style="text-align: center; padding: 40px 20px;">
+                        <svg class="star-rosette" viewBox="0 0 100 100" style="width: 70px; height: 70px; margin-bottom: 16px; opacity: 0.8;">
+                            <polygon points="50,0 64,36 100,50 64,64 50,100 36,64 0,50 36,36" fill="none" stroke="#C5A059" stroke-width="2"/>
+                            <circle cx="50" cy="50" r="14" fill="#0E3A1F" stroke="#C5A059" stroke-width="1.5"/>
+                            <circle cx="50" cy="50" r="5" fill="#C5A059"/>
+                        </svg>
+                        <h4 style="font-family: var(--font-arabic-title); font-size: 1.15rem; color: #FFFDF8; margin-bottom: 6px;">محراب العرض الرقمي</h4>
+                        <p style="font-size: 0.8125rem; color: var(--color-mocha-muted); max-width: 320px; margin: 0 auto;">
+                            اختر الأداة واكتب الأمر واضغط على 'إطلاق التوليد الآن' لتظهر مخرجات الذكاء الاصطناعي مباشرة هنا.
+                        </p>
+                    </div>
+
+                    <!-- Loading Radar -->
+                    <div id="viewport-loading" style="display: none; text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 2.5rem; animation: rotateDial 2s linear infinite; margin-bottom: 14px;">✦</div>
+                        <h4 style="font-family: var(--font-arabic-title); font-size: 1.15rem; color: #D4AF37; margin-bottom: 6px;">جاري المعالجة السحابية...</h4>
+                        <p style="font-size: 0.8125rem; color: #2ECC71;" id="viewport-task-label">توزيع المهمة على وحدات المعالجة العصبية عبر Redis...</p>
+                    </div>
+
+                    <!-- Result View (Image / Video / Audio) -->
+                    <div id="viewport-result" style="display: none; width: 100%; height: 100%; text-align: center;">
+                        <img id="result-img" src="" alt="AI Output" style="width: 100%; height: 100%; object-fit: contain; max-height: 420px; display: none;">
+                        <video id="result-video" src="" controls style="width: 100%; max-height: 420px; display: none;"></video>
+                        <div id="result-audio-box" style="padding: 40px 20px; display: none;">
+                            <audio id="result-audio" src="" controls style="width: 90%;"></audio>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Actions -->
+                <div id="viewport-actions" style="margin-top: 16px; display: none; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 0.75rem; color: #C5A059;">
+                        <span>زمن التنفيذ: <strong id="res-duration">2.4 ثانية</strong></span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <a id="btn-download-res" href="#" target="_blank" download class="btn-ghost" style="padding: 6px 14px; font-size: 0.75rem; text-decoration: none;">
+                            تحميل الملف ⬇
+                        </a>
+                        <button type="button" id="btn-copy-url" class="btn-royal-forest" style="padding: 6px 14px; font-size: 0.75rem;">
+                            نسخ الرابط
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 4. BOTTOM DRAWER: User's Media Library (سجل أعمالي) -->
+        <div style="margin-top: 40px; background: rgba(22, 15, 11, 0.9); border: 1.5px solid var(--color-gold); border-radius: 16px; padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.2rem;">🏛️</span>
+                    <h3 style="font-family: var(--font-arabic-title); font-size: 1.25rem; color: #FFFDF8;">معرض وسائطي السابقة (Generation History)</h3>
+                </div>
+                <button type="button" id="btn-refresh-history" class="btn-ghost" style="padding: 4px 12px; font-size: 0.75rem;">تحديث السجل ↻</button>
+            </div>
+
+            <div id="history-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+                {% for item in recent_history %}
+                <div class="history-item-card" data-url="{{ item.result_url }}" data-tool="{{ item.tool_type }}" style="background: #110B07; border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s ease;">
+                    <div style="height: 100px; background: #1C120B; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        {% if item.thumbnail_url %}
+                        <img src="{{ item.thumbnail_url }}" alt="thumb" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                        <span style="color: #C5A059; font-size: 1.5rem;">✦</span>
+                        {% endif %}
+                    </div>
+                    <div style="padding: 10px;">
+                        <span style="font-size: 0.6875rem; background: rgba(14, 58, 31, 0.4); color: #2ECC71; padding: 2px 6px; border-radius: 4px; border: 1px solid #0E3A1F;">{{ item.get_tool_type_display }}</span>
+                        <p style="font-size: 0.75rem; color: #E8DFC8; margin: 6px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.prompt }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--color-mocha-muted); font-size: 0.875rem; padding: 30px;">
+                    لا توجد عمليات توليد سابقة بعد. أطلق أول إبداع لك من اللوحة أعلاه!
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Studio Logic Inline Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let currentTool = 'text_to_image';
+    let currentCost = '4.0';
+
+    const toolButtons = document.querySelectorAll('.studio-tool-btn');
+    const badgeEl = document.getElementById('active-tool-badge');
+    const modelSelect = document.getElementById('studio-model-select');
+    const costDisplay = document.getElementById('task-cost-display');
+    const promptInput = document.getElementById('studio-prompt-input');
+    const promptChips = document.querySelectorAll('.prompt-chip-btn');
+    const ratioButtons = document.querySelectorAll('.ratio-btn');
+    const dynamicAspect = document.getElementById('dynamic-aspect-ratio');
+    const dynamicTts = document.getElementById('dynamic-tts-options');
+
+    const btnGenerate = document.getElementById('btn-generate-media');
+    const btnGenText = document.getElementById('btn-gen-text');
+    const btnGenSpinner = document.getElementById('btn-gen-spinner');
+
+    const vpStandby = document.getElementById('viewport-standby');
+    const vpLoading = document.getElementById('viewport-loading');
+    const vpResult = document.getElementById('viewport-result');
+    const vpActions = document.getElementById('viewport-actions');
+    const vpStatusTag = document.getElementById('viewport-status-tag');
+    const vpTaskLabel = document.getElementById('viewport-task-label');
+
+    const resImg = document.getElementById('result-img');
+    const resVideo = document.getElementById('result-video');
+    const resAudioBox = document.getElementById('result-audio-box');
+    const resAudio = document.getElementById('result-audio');
+    const resDuration = document.getElementById('res-duration');
+    const btnDownload = document.getElementById('btn-download-res');
+    const btnCopyUrl = document.getElementById('btn-copy-url');
+
+    const walletStd = document.getElementById('wallet-standard-val');
+    const walletPrem = document.getElementById('wallet-premium-val');
+
+    // Tool Model Options Config
+    const TOOL_MODELS = {
+        'text_to_image': [
+            { text: 'Grok Imagine HD (4 رصيد)', val: 'Grok Imagine HD' },
+            { text: 'Google Imagen 3 Ultra (5 رصيد)', val: 'Google Imagen 3 Ultra' }
+        ],
+        'text_to_video': [
+            { text: 'Kling AI Cinematic v1.6 (8 رصيد)', val: 'Kling AI Cinematic v1.6' },
+            { text: 'Google Veo 2 Ultra (12 رصيد)', val: 'Google Veo 2 Ultra' }
+        ],
+        'image_to_video': [
+            { text: 'Kling Image2Video Pro (5 رصيد)', val: 'Kling Image2Video Pro' }
+        ],
+        'reference_to_video': [
+            { text: 'Seedance Multi-Reference Pro (20 رصيد)', val: 'Seedance Multi-Reference Pro' }
+        ],
+        'lipsync': [
+            { text: 'Vidu Neural LipSync Pro (3 رصيد)', val: 'Vidu Neural LipSync Pro' }
+        ],
+        'motion_control': [
+            { text: 'Kling Motion Precision v1 (10 رصيد)', val: 'Kling Motion Precision v1' }
+        ],
+        'tts': [
+            { text: 'Gemini 2.5 Flash Neural TTS (1 رصيد)', val: 'Gemini 2.5 Flash Neural TTS' },
+            { text: 'ElevenLabs Multilingual Studio v2.5 (3 رصيد)', val: 'ElevenLabs Multilingual Studio v2.5' }
+        ],
+        'stt': [
+            { text: 'Whisper Large v3 Lossless (1.5 رصيد)', val: 'Whisper Large v3 Lossless' }
+        ],
+        'avatar_video': [
+            { text: 'Hedra Character Studio v1 (6 رصيد)', val: 'Hedra Character Studio v1' }
+        ]
+    };
+
+    // Tool switching
+    toolButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            toolButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            currentTool = btn.dataset.tool;
+            currentCost = btn.dataset.cost;
+
+            badgeEl.textContent = btn.dataset.badge;
+            costDisplay.textContent = `${currentCost} رصيد قياسي`;
+
+            // Populate models
+            modelSelect.innerHTML = '';
+            const models = TOOL_MODELS[currentTool] || [];
+            models.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.val;
+                opt.textContent = m.text;
+                modelSelect.appendChild(opt);
+            });
+
+            // Adjust option visibility
+            if (currentTool === 'tts') {
+                dynamicTts.style.display = 'block';
+                dynamicAspect.style.display = 'none';
+            } else if (currentTool === 'text_to_image') {
+                dynamicTts.style.display = 'none';
+                dynamicAspect.style.display = 'block';
+            } else {
+                dynamicTts.style.display = 'none';
+                dynamicAspect.style.display = 'none';
+            }
+        });
+    });
+
+    // Prompt Chips
+    promptChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            promptInput.value = chip.dataset.text;
+        });
+    });
+
+    // Ratio Selection
+    ratioButtons.forEach(rb => {
+        rb.addEventListener('click', () => {
+            ratioButtons.forEach(b => b.classList.remove('active'));
+            rb.classList.add('active');
+        });
+    });
+
+    // Handle Generation Action
+    btnGenerate.addEventListener('click', async () => {
+        const prompt = promptInput.value.trim();
+        if (!prompt) {
+            alert('يرجى كتابة نص أو وصف للأمر المراد توليده');
+            promptInput.focus();
+            return;
+        }
+
+        btnGenerate.disabled = true;
+        btnGenText.textContent = 'جاري إطلاق المهمة...';
+        btnGenSpinner.style.display = 'inline-block';
+
+        vpStandby.style.display = 'none';
+        vpResult.style.display = 'none';
+        vpActions.style.display = 'none';
+        vpLoading.style.display = 'block';
+        vpStatusTag.textContent = 'قيد المعالجة السحابية';
+        vpStatusTag.style.borderColor = '#F59E0B';
+        vpStatusTag.style.color = '#F59E0B';
+
+        try {
+            const resp = await fetch('/api/generate/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tool_type: currentTool,
+                    model_name: modelSelect.value,
+                    prompt: prompt,
+                    options: {
+                        ratio: document.querySelector('.ratio-btn.active')?.dataset.ratio || '1:1'
+                    }
+                })
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                alert(data.message || 'حدث خطأ أثناء إرسال المهمة');
+                resetBtn();
+                showStandby();
+                return;
+            }
+
+            // Update user wallet balance on screen immediately!
+            if (data.standard_credits_left !== undefined) {
+                walletStd.textContent = data.standard_credits_left.toFixed(1);
+            }
+            if (data.premium_credits_left !== undefined) {
+                walletPrem.textContent = data.premium_credits_left.toFixed(1);
+            }
+
+            // Poll for task completion
+            pollJobStatus(data.history_id);
+
+        } catch (err) {
+            alert('تعذر الاتصال بالسيرفر');
+            resetBtn();
+            showStandby();
+        }
+    });
+
+    async function pollJobStatus(historyId) {
+        let attempts = 0;
+        const maxAttempts = 30;
+
+        const interval = setInterval(async () => {
+            attempts++;
+            try {
+                const res = await fetch(`/api/generation-status/${historyId}/`);
+                const job = await res.json();
+
+                if (job.status === 'completed') {
+                    clearInterval(interval);
+                    renderResult(job);
+                    resetBtn();
+                } else if (job.status === 'failed') {
+                    clearInterval(interval);
+                    alert('فشلت عملية التوليد: ' + (job.error_message || 'خطأ غير معروف'));
+                    resetBtn();
+                    showStandby();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    alert('استغرقت العملية وقتاً أطول من المتوقع، يمكنك مراجعة النتيجة في سجل أعمالك.');
+                    resetBtn();
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }, 1500);
+    }
+
+    function renderResult(job) {
+        vpLoading.style.display = 'none';
+        vpResult.style.display = 'block';
+        vpActions.style.display = 'flex';
+        vpStatusTag.textContent = 'اكتمل التوليد بنجاح';
+        vpStatusTag.style.borderColor = '#2ECC71';
+        vpStatusTag.style.color = '#2ECC71';
+
+        resDuration.textContent = `${job.duration_seconds} ثانية`;
+        btnDownload.href = job.result_url;
+
+        resImg.style.display = 'none';
+        resVideo.style.display = 'none';
+        resAudioBox.style.display = 'none';
+
+        if (job.tool_type === 'text_to_image') {
+            resImg.src = job.result_url;
+            resImg.style.display = 'block';
+        } else if (job.tool_type.includes('video')) {
+            resVideo.src = job.result_url;
+            resVideo.style.display = 'block';
+        } else if (job.tool_type === 'tts' || job.tool_type === 'stt') {
+            resAudio.src = job.result_url;
+            resAudioBox.style.display = 'block';
+        } else {
+            resImg.src = job.result_url;
+            resImg.style.display = 'block';
+        }
+    }
+
+    function resetBtn() {
+        btnGenerate.disabled = false;
+        btnGenText.textContent = 'إطلاق التوليد الآن ✦';
+        btnGenSpinner.style.display = 'none';
+    }
+
+    function showStandby() {
+        vpLoading.style.display = 'none';
+        vpResult.style.display = 'none';
+        vpActions.style.display = 'none';
+        vpStandby.style.display = 'block';
+        vpStatusTag.textContent = 'جاهز للعرض';
+        vpStatusTag.style.borderColor = '#2ECC71';
+        vpStatusTag.style.color = '#2ECC71';
+    }
+
+    btnCopyUrl.addEventListener('click', () => {
+        if (btnDownload.href) {
+            navigator.clipboard.writeText(btnDownload.href);
+            alert('تم نسخ رابط الوسائط إلى الحافظة!');
+        }
+    });
+
+    // Refresh history
+    document.getElementById('btn-refresh-history')?.addEventListener('click', async () => {
+        const res = await fetch('/api/user-history/');
+        const data = await res.json();
+        if (data.status === 'success' && data.history) {
+            const grid = document.getElementById('history-grid');
+            grid.innerHTML = '';
+            data.history.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'history-item-card';
+                card.style.cssText = 'background: #110B07; border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 10px; overflow: hidden; cursor: pointer;';
+                card.innerHTML = `
+                    <div style="height: 100px; background: #1C120B; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                        ${item.thumbnail_url ? `<img src="${item.thumbnail_url}" style="width:100%;height:100%;object-fit:cover;">` : '<span style="color:#C5A059;font-size:1.5rem;">✦</span>'}
+                    </div>
+                    <div style="padding: 10px;">
+                        <span style="font-size: 0.6875rem; background: rgba(14, 58, 31, 0.4); color: #2ECC71; padding: 2px 6px; border-radius: 4px; border: 1px solid #0E3A1F;">${item.tool_type}</span>
+                        <p style="font-size: 0.75rem; color: #E8DFC8; margin: 6px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.prompt}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+    });
+});
+</script>
+
+<style>
+.studio-tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #E8DFC8;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: right;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+.studio-tool-btn:hover {
+    background: rgba(197, 160, 89, 0.1);
+    color: var(--color-gold-bright);
+}
+.studio-tool-btn.active {
+    background: var(--color-forest-green);
+    border-color: var(--color-gold);
+    color: #FFFDF8;
+    box-shadow: 0 4px 12px rgba(14, 58, 31, 0.5);
+}
+.prompt-chip-btn {
+    background: rgba(197, 160, 89, 0.1);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    border-radius: 20px;
+    color: #C5A059;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.prompt-chip-btn:hover {
+    background: rgba(197, 160, 89, 0.25);
+    color: #FFF;
+}
+.ratio-btn {
+    flex: 1;
+    background: #100A07;
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    border-radius: 6px;
+    color: #E8DFC8;
+    font-size: 0.8125rem;
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.ratio-btn.active {
+    background: var(--color-forest-green);
+    border-color: var(--color-gold);
+    color: #FFFDF8;
+    font-weight: 700;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
