@@ -1,0 +1,123 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="t2v-form" onsubmit="event.preventDefault(); handleT2VSubmit();">
+    
+    <!-- Model Selection -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            النموذج العصبي (Neural Engine)
+        </label>
+        <select id="t2v-model" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
+            {% for m in models %}
+            <option value="{{ m.model_id }}">{{ m.name }} ({{ m.provider }}) - {{ m.cost_1080p }} كريديت/ث</option>
+            {% empty %}
+            <option value="kling-v1.5">Kling v1.5 Pro Cinematic (8.00 كريديت/ث)</option>
+            <option value="google-veo-2">Google Veo 2.0 Ultra (15.00 كريديت/ث - 4K)</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Prompt Area -->
+    <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #C5A059; font-weight: bold;">الوصف السينمائي (Prompt)</label>
+            <span style="font-size: 11px; color: #8EBA9A;">ادعم المشهد بتفاصيل الإضاءة والزوايا</span>
+        </div>
+        <textarea id="t2v-prompt" required rows="4" placeholder="مثال: لقطة سينمائية بدقة 4K تظهر ساحة الأسود في قصر الحمراء أثناء الغروب، إضاءة ذهبية ناعمة مع حركة بطيئة لخرير المياه وانعكاسات معمارية متقنة..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+    </div>
+
+    <!-- Quick Prompt Ideas -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+        <span onclick="document.getElementById('t2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.1); border: 1px solid rgba(197,160,89,0.25); color: #D1DED5; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer;">
+            قصر الحمراء ليلاً مع إضاءة مشاعل سينمائية
+        </span>
+        <span onclick="document.getElementById('t2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.1); border: 1px solid rgba(197,160,89,0.25); color: #D1DED5; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer;">
+            لقطة درون جوية فوق بساتين غرناطة التاريخية بدقة 4K
+        </span>
+    </div>
+
+    <!-- Negative Prompt -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 12.5px; color: #A0B2A6; margin-bottom: 6px;">
+            الاستبعاد السلبي (Negative Prompt)
+        </label>
+        <input id="t2v-neg-prompt" type="text" placeholder="blurry, distorted, low quality, watermarks, artifacts" style="width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Quality & Aspect Ratio Options Grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+        
+        <!-- Resolution -->
+        <div>
+            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">دقة الفيديو (Resolution)</label>
+            <div style="display: flex; gap: 6px;">
+                <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
+                    <input type="radio" name="res" value="720p" style="display: none;"> 720p
+                </label>
+                <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
+                    <input type="radio" name="res" value="1080p" checked style="display: none;"> 1080p
+                </label>
+                <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
+                    <input type="radio" name="res" value="4k" style="display: none;"> 4K
+                </label>
+            </div>
+        </div>
+
+        <!-- Duration -->
+        <div>
+            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">المدة الزمنية (Duration)</label>
+            <div style="display: flex; gap: 6px;">
+                <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
+                    <input type="radio" name="duration" value="5" checked style="display: none;"> 5 ثوانٍ
+                </label>
+                <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
+                    <input type="radio" name="duration" value="10" style="display: none;"> 10 ثوانٍ
+                </label>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Aspect Ratio Selection -->
+    <div style="margin-bottom: 25px;">
+        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">أبعاد المشهد (Aspect Ratio)</label>
+        <div style="display: flex; gap: 10px;">
+            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #FFF; font-weight: bold;">
+                <input type="radio" name="aspect" value="16:9" checked style="display: none;"> 16:9 سينمائي
+            </label>
+            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #FFF;">
+                <input type="radio" name="aspect" value="9:16" style="display: none;"> 9:16 تيك توك/ريلز
+            </label>
+            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #FFF;">
+                <input type="radio" name="aspect" value="1:1" style="display: none;"> 1:1 مربع
+            </label>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35); transition: transform 0.2s;">
+        🎬 بدء توليد الفيديو السينمائي (Generate Video)
+    </button>
+
+</form>
+
+<script>
+function handleT2VSubmit() {
+    const prompt = document.getElementById('t2v-prompt').value;
+    const model = document.getElementById('t2v-model').value;
+    const res = document.querySelector('input[name="res"]:checked').value;
+    const duration = document.querySelector('input[name="duration"]:checked').value;
+    const aspect = document.querySelector('input[name="aspect"]:checked').value;
+
+    const fd = new FormData();
+    fd.append('prompt', prompt);
+    fd.append('model', model);
+    fd.append('resolution', res);
+    fd.append('duration', duration);
+    fd.append('aspect_ratio', aspect);
+
+    submitGeneration(fd, 'text_to_video');
+}
+</script>
+{% endblock %}

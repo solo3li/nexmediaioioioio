@@ -1,0 +1,56 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="lipsync-form" onsubmit="event.preventDefault(); handleLipsyncSubmit();">
+    
+    <!-- Video / Portrait URL -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            فيديو الوجه أو الصورة (Target Face Media)
+        </label>
+        <input id="lip-video-url" type="url" required placeholder="https://.../face_video.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Speech Audio URL -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            المقطع الصوتي المنطوق (Driving Audio Track)
+        </label>
+        <input id="lip-audio-url" type="url" required placeholder="https://.../speech.mp3" value="https://actions.google.com/sounds/v1/water/rain_heavy.ogg" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Precision Mode -->
+    <div style="margin-bottom: 25px;">
+        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">دقة مطابقة مخارج الحروف</label>
+        <div style="display: flex; gap: 10px;">
+            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12.5px; color: #FFF; font-weight: bold;">
+                <input type="radio" name="lip_mode" value="ultra" checked style="display: none;"> Vidu Ultra السينمائي
+            </label>
+            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12.5px; color: #FFF;">
+                <input type="radio" name="lip_mode" value="expressive" style="display: none;"> تعبيرات انفعالية مكثفة
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
+        👄 بدء مزامنة الشفاه السينمائية (Sync Lips)
+    </button>
+
+</form>
+
+<script>
+function handleLipsyncSubmit() {
+    const videoUrl = document.getElementById('lip-video-url').value;
+    const audioUrl = document.getElementById('lip-audio-url').value;
+    const mode = document.querySelector('input[name="lip_mode"]:checked').value;
+
+    const fd = new FormData();
+    fd.append('prompt', 'Lip Sync: ' + videoUrl);
+    fd.append('video_url', videoUrl);
+    fd.append('audio_url', audioUrl);
+    fd.append('mode', mode);
+
+    submitGeneration(fd, 'lipsync');
+}
+</script>
+{% endblock %}

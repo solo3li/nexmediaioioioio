@@ -1,0 +1,74 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="avatar-form" onsubmit="event.preventDefault(); handleAvatarSubmit();">
+    
+    <!-- Avatar Character Selector -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            اختيار الشخصية الرقمية (Avatar Persona)
+        </label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
+            <label style="background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; color: #FFF; font-size: 12.5px; font-weight: bold;">
+                <input type="radio" name="avatar_char" value="hed-presenter-1" checked style="display: none;">
+                <div style="font-size: 26px; margin-bottom: 4px;">👨‍💼</div>
+                مقدم رسمي وقور
+            </label>
+            <label style="background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; color: #FFF; font-size: 12.5px;">
+                <input type="radio" name="avatar_char" value="hed-presenter-2" style="display: none;">
+                <div style="font-size: 26px; margin-bottom: 4px;">👩‍💼</div>
+                مقدمة برامج ذكية
+            </label>
+            <label style="background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; color: #FFF; font-size: 12.5px;">
+                <input type="radio" name="avatar_char" value="hed-scholar-1" style="display: none;">
+                <div style="font-size: 26px; margin-bottom: 4px;">📜</div>
+                حكيم أندلسي تراثي
+            </label>
+        </div>
+    </div>
+
+    <!-- Script Text -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            نص الحوار أو الخطاب (Presenter Script)
+        </label>
+        <textarea id="avatar-script" required rows="4" placeholder="أدخل النص الذي ستلقيه الشخصية الافتراضية أمام الكاميرا بتعبيرات وحركات رأس طبيعية..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+    </div>
+
+    <!-- Expression Tone -->
+    <div style="margin-bottom: 25px;">
+        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">نبرة التعبيرات الجسدية والانفعالية</label>
+        <div style="display: flex; gap: 8px;">
+            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
+                <input type="radio" name="tone" value="formal" checked style="display: none;"> رسمي هادئ
+            </label>
+            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
+                <input type="radio" name="tone" value="warm" style="display: none;"> دافئ ومشجع
+            </label>
+            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
+                <input type="radio" name="tone" value="dynamic" style="display: none;"> حماسي تفاعلي
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
+        👤 إنتاج فيديو الأفاتار المتكلم (Generate Avatar Video)
+    </button>
+
+</form>
+
+<script>
+function handleAvatarSubmit() {
+    const script = document.getElementById('avatar-script').value;
+    const character = document.querySelector('input[name="avatar_char"]:checked').value;
+    const tone = document.querySelector('input[name="tone"]:checked').value;
+
+    const fd = new FormData();
+    fd.append('prompt', script);
+    fd.append('character_id', character);
+    fd.append('expression_tone', tone);
+
+    submitGeneration(fd, 'avatar_video');
+}
+</script>
+{% endblock %}

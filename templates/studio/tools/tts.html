@@ -1,0 +1,75 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="tts-form" onsubmit="event.preventDefault(); handleTtsSubmit();">
+    
+    <!-- Voice Selector -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            الصوت الملكي (Neural Voice)
+        </label>
+        <select id="tts-voice" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
+            {% for v in tts_voices %}
+            <option value="{{ v.voice_id }}">{{ v.display_name_ar }} ({{ v.display_name }}) - {{ v.gender }} [{{ v.language_code }}]</option>
+            {% empty %}
+            <option value="ar-andalus-male-1">زيد الأندلسي (فصيح وقور - ذكر)</option>
+            <option value="ar-andalus-female-1">ولادة القرطبية (وثائقي شاعري - أنثى)</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Text to Synthesize -->
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #C5A059; font-weight: bold;">النص المراد تحويله إلى صوت</label>
+            <span id="char-counter" style="font-size: 11px; color: #8EBA9A;">0 / 3000 حرف</span>
+        </div>
+        <textarea id="tts-text" required rows="5" oninput="document.getElementById('char-counter').innerText = this.value.length + ' / 3000 حرف'" placeholder="أدخل النص العربي الفصيح هنا، مع التشكيل أو بدونه، لتوليد نبرة صوتية طبيعية تحاكي النطق البشري الأصيل..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.6;"></textarea>
+    </div>
+
+    <!-- Sliders: Speed & Pitch -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+        
+        <!-- Speed -->
+        <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>سرعة الإلقاء (Speed)</span>
+                <span id="speed-label" style="color: #C5A059; font-weight: bold;">1.0x</span>
+            </div>
+            <input type="range" id="tts-speed" min="0.5" max="1.5" step="0.05" value="1.0" oninput="document.getElementById('speed-label').innerText = this.value + 'x'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+        </div>
+
+        <!-- Stability -->
+        <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                <span>ثبات النبرة (Stability)</span>
+                <span id="stability-label" style="color: #C5A059; font-weight: bold;">75%</span>
+            </div>
+            <input type="range" id="tts-stability" min="20" max="100" step="5" value="75" oninput="document.getElementById('stability-label').innerText = this.value + '%'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+        </div>
+
+    </div>
+
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
+        🎙️ توليد الصوت البشري الطبيعي (Synthesize Audio)
+    </button>
+
+</form>
+
+<script>
+function handleTtsSubmit() {
+    const text = document.getElementById('tts-text').value;
+    const voice = document.getElementById('tts-voice').value;
+    const speed = document.getElementById('tts-speed').value;
+    const stability = document.getElementById('tts-stability').value;
+
+    const fd = new FormData();
+    fd.append('prompt', text);
+    fd.append('voice_id', voice);
+    fd.append('speed', speed);
+    fd.append('stability', stability);
+
+    submitGeneration(fd, 'tts');
+}
+</script>
+{% endblock %}

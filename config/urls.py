@@ -10,7 +10,7 @@ from apps.billing import views as billing_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
-    path('studio/', views.studio, name='studio'),
+    path('studio/', include('apps.tools.urls')),
     path('accounts/', include('apps.accounts.urls')),
     path('profile/', accounts_views.profile_view, name='profile'),
     path('affiliate/', include('apps.affiliate.urls')),

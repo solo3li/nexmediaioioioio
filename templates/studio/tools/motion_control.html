@@ -1,0 +1,52 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="motion-form" onsubmit="event.preventDefault(); handleMotionSubmit();">
+    
+    <!-- Motion Source Video -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            فيديو الحركة المرجعي (Driving Motion Video)
+        </label>
+        <input id="mot-source-url" type="url" required placeholder="https://.../motion_dance.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Target Character Image -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            صورة الشخصية المستهدفة (Target Character Image)
+        </label>
+        <input id="mot-target-url" type="url" required placeholder="https://.../character_full_body.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Motion Match Scale -->
+    <div style="margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #FAF7F0;">دقة نقل الهيكل العظمي الحركي (Pose Tracking)</label>
+            <span id="pose-label" style="color: #C5A059; font-weight: bold; font-size: 14px;">95%</span>
+        </div>
+        <input type="range" id="mot-scale" min="50" max="100" value="95" oninput="document.getElementById('pose-label').innerText = this.value + '%'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+    </div>
+
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
+        🕺 بدء نقل وتطبيق الحركة (Retarget Motion)
+    </button>
+
+</form>
+
+<script>
+function handleMotionSubmit() {
+    const sourceVideo = document.getElementById('mot-source-url').value;
+    const targetImage = document.getElementById('mot-target-url').value;
+    const scale = document.getElementById('mot-scale').value;
+
+    const fd = new FormData();
+    fd.append('prompt', 'Motion Transfer: ' + sourceVideo);
+    fd.append('source_video_url', sourceVideo);
+    fd.append('target_image_url', targetImage);
+    fd.append('motion_scale', scale);
+
+    submitGeneration(fd, 'motion_control');
+}
+</script>
+{% endblock %}

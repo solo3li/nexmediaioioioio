@@ -1,0 +1,758 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ current_tool.name_ar }} | NexMedia Royal Studio{% endblock %}
+
+{% block content %}
+<div class="studio-layout-wrapper">
+    
+    <!-- ================= PERSISTENT STUDIO SIDEBAR ================= -->
+    <aside class="studio-sidebar" id="studio-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-emblem">✦</div>
+            <div class="sidebar-titles">
+                <h3 class="sidebar-title">أدوات التوليد</h3>
+                <span class="sidebar-subtitle">9 AI Autonomous Portals</span>
+            </div>
+        </div>
+
+        <nav class="studio-tools-nav">
+            {% for tool in all_tools %}
+            <a href="{% url 'studio_tool' tool.slug %}" class="studio-tool-link {% if tool.slug == current_tool.slug %}active-tool{% endif %}">
+                <span class="tool-icon">{{ tool.icon }}</span>
+                <div class="tool-info">
+                    <span class="tool-title-ar">{{ tool.name_ar }}</span>
+                    <span class="tool-title-en">{{ tool.name_en }}</span>
+                </div>
+                <span class="tool-badge">{{ tool.badge }}</span>
+            </a>
+            {% endfor %}
+        </nav>
+
+        <!-- Live Dual-Wallet Widget -->
+        <div class="sidebar-wallet-card">
+            <div class="wallet-header">
+                <span class="wallet-title">رصيد الاستوديو الحي</span>
+                <a href="/profile/" class="wallet-settings-link" title="إدارة المحفظة">⚙</a>
+            </div>
+            
+            <div class="wallet-balances">
+                <div class="wallet-pill standard">
+                    <span class="wallet-label">قياسي (Std):</span>
+                    <strong class="wallet-val" id="std-credits-display">
+                        {{ active_user.standard_credits|floatformat:1 }}
+                    </strong>
+                </div>
+                <div class="wallet-pill premium">
+                    <span class="wallet-label">مميز (Prem):</span>
+                    <strong class="wallet-val" id="prem-credits-display">
+                        {{ active_user.premium_credits|floatformat:1 }}
+                    </strong>
+                </div>
+            </div>
+
+            <a href="/#pricing" class="btn-recharge-credits">
+                + ترقية وشحن الرصيد
+            </a>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN STUDIO WORKSPACE ================= -->
+    <main class="studio-workspace-area">
+        
+        <!-- Tool Header Banner -->
+        <div class="tool-header-banner">
+            <div class="tool-meta-wrapper">
+                <div class="tool-hero-icon">{{ current_tool.icon }}</div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                        <h1 class="tool-main-heading">{{ current_tool.name_ar }}</h1>
+                        <span class="tool-tag-pill">{{ current_tool.name_en }}</span>
+                        <span class="tool-active-status">● جاهز للإنتاج</span>
+                    </div>
+                    <p class="tool-desc-text">{{ current_tool.description }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tool Body Split Grid -->
+        <div class="tool-workspace-grid">
+            
+            <!-- Left Column: Tool Controls Form -->
+            <section class="tool-controls-panel">
+                {% block tool_controls %}{% endblock %}
+            </section>
+
+            <!-- Right Column: Output Viewport & Recent Media -->
+            <section class="tool-output-panel">
+                <div class="output-viewport-card">
+                    <div class="viewport-header">
+                        <span class="viewport-title">شاشة العرض المباشرة (Live Viewport)</span>
+                        <span class="viewport-specs" id="viewport-specs-badge">MinIO Encrypted S3</span>
+                    </div>
+
+                    <div class="viewport-media-stage" id="viewport-media-stage">
+                        <div class="viewport-idle-state" id="viewport-idle">
+                            <div class="idle-icon">{{ current_tool.icon }}</div>
+                            <div class="idle-title">جاهز لبدء التوليد العصبي</div>
+                            <div class="idle-desc">قم بضبط الإعدادات في اللوحة المجاورة ثم اضغط على زر التوليد الملكي.</div>
+                        </div>
+
+                        <!-- Video Player (Hidden by default) -->
+                        <video id="viewport-video" controls playsinline style="display: none; width: 100%; height: 100%; border-radius: 8px; object-fit: contain;"></video>
+                        
+                        <!-- Image Display (Hidden by default) -->
+                        <img id="viewport-image" alt="Generated result" style="display: none; max-width: 100%; max-height: 100%; border-radius: 8px; object-fit: contain;">
+                        
+                        <!-- Audio Player (Hidden by default) -->
+                        <div id="viewport-audio-container" style="display: none; width: 85%; padding: 25px; text-align: center; background: rgba(0,0,0,0.5); border: 1px solid #C5A059; border-radius: 12px;">
+                            <div style="color: #C5A059; font-size: 16px; margin-bottom: 12px; font-weight: bold;">✦ النتيجة الصوتية الملكية</div>
+                            <audio id="viewport-audio" controls style="width: 100%;"></audio>
+                        </div>
+
+                        <!-- Progress Bar Overlay -->
+                        <div class="generation-progress-overlay" id="progress-overlay" style="display: none;">
+                            <div class="andalus-spinner"></div>
+                            <div class="progress-title" id="progress-title">جاري التوليد عبر الشبكة العصبية...</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="progress-fill" style="width: 20%;"></div>
+                            </div>
+                            <div class="progress-status-log" id="progress-log">تخصيص مسار المعالجة في السحابة المشفرة...</div>
+                        </div>
+                    </div>
+
+                    <div class="viewport-actions" id="viewport-actions" style="display: none;">
+                        <a id="btn-download-result" href="#" download class="btn-royal-download" target="_blank">
+                            ⬇ تحميل النتيجة الأصلية (Download 4K)
+                        </a>
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('btn-download-result').href); alert('تم نسخ رابط الملف!');" class="btn-share-media">
+                            🔗 نسخ الرابط
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Tool History -->
+                <div class="tool-history-section">
+                    <h3 class="history-heading">سجل إنتاج هذه الأداة</h3>
+                    <div class="history-grid">
+                        {% for item in recent_history %}
+                        <div class="history-item-card" onclick="previewHistoryItem('{{ item.result_url }}', '{{ item.tool_type }}')">
+                            <div class="history-thumb-box">
+                                {% if item.thumbnail_url %}
+                                <img src="{{ item.thumbnail_url }}" alt="thumb">
+                                {% else %}
+                                <div class="thumb-placeholder">{{ current_tool.icon }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="history-item-meta">
+                                <span class="history-prompt">{{ item.prompt|truncatechars:35 }}</span>
+                                <span class="history-time">{{ item.created_at|date:"d M H:i" }}</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="history-empty">لا توجد عمليات سابقة لهذه الأداة بعد.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- Styles for Royal Studio Layout -->
+<style>
+.studio-layout-wrapper {
+    display: flex;
+    min-height: calc(100vh - 120px);
+    background: #08140E;
+    color: #FAF7F0;
+    direction: rtl;
+}
+
+/* Sidebar */
+.studio-sidebar {
+    width: 320px;
+    background: #0B1A12;
+    border-left: 1px solid rgba(197, 160, 89, 0.25);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    flex-shrink: 0;
+}
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 20px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+}
+.sidebar-emblem {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(197, 160, 89, 0.15);
+    border: 1px solid #C5A059;
+    color: #C5A059;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.sidebar-title {
+    margin: 0;
+    font-family: 'Amiri', 'Cinzel', serif;
+    font-size: 18px;
+    color: #C5A059;
+}
+.sidebar-subtitle {
+    font-size: 11px;
+    color: #8EBA9A;
+    text-transform: uppercase;
+}
+.studio-tools-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    overflow-y: auto;
+}
+.studio-tool-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #D1DED5;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+.studio-tool-link:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #FFF;
+    border-color: rgba(197, 160, 89, 0.2);
+}
+.studio-tool-link.active-tool {
+    background: linear-gradient(135deg, rgba(14, 58, 31, 0.8), rgba(20, 40, 28, 0.9));
+    border: 1px solid #C5A059;
+    color: #FFF;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.studio-tool-link.active-tool .tool-title-ar {
+    color: #C5A059;
+    font-weight: bold;
+}
+.tool-icon {
+    font-size: 20px;
+}
+.tool-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.tool-title-ar {
+    font-size: 13.5px;
+    line-height: 1.3;
+}
+.tool-title-en {
+    font-size: 10.5px;
+    color: #8EBA9A;
+}
+.tool-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #A0B2A6;
+}
+.active-tool .tool-badge {
+    border-color: #C5A059;
+    color: #C5A059;
+    background: rgba(197, 160, 89, 0.15);
+}
+
+/* Wallet Widget */
+.sidebar-wallet-card {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 15px;
+}
+.wallet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #A0B2A6;
+}
+.wallet-settings-link {
+    color: #C5A059;
+    text-decoration: none;
+    font-size: 14px;
+}
+.wallet-balances {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.wallet-pill {
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+}
+.wallet-pill.standard {
+    background: rgba(76, 175, 80, 0.12);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #8EBA9A;
+}
+.wallet-pill.premium {
+    background: rgba(197, 160, 89, 0.12);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    color: #C5A059;
+}
+.wallet-val {
+    display: block;
+    font-size: 16px;
+    margin-top: 3px;
+    color: #FFF;
+}
+.btn-recharge-credits {
+    display: block;
+    text-align: center;
+    background: linear-gradient(135deg, #C5A059, #9E7D3B);
+    color: #0E2218;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: opacity 0.2s;
+}
+
+/* Workspace Area */
+.studio-workspace-area {
+    flex: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+}
+.tool-header-banner {
+    background: rgba(14, 25, 20, 0.95);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    border-radius: 16px;
+    padding: 24px 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.tool-meta-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.tool-hero-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    background: rgba(197, 160, 89, 0.15);
+    border: 1px solid #C5A059;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.tool-main-heading {
+    margin: 0;
+    font-family: 'Amiri', 'Cinzel', serif;
+    font-size: 26px;
+    color: #C5A059;
+}
+.tool-tag-pill {
+    font-size: 12px;
+    padding: 2px 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    color: #A0B2A6;
+}
+.tool-active-status {
+    font-size: 11px;
+    color: #4CAF50;
+    font-weight: bold;
+}
+.tool-desc-text {
+    margin: 0;
+    color: #A0B2A6;
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+/* Split Grid */
+.tool-workspace-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 25px;
+}
+.tool-controls-panel {
+    background: rgba(14, 25, 20, 0.95);
+    border: 1px solid rgba(197, 160, 89, 0.25);
+    border-radius: 16px;
+    padding: 28px;
+}
+.tool-output-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Viewport Card */
+.output-viewport-card {
+    background: rgba(14, 25, 20, 0.95);
+    border: 1px solid rgba(197, 160, 89, 0.25);
+    border-radius: 16px;
+    padding: 20px;
+}
+.viewport-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+.viewport-title {
+    color: #C5A059;
+    font-weight: bold;
+}
+.viewport-specs {
+    font-size: 11px;
+    color: #8EBA9A;
+    background: rgba(0,0,0,0.3);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+.viewport-media-stage {
+    min-height: 380px;
+    background: #050B08;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+.viewport-idle-state {
+    text-align: center;
+    padding: 30px;
+}
+.idle-icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+    opacity: 0.8;
+}
+.idle-title {
+    color: #FAF7F0;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+.idle-desc {
+    color: #A0B2A6;
+    font-size: 12.5px;
+    max-width: 300px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+.viewport-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+.btn-royal-download {
+    flex: 1;
+    text-align: center;
+    background: linear-gradient(135deg, #C5A059, #9E7D3B);
+    color: #0E2218;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 13.5px;
+    padding: 10px;
+    border-radius: 8px;
+}
+.btn-share-media {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #FAF7F0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* Spinner & Progress */
+.generation-progress-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 20, 14, 0.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    z-index: 10;
+}
+.andalus-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(197, 160, 89, 0.2);
+    border-top-color: #C5A059;
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+    margin-bottom: 16px;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.progress-title {
+    color: #C5A059;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+.progress-bar-container {
+    width: 80%;
+    max-width: 320px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.progress-bar-fill {
+    height: 100%;
+    background: #C5A059;
+    transition: width 0.3s ease;
+}
+.progress-status-log {
+    color: #A0B2A6;
+    font-size: 11.5px;
+}
+
+/* Tool History */
+.tool-history-section {
+    background: rgba(14, 25, 20, 0.95);
+    border: 1px solid rgba(197, 160, 89, 0.25);
+    border-radius: 16px;
+    padding: 20px;
+}
+.history-heading {
+    margin: 0 0 14px 0;
+    font-family: 'Amiri', 'Cinzel', serif;
+    font-size: 16px;
+    color: #C5A059;
+}
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+}
+.history-item-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.history-item-card:hover {
+    transform: translateY(-2px);
+    border-color: #C5A059;
+}
+.history-thumb-box {
+    height: 70px;
+    background: #050B08;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.history-thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.thumb-placeholder {
+    font-size: 24px;
+}
+.history-item-meta {
+    padding: 6px 8px;
+}
+.history-prompt {
+    display: block;
+    font-size: 10px;
+    color: #D1DED5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.history-time {
+    display: block;
+    font-size: 9px;
+    color: #8EBA9A;
+    margin-top: 2px;
+}
+.history-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 12px;
+    color: #A0B2A6;
+    padding: 16px 0;
+}
+
+/* Responsive */
+@media (max-width: 1080px) {
+    .studio-layout-wrapper {
+        flex-direction: column;
+    }
+    .studio-sidebar {
+        width: 100%;
+        border-left: none;
+        border-bottom: 1px solid rgba(197, 160, 89, 0.25);
+    }
+    .tool-workspace-grid {
+        grid-template-columns: 1fr;
+    }
+    .studio-workspace-area {
+        padding: 20px;
+    }
+}
+</style>
+
+<!-- Unified Studio Generator Script -->
+<script>
+async function submitGeneration(formData, toolType) {
+    const idleEl = document.getElementById('viewport-idle');
+    const overlayEl = document.getElementById('progress-overlay');
+    const progressFill = document.getElementById('progress-fill');
+    const progressLog = document.getElementById('progress-log');
+    const videoEl = document.getElementById('viewport-video');
+    const imageEl = document.getElementById('viewport-image');
+    const audioContainer = document.getElementById('viewport-audio-container');
+    const audioEl = document.getElementById('viewport-audio');
+    const actionsEl = document.getElementById('viewport-actions');
+    const downloadBtn = document.getElementById('btn-download-result');
+
+    // Reset viewports
+    idleEl.style.display = 'none';
+    videoEl.style.display = 'none';
+    imageEl.style.display = 'none';
+    audioContainer.style.display = 'none';
+    actionsEl.style.display = 'none';
+    overlayEl.style.display = 'flex';
+    progressFill.style.width = '15%';
+    progressLog.innerText = 'إرسال المعطيات والأمر العصبي إلى السحابة...';
+
+    try {
+        formData.append('tool_type', toolType);
+        
+        const response = await fetch('/api/generate/', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+
+        if (!data.success) {
+            alert('حدث خطأ: ' + (data.error || 'تعذر بدء المعالجة'));
+            overlayEl.style.display = 'none';
+            idleEl.style.display = 'block';
+            return;
+        }
+
+        const historyId = data.history_id;
+        progressFill.style.width = '45%';
+        progressLog.innerText = 'جاري التوليد العصبي ومحاكاة المعالجة الخلفية...';
+
+        // Poll for completion
+        let pollCount = 0;
+        const interval = setInterval(async () => {
+            pollCount++;
+            progressFill.style.width = Math.min(95, 45 + pollCount * 12) + '%';
+
+            const statusRes = await fetch(`/api/generation-status/${historyId}/`);
+            const statusData = await statusRes.json();
+
+            if (statusData.status === 'completed') {
+                clearInterval(interval);
+                progressFill.style.width = '100%';
+                progressLog.innerText = 'اكتمل التوليد بنجاح!';
+                setTimeout(() => {
+                    overlayEl.style.display = 'none';
+                    actionsEl.style.display = 'flex';
+                    downloadBtn.href = statusData.result_url;
+
+                    if (toolType.includes('video') || toolType.includes('lipsync') || toolType.includes('motion') || toolType.includes('avatar')) {
+                        videoEl.src = statusData.result_url;
+                        videoEl.style.display = 'block';
+                        videoEl.play();
+                    } else if (toolType.includes('image')) {
+                        imageEl.src = statusData.result_url;
+                        imageEl.style.display = 'block';
+                    } else if (toolType === 'tts' || toolType === 'stt') {
+                        audioEl.src = statusData.result_url;
+                        audioContainer.style.display = 'block';
+                        audioEl.play();
+                    }
+                }, 600);
+            } else if (statusData.status === 'failed') {
+                clearInterval(interval);
+                overlayEl.style.display = 'none';
+                alert('فشلت المعالجة: ' + (statusData.error_message || 'خطأ غير معروف'));
+                idleEl.style.display = 'block';
+            }
+        }, 1200);
+
+    } catch (err) {
+        overlayEl.style.display = 'none';
+        idleEl.style.display = 'block';
+        alert('تعذر الاتصال بالخادم: ' + err);
+    }
+}
+
+function previewHistoryItem(url, type) {
+    const videoEl = document.getElementById('viewport-video');
+    const imageEl = document.getElementById('viewport-image');
+    const audioContainer = document.getElementById('viewport-audio-container');
+    const audioEl = document.getElementById('viewport-audio');
+    const idleEl = document.getElementById('viewport-idle');
+    const actionsEl = document.getElementById('viewport-actions');
+    const downloadBtn = document.getElementById('btn-download-result');
+
+    idleEl.style.display = 'none';
+    videoEl.style.display = 'none';
+    imageEl.style.display = 'none';
+    audioContainer.style.display = 'none';
+    actionsEl.style.display = 'flex';
+    downloadBtn.href = url;
+
+    if (type.includes('video') || type.includes('lipsync') || type.includes('motion') || type.includes('avatar')) {
+        videoEl.src = url;
+        videoEl.style.display = 'block';
+        videoEl.play();
+    } else if (type.includes('image')) {
+        imageEl.src = url;
+        imageEl.style.display = 'block';
+    } else if (type === 'tts' || type === 'stt') {
+        audioEl.src = url;
+        audioContainer.style.display = 'block';
+        audioEl.play();
+    }
+}
+</script>
+{% endblock %}

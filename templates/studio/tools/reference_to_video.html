@@ -1,0 +1,61 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="r2v-form" onsubmit="event.preventDefault(); handleR2VSubmit();">
+    
+    <!-- Dual Reference Upload Grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+        <div>
+            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 6px; font-weight: bold;">
+                مرجع الشخصية (Character Ref)
+            </label>
+            <input id="r2v-char-url" type="url" placeholder="https://.../face.jpg" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+        </div>
+        <div>
+            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 6px; font-weight: bold;">
+                مرجع البيئة والزي (Style Ref)
+            </label>
+            <input id="r2v-style-url" type="url" placeholder="https://.../costume.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+        </div>
+    </div>
+
+    <!-- Scene Prompt -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            وصف المشهد وتفاعل المراجع (Scene Description)
+        </label>
+        <textarea id="r2v-prompt" required rows="4" placeholder="مثال: دمج ملامح الشخصية الأولى بدقة تامة مع الزي الأندلسي والبيئة المعمارية للمرجع الثاني، المشهد يظهر حركة وقورة باتجاه النافذة المطلة على البساتين..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; line-height: 1.5;"></textarea>
+    </div>
+
+    <!-- Identity Preservation Slider -->
+    <div style="margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #FAF7F0;">دقة الحفاظ على هوية الشخصية (Fidelity)</label>
+            <span id="fidelity-label" style="color: #C5A059; font-weight: bold; font-size: 14px;">90%</span>
+        </div>
+        <input type="range" id="r2v-fidelity" min="50" max="100" value="90" oninput="document.getElementById('fidelity-label').innerText = this.value + '%'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+    </div>
+
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
+        📐 توليد الفيديو متعدد المراجع (Synthesize Reference Video)
+    </button>
+
+</form>
+
+<script>
+function handleR2VSubmit() {
+    const prompt = document.getElementById('r2v-prompt').value;
+    const charUrl = document.getElementById('r2v-char-url').value;
+    const styleUrl = document.getElementById('r2v-style-url').value;
+    const fidelity = document.getElementById('r2v-fidelity').value;
+
+    const fd = new FormData();
+    fd.append('prompt', prompt);
+    fd.append('char_url', charUrl);
+    fd.append('style_url', styleUrl);
+    fd.append('fidelity', fidelity);
+
+    submitGeneration(fd, 'reference_to_video');
+}
+</script>
+{% endblock %}

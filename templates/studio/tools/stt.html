@@ -1,0 +1,77 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="stt-form" onsubmit="event.preventDefault(); handleSttSubmit();">
+    
+    <!-- Audio Source -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            الملف الصوتي المراد تفريغه (Audio File)
+        </label>
+        <div style="border: 2px dashed rgba(197, 160, 89, 0.4); border-radius: 10px; padding: 25px; text-align: center; background: rgba(0,0,0,0.3); margin-bottom: 10px;">
+            <div style="font-size: 32px; margin-bottom: 8px;">🎧</div>
+            <div style="font-size: 14px; color: #FAF7F0; margin-bottom: 4px;">اسحب الملف الصوتي هنا أو أدخل رابط الملف المباشر</div>
+            <div style="font-size: 11px; color: #8EBA9A;">MP3, WAV, M4A, OGG حتى 50 ميغابايت</div>
+        </div>
+        <input id="stt-audio-url" type="url" placeholder="https://example.com/recording.mp3" value="https://actions.google.com/sounds/v1/water/rain_heavy.ogg" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Engine & Language -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+        <div>
+            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">نموذج التفريغ (Whisper)</label>
+            <select id="stt-model" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px;">
+                <option value="whisper-large-v3">Whisper Large v3 (أعلى دقة)</option>
+                <option value="whisper-medium">Whisper Medium (فائق السرعة)</option>
+            </select>
+        </div>
+        <div>
+            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">لغة التسجيل</label>
+            <select id="stt-lang" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px;">
+                <option value="ar">العربية (كافة اللهجات والفصحى)</option>
+                <option value="en">الإنجليزية (English)</option>
+                <option value="auto">كشف تلقائي (Auto Detect)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Export Format -->
+    <div style="margin-bottom: 25px;">
+        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">صيغة المخرجات المطلوبة</label>
+        <div style="display: flex; gap: 10px;">
+            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
+                <input type="radio" name="format" value="txt" checked style="display: none;"> نص كامل (TXT)
+            </label>
+            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
+                <input type="radio" name="format" value="srt" style="display: none;"> ملف ترجمة (SRT)
+            </label>
+            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
+                <input type="radio" name="format" value="json" style="display: none;"> توقيت دقيق (JSON)
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
+        🎧 بدء التفريغ الصوتي الذكي (Transcribe Audio)
+    </button>
+
+</form>
+
+<script>
+function handleSttSubmit() {
+    const audioUrl = document.getElementById('stt-audio-url').value;
+    const model = document.getElementById('stt-model').value;
+    const lang = document.getElementById('stt-lang').value;
+    const format = document.querySelector('input[name="format"]:checked').value;
+
+    const fd = new FormData();
+    fd.append('prompt', 'Transcribe: ' + audioUrl);
+    fd.append('audio_url', audioUrl);
+    fd.append('model', model);
+    fd.append('language', lang);
+    fd.append('format', format);
+
+    submitGeneration(fd, 'stt');
+}
+</script>
+{% endblock %}

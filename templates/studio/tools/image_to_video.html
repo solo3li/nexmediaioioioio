@@ -1,0 +1,79 @@
+{% extends 'studio/base_studio.html' %}
+
+{% block tool_controls %}
+<form id="i2v-form" onsubmit="event.preventDefault(); handleI2VSubmit();">
+    
+    <!-- Image Source -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            الصورة المصدرية للتحريك (Source Image)
+        </label>
+        <div style="border: 2px dashed rgba(197, 160, 89, 0.4); border-radius: 10px; padding: 25px; text-align: center; background: rgba(0,0,0,0.3); margin-bottom: 10px;">
+            <div style="font-size: 32px; margin-bottom: 8px;">🖼️</div>
+            <div style="font-size: 14px; color: #FAF7F0; margin-bottom: 4px;">اسحب الصورة هنا أو أدخل رابط الصورة المباشر</div>
+            <div style="font-size: 11px; color: #8EBA9A;">PNG, JPG, WebP حتى 20 ميغابايت</div>
+        </div>
+        <input id="i2v-image-url" type="url" placeholder="https://example.com/portrait.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Motion Description -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+            وصف الحركة المراد تطبيقها (Motion Prompt)
+        </label>
+        <textarea id="i2v-prompt" required rows="3" placeholder="مثال: تحريك أمواج البحر بنعومة مع دوران الكاميرا ببطء لليمين وتساقط بتلات الورد في الهواء..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; line-height: 1.5;"></textarea>
+    </div>
+
+    <!-- Motion Intensity Slider -->
+    <div style="margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #FAF7F0;">شدة الحركة (Motion Intensity)</label>
+            <span id="motion-val-label" style="color: #C5A059; font-weight: bold; font-size: 14px;">5 / 10</span>
+        </div>
+        <input type="range" id="i2v-motion-range" min="1" max="10" value="5" oninput="document.getElementById('motion-val-label').innerText = this.value + ' / 10'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8EBA9A; margin-top: 4px;">
+            <span>حركة سينمائية هادئة</span>
+            <span>حركة سريعة وديناميكية</span>
+        </div>
+    </div>
+
+    <!-- Camera Trajectory -->
+    <div style="margin-bottom: 25px;">
+        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px;">مسار حركة الكاميرا (Camera Control)</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <label style="text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
+                <input type="radio" name="cam" value="static" checked style="display: none;"> ثبات الكاميرا
+            </label>
+            <label style="text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
+                <input type="radio" name="cam" value="zoom_in" style="display: none;"> تقريب تدريجي
+            </label>
+            <label style="text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
+                <input type="radio" name="cam" value="pan_right" style="display: none;"> دوران جانبي
+            </label>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
+        🎞️ بث الحياة في الصورة (Animate Image)
+    </button>
+
+</form>
+
+<script>
+function handleI2VSubmit() {
+    const prompt = document.getElementById('i2v-prompt').value;
+    const imageUrl = document.getElementById('i2v-image-url').value;
+    const intensity = document.getElementById('i2v-motion-range').value;
+    const camera = document.querySelector('input[name="cam"]:checked').value;
+
+    const fd = new FormData();
+    fd.append('prompt', prompt);
+    fd.append('source_image_url', imageUrl);
+    fd.append('motion_intensity', intensity);
+    fd.append('camera_control', camera);
+
+    submitGeneration(fd, 'image_to_video');
+}
+</script>
+{% endblock %}
