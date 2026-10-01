@@ -4,9 +4,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from . import views
 
+from apps.accounts import views as accounts_views
+from apps.billing import views as billing_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('studio/', views.studio, name='studio'),
+    path('accounts/', include('apps.accounts.urls')),
+    path('profile/', accounts_views.profile_view, name='profile'),
+    path('affiliate/', include('apps.affiliate.urls')),
+    path('support/', include('apps.support.urls')),
+    path('billing/', include('apps.billing.urls')),
+    path('invoices/', billing_views.invoices_list_view, name='invoices_list'),
+    path('invoices/<int:invoice_id>/', billing_views.invoice_detail_view, name='invoice_detail'),
     path('', include('apps.history.urls')),
 ]

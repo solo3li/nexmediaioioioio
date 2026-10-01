@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}مركز الدعم الفني الملكي | NexMedia Support{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 0 20px; color: #FAF7F0;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h1 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 28px; color: #C5A059; margin: 0 0 6px 0;">
+                مركز المساعدة والدعم الفني
+            </h1>
+            <p style="color: #A0B2A6; font-size: 14px; margin: 0;">
+                Royal Concierge & Priority Technical Support
+            </p>
+        </div>
+        <button onclick="document.getElementById('newTicketModal').style.display='flex'" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(197,160,89,0.3);">
+            + فتح تذكرة دعم جديدة
+        </button>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div style="background: rgba(76,175,80,0.15); border: 1px solid #4CAF50; color: #8EBA9A; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 16px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+        {% if tickets %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(197, 160, 89, 0.3); color: #8EBA9A;">
+                        <th style="padding: 12px 16px;">رقم التذكرة</th>
+                        <th style="padding: 12px 16px;">الموضوع</th>
+                        <th style="padding: 12px 16px;">الحالة</th>
+                        <th style="padding: 12px 16px;">آخر تحديث</th>
+                        <th style="padding: 12px 16px; text-align: center;">عرض</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 14px 16px; font-family: monospace; color: #C5A059;">#{{ ticket.id }}</td>
+                        <td style="padding: 14px 16px; font-weight: bold; color: #FFF;">{{ ticket.subject }}</td>
+                        <td style="padding: 14px 16px;">
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; {% if ticket.status == 'Open' %}background: rgba(33,150,243,0.15); color: #2196F3; border: 1px solid #2196F3;{% elif ticket.status == 'InProgress' %}background: rgba(255,193,7,0.15); color: #FFC107; border: 1px solid #FFC107;{% else %}background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid #4CAF50;{% endif %}">
+                                {{ ticket.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="padding: 14px 16px; color: #A0B2A6;">{{ ticket.updated_at|date:"d M Y H:i" }}</td>
+                        <td style="padding: 14px 16px; text-align: center;">
+                            <a href="{% url 'ticket_detail' ticket.id %}" style="text-decoration: none; color: #C5A059; border: 1px solid rgba(197,160,89,0.3); padding: 5px 12px; border-radius: 6px; font-size: 13px;">
+                                المحادثة ←
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="text-align: center; color: #A0B2A6; font-size: 14px; padding: 30px;">
+            ليس لديك أي تذاكر دعم حالياً. هل تواجه أي استفسار أو مشكلة تقنية؟ يسعدنا مساعدتك في أي وقت!
+        </p>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- New Ticket Modal -->
+<div id="newTicketModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px;">
+    <div style="max-width: 540px; width: 100%; background: #0E1F16; border: 1px solid #C5A059; border-radius: 16px; padding: 35px; color: #FAF7F0;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(197,160,89,0.3); padding-bottom: 12px;">
+            <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 22px; color: #C5A059; margin: 0;">
+                فتح تذكرة دعم فني جديدة
+            </h3>
+            <button onclick="document.getElementById('newTicketModal').style.display='none'" style="background: none; border: none; color: #A0B2A6; font-size: 22px; cursor: pointer;">
+                ✕
+            </button>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">عنوان المشكلة أو الاستفسار</label>
+                <input type="text" name="subject" required placeholder="مثال: استفسار حول رصيد باقة الـ 4K" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">تفاصيل الرسالة</label>
+                <textarea name="content" required rows="4" placeholder="اشرح المشكلة أو الاستفسار بالتفصيل..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;"></textarea>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">رابط صورة أو لقطة شاشة توضيحية (اختياري)</label>
+                <input type="url" name="attachment_url" placeholder="https://..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;">
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 15px; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
+                    إرسال التذكرة
+                </button>
+                <button type="button" onclick="document.getElementById('newTicketModal').style.display='none'" style="border: 1px solid rgba(255,255,255,0.2); background: none; color: #A0B2A6; padding: 12px 20px; border-radius: 8px; cursor: pointer;">
+                    إلغاء
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

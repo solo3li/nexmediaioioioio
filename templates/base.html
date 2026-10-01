@@ -69,11 +69,12 @@
             </a>
 
             <!-- Nav Links -->
+            <!-- Nav Links -->
             <nav class="nav-menu" aria-label="Main Navigation">
                 <a href="/studio/" class="nav-item" style="color: #D4AF37; font-weight: 700;">استوديو التوليد ✦</a>
-                <a href="/#three-portals" class="nav-item">البوابات الثلاث</a>
-                <a href="/#simulator" class="nav-item">المحاكي الحي</a>
-                <a href="/#pricing-calculator" class="nav-item">حاسبة الرصيد</a>
+                <a href="/#pricing-calculator" class="nav-item">الباقات والأسعار</a>
+                <a href="{% url 'affiliate_dashboard' %}" class="nav-item">برنامج المسوقين</a>
+                <a href="{% url 'support_list' %}" class="nav-item">الدعم الفني</a>
             </nav>
 
             <!-- Header Action Buttons & Language Switcher -->
@@ -85,11 +86,17 @@
                     <span class="lang-badge" data-lang="en">EN</span>
                 </div>
 
-                <a href="/admin/" class="btn-ghost" id="admin-login-btn">لوحة المدير</a>
-                <a href="/studio/" class="btn-royal-forest" id="cta-start-btn">
-                    <span>دخول الاستوديو ✦</span>
-                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="btn-ghost" title="الملف الشخصي والمحفظة" style="border-color: rgba(197,160,89,0.5); color: #C5A059;">
+                    👑 {{ user.username }}
                 </a>
+                <a href="{% url 'logout' %}" class="btn-ghost" style="color: #FFA8A8; font-size: 13px;">خروج</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn-ghost">دخول</a>
+                <a href="{% url 'register' %}" class="btn-royal-forest" id="cta-start-btn">
+                    <span>حساب جديد ✦</span>
+                </a>
+                {% endif %}
 
                 <!-- Mobile Menu Button -->
                 <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="فتح القائمة">
@@ -103,15 +110,21 @@
     <div class="mobile-nav-drawer" id="mobile-drawer" aria-hidden="true">
         <div class="drawer-header">
             <span class="drawer-title">نكس ميديا للوسائط الذكية</span>
-            <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="إغلاق القائمة">✕</button>
+            <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="إغلاق">✕</button>
         </div>
         <nav class="drawer-menu">
-            <a href="#three-portals" class="drawer-nav-item">البوابات الثلاث</a>
-            <a href="#prompt-playground" class="drawer-nav-item">مختبر الأوامر</a>
-            <a href="#showcase-gallery" class="drawer-nav-item">معرض الروائع</a>
-            <a href="#simulator" class="drawer-nav-item">المحاكي الحي</a>
-            <a href="#pricing-calculator" class="drawer-nav-item">حاسبة الرصيد</a>
-            <a href="/admin/" class="drawer-nav-item">لوحة المدير</a>
+            <a href="/studio/" class="drawer-item" style="color: #D4AF37; font-weight: bold;">استوديو التوليد ✦</a>
+            <a href="/#pricing-calculator" class="drawer-item">الباقات والأسعار</a>
+            <a href="{% url 'affiliate_dashboard' %}" class="drawer-item">برنامج المسوقين والعمولات</a>
+            <a href="{% url 'support_list' %}" class="drawer-item">الدعم الفني والمساعدة</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="drawer-item">الملف الشخصي والمحفظة</a>
+            <a href="{% url 'invoices_list' %}" class="drawer-item">سجل الفواتير</a>
+            <a href="{% url 'logout' %}" class="drawer-item" style="color: #FF5757;">تسجيل الخروج</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="drawer-item">تسجيل الدخول</a>
+            <a href="{% url 'register' %}" class="drawer-item" style="color: #C5A059;">إنشاء حساب جديد</a>
+            {% endif %}
         </nav>
     </div>
 

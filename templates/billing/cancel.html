@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}تم إلغاء عملية الدفع | NexMedia{% endblock %}
+
+{% block content %}
+<div style="min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div style="max-width: 520px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(255, 87, 87, 0.4); border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0; text-align: center;">
+        
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: rgba(255, 87, 87, 0.15); border: 2px solid #FF5757; font-size: 32px; color: #FF5757; margin-bottom: 20px;">
+            ✕
+        </div>
+
+        <h2 style="font-family: 'Amiri', 'Cinzel', serif; color: #FF5757; font-size: 26px; margin-bottom: 10px;">
+            تم إلغاء العملية ولم يتم خصم أي مبالغ
+        </h2>
+        <p style="color: #A0B2A6; font-size: 14px; margin-bottom: 30px;">
+            Payment was cancelled or expired. لم تكتمل عملية الدفع، يمكنك المحاولة مجدداً في أي وقت.
+        </p>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a href="/#pricing" style="text-decoration: none; background: #C5A059; color: #0E2218; font-weight: bold; padding: 12px 24px; border-radius: 8px; font-size: 15px;">
+                عرض الباقات والأسعار
+            </a>
+            <a href="/" style="text-decoration: none; border: 1px solid rgba(255,255,255,0.2); color: #FAF7F0; padding: 12px 24px; border-radius: 8px; font-size: 15px;">
+                الرئيسية
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

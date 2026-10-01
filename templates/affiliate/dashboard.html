@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}لوحة تحكم المسوق الملكي | NexMedia Affiliate{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 40px auto; padding: 0 20px; color: #FAF7F0;">
+    
+    <!-- Top Header -->
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 18px; padding: 30px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.5);">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+                <h1 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 28px; color: #C5A059; margin: 0;">
+                    بوابة التسويق بالعمولة الملكية
+                </h1>
+                <span style="font-size: 12px; background: rgba(197,160,89,0.2); color: #C5A059; border: 1px solid #C5A059; padding: 3px 10px; border-radius: 20px; font-weight: bold;">
+                    {{ profile.display_id }}
+                </span>
+            </div>
+            <p style="color: #A0B2A6; font-size: 14px; margin: 0;">
+                احصل على نسبة <strong>{{ settings.first_purchase_rate }}%</strong> من أول اشتراك لكل عميل + <strong>{{ settings.recurring_rate }}%</strong> من التجديدات الدورية!
+            </p>
+        </div>
+
+        <button onclick="document.getElementById('payoutModal').style.display='flex'" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; padding: 14px 26px; border: none; border-radius: 10px; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(197,160,89,0.3);">
+            💰 طلب سحب الأرباح (Withdraw)
+        </button>
+    </div>
+
+    <!-- Messages / Alerts -->
+    {% if messages %}
+        {% for message in messages %}
+        <div style="background: {% if message.tags == 'error' %}rgba(255,87,87,0.15); border: 1px solid #FF5757; color: #FFA8A8;{% else %}rgba(76,175,80,0.15); border: 1px solid #4CAF50; color: #8EBA9A;{% endif %} padding: 14px 20px; border-radius: 10px; margin-bottom: 25px; font-size: 14px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Referral Link Box -->
+    <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 14px; padding: 22px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div style="flex: 1; min-width: 280px;">
+            <div style="font-size: 12px; color: #C5A059; margin-bottom: 6px; font-weight: bold;">
+                🔗 رابط الإحالة الخاص بك (Referral Link):
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <input id="refUrl" type="text" readonly value="{{ referral_url }}" style="flex: 1; padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #FFF; font-family: monospace; font-size: 14px; direction: ltr;">
+                <button onclick="navigator.clipboard.writeText(document.getElementById('refUrl').value); alert('تم نسخ رابط الإحالة بنجاح!');" style="background: #C5A059; color: #0E2218; font-weight: bold; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 13px;">
+                    نسخ الرابط
+                </button>
+            </div>
+        </div>
+        <div style="text-align: right; font-size: 12px; color: #A0B2A6;">
+            كود الإحالة المباشر: <strong style="color: #FFF; font-size: 15px; font-family: monospace;">{{ profile.referral_code }}</strong><br>
+            مدة تتبع الكوكيز: <strong>{{ settings.attribution_period_days }} يوماً</strong>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 35px;">
+        
+        <!-- Clicks -->
+        <div style="background: rgba(14, 25, 20, 0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
+            <div style="color: #A0B2A6; font-size: 13px; margin-bottom: 6px;">إجمالي النقرات (Total Clicks)</div>
+            <div style="font-size: 32px; font-weight: bold; color: #FFF;">{{ profile.total_clicks }}</div>
+        </div>
+
+        <!-- Conversions -->
+        <div style="background: rgba(14, 25, 20, 0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
+            <div style="color: #A0B2A6; font-size: 13px; margin-bottom: 6px;">العملاء المحولون (Conversions)</div>
+            <div style="font-size: 32px; font-weight: bold; color: #4CAF50;">{{ converted_count }} <span style="font-size: 14px; color: #8EBA9A;">/ {{ referrals_count }}</span></div>
+        </div>
+
+        <!-- Available Balance -->
+        <div style="background: rgba(14, 25, 20, 0.9); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 12px; padding: 20px;">
+            <div style="color: #C5A059; font-size: 13px; margin-bottom: 6px;">الأرباح المتاحة للسحب (Available)</div>
+            <div style="font-size: 26px; font-weight: bold; color: #C5A059;">
+                ${{ profile.available_usd|floatformat:2 }} <span style="font-size: 15px; color: #FAF7F0;">| {{ profile.available_egp|floatformat:2 }} EGP</span>
+            </div>
+        </div>
+
+        <!-- Pending Balance -->
+        <div style="background: rgba(14, 25, 20, 0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
+            <div style="color: #FFA726; font-size: 13px; margin-bottom: 6px;">الأرباح المعلقة (Hold Period {{ settings.hold_period_days }}d)</div>
+            <div style="font-size: 26px; font-weight: bold; color: #FFA726;">
+                ${{ profile.pending_usd|floatformat:2 }} <span style="font-size: 15px; color: #FAF7F0;">| {{ profile.pending_egp|floatformat:2 }} EGP</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Commissions History Table -->
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.25); border-radius: 16px; padding: 28px; margin-bottom: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+        <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 20px; color: #C5A059; margin-bottom: 20px;">
+            سجل العمولات المكتسبة (Commissions Ledger)
+        </h3>
+
+        {% if commissions %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(197, 160, 89, 0.3); color: #8EBA9A;">
+                        <th style="padding: 12px 14px;">العميل</th>
+                        <th style="padding: 12px 14px;">الباقة</th>
+                        <th style="padding: 12px 14px;">النوع</th>
+                        <th style="padding: 12px 14px;">النسبة</th>
+                        <th style="padding: 12px 14px;">العمولة</th>
+                        <th style="padding: 12px 14px;">تاريخ الإتاحة للسحب</th>
+                        <th style="padding: 12px 14px;">الحالة</th>
+                        <th style="padding: 12px 14px;">التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comm in commissions %}
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 14px; font-family: monospace;">{{ comm.customer.username }}</td>
+                        <td style="padding: 14px;">{{ comm.plan.name_ar|default:comm.plan.name }}</td>
+                        <td style="padding: 14px; font-size: 12px;">{{ comm.get_type_display }}</td>
+                        <td style="padding: 14px; color: #C5A059; font-weight: bold;">{{ comm.rate }}%</td>
+                        <td style="padding: 14px; font-weight: bold; color: #4CAF50;">+{{ comm.amount }} {{ comm.currency }}</td>
+                        <td style="padding: 14px; color: #A0B2A6;">{{ comm.available_at|date:"d M Y" }}</td>
+                        <td style="padding: 14px;">
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; {% if comm.status == 'AVAILABLE' %}background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid rgba(76,175,80,0.3);{% elif comm.status == 'PENDING' %}background: rgba(255,167,38,0.15); color: #FFA726; border: 1px solid rgba(255,167,38,0.3);{% else %}background: rgba(255,255,255,0.08); color: #FFF;{% endif %}">
+                                {{ comm.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="padding: 14px; color: #A0B2A6;">{{ comm.created_at|date:"d M Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #A0B2A6; font-size: 14px; text-align: center; padding: 25px;">
+            لا توجد عمولات مسجلة بعد. شارك رابط الإحالة الخاص بك وابدأ في تحقيق الأرباح!
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Payouts History Table -->
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.25); border-radius: 16px; padding: 28px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+        <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 20px; color: #C5A059; margin-bottom: 20px;">
+            سجل طلبات السحب (Payout History)
+        </h3>
+
+        {% if payouts %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(197, 160, 89, 0.3); color: #8EBA9A;">
+                        <th style="padding: 12px 14px;">المبلغ</th>
+                        <th style="padding: 12px 14px;">طريقة السحب</th>
+                        <th style="padding: 12px 14px;">بيانات الحساب / المحفظة</th>
+                        <th style="padding: 12px 14px;">الحالة</th>
+                        <th style="padding: 12px 14px;">تاريخ الطلب</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in payouts %}
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 14px; font-weight: bold; color: #FFF;">{{ p.amount }} {{ p.currency }}</td>
+                        <td style="padding: 14px; color: #C5A059;">{{ p.payout_method }}</td>
+                        <td style="padding: 14px; font-family: monospace; color: #A0B2A6;">{{ p.payout_account }}</td>
+                        <td style="padding: 14px;">
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; {% if p.status == 'PAID' %}background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid #4CAF50;{% elif p.status == 'PENDING' %}background: rgba(255,193,7,0.15); color: #FFC107; border: 1px solid #FFC107;{% else %}background: rgba(255,87,87,0.15); color: #FF5757;{% endif %}">
+                                {{ p.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="padding: 14px; color: #A0B2A6;">{{ p.requested_at|date:"d M Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #A0B2A6; font-size: 14px; text-align: center; padding: 25px;">
+            لا توجد طلبات سحب سابقة.
+        </p>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Payout Modal -->
+<div id="payoutModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px;">
+    <div style="max-width: 520px; width: 100%; background: #0E1F16; border: 1px solid #C5A059; border-radius: 16px; padding: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.8); color: #FAF7F0;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(197,160,89,0.3); padding-bottom: 12px;">
+            <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 22px; color: #C5A059; margin: 0;">
+                طلب سحب الأرباح الملكية
+            </h3>
+            <button onclick="document.getElementById('payoutModal').style.display='none'" style="background: none; border: none; color: #A0B2A6; font-size: 22px; cursor: pointer;">
+                ✕
+            </button>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="request_payout">
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">العملة المراد سحبها</label>
+                <select name="currency" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
+                    <option value="USD">الدولار الأمريكي ($USD) - المتاح: ${{ profile.available_usd|floatformat:2 }}</option>
+                    <option value="EGP">الجنيه المصري (EGP) - المتاح: {{ profile.available_egp|floatformat:2 }} EGP</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">المبلغ المطلوب سحبه</label>
+                <input type="number" step="0.01" name="amount" required placeholder="0.00" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">طريقة استلام الأرباح</label>
+                <select name="payout_method" required style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
+                    <option value="Vodafone Cash">محفظة إلكترونية (فودافون كاش / أورنج / اتصالات / وي)</option>
+                    <option value="Instapay">إنستاباي (InstaPay Egypt)</option>
+                    <option value="Bank Transfer">تحويل بنكي مباشر (Bank Wire / IBAN)</option>
+                    <option value="PayPal">باي بال (PayPal International)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">بيانات المحفظة أو الحساب (رقم الهاتف / الآيبان / الإيميل)</label>
+                <input type="text" name="payout_account" required placeholder="مثال: 01000000000 أو حساب إنستاباي أو إيميل الباي بال" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">ملاحظات إضافية (اختياري)</label>
+                <textarea name="affiliate_message" rows="2" placeholder="أي تعليمات إضافية بخصوص التحويل..." style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 15px; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
+                    تأكيد إرسال الطلب
+                </button>
+                <button type="button" onclick="document.getElementById('payoutModal').style.display='none'" style="border: 1px solid rgba(255,255,255,0.2); background: none; color: #A0B2A6; padding: 12px 20px; border-radius: 8px; cursor: pointer;">
+                    إلغاء
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

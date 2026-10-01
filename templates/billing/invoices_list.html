@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}سجل الفواتير الملكية | NexMedia Invoices{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 0 20px; color: #FAF7F0;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 28px; color: #C5A059; margin: 0 0 6px 0;">
+                سجل الفواتير الرسمية
+            </h1>
+            <p style="color: #A0B2A6; font-size: 14px; margin: 0;">
+                Official Invoices & Tax Receipts
+            </p>
+        </div>
+        <a href="{% url 'profile' %}" style="text-decoration: none; border: 1px solid rgba(197,160,89,0.4); color: #C5A059; padding: 10px 18px; border-radius: 8px; font-size: 14px;">
+            ← العودة للملف الشخصي
+        </a>
+    </div>
+
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 16px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+        {% if invoices %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(197, 160, 89, 0.3); color: #8EBA9A;">
+                        <th style="padding: 12px 16px;">رقم الفاتورة</th>
+                        <th style="padding: 12px 16px;">الباقة المشتراة</th>
+                        <th style="padding: 12px 16px;">المبلغ الإجمالي</th>
+                        <th style="padding: 12px 16px;">تاريخ الإصدار</th>
+                        <th style="padding: 12px 16px; text-align: center;">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inv in invoices %}
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 14px 16px; font-family: monospace; color: #C5A059; font-weight: bold;">
+                            #{{ inv.invoice_number }}
+                        </td>
+                        <td style="padding: 14px 16px;">
+                            {{ inv.payment.plan.name_ar|default:inv.payment.plan.name }}
+                        </td>
+                        <td style="padding: 14px 16px; font-weight: bold; color: #FFF;">
+                            {{ inv.total }} {{ inv.currency }}
+                        </td>
+                        <td style="padding: 14px 16px; color: #A0B2A6;">
+                            {{ inv.created_at|date:"d M Y" }}
+                        </td>
+                        <td style="padding: 14px 16px; text-align: center;">
+                            <a href="{% url 'invoice_detail' inv.id %}" target="_blank" style="text-decoration: none; background: rgba(197,160,89,0.15); border: 1px solid #C5A059; color: #C5A059; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; transition: all 0.2s;">
+                                🖨️ عرض الفاتورة
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="text-align: center; color: #A0B2A6; font-size: 14px; padding: 30px;">
+            لا توجد فواتير مصدرة لحسابك حتى الآن.
+        </p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

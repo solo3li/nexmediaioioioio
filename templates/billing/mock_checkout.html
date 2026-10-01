@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}بوابة الدفع التجريبية الملكية | NexMedia Checkout{% endblock %}
+
+{% block content %}
+<div style="min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div style="max-width: 580px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0;">
+        
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="display: inline-block; width: 64px; height: 64px; border-radius: 50%; background: rgba(197, 160, 89, 0.15); border: 1px solid #C5A059; line-height: 64px; font-size: 28px; margin-bottom: 16px;">
+                💳
+            </div>
+            <h2 style="font-family: 'Amiri', 'Cinzel', serif; color: #C5A059; font-size: 28px; margin-bottom: 8px;">
+                بوابة الدفع الآمنة (بيئة الاختبار)
+            </h2>
+            <p style="color: #A0B2A6; font-size: 14px;">
+                Royal Andalusian Secure Payment Simulator • {{ gateway|upper }}
+            </p>
+        </div>
+
+        <!-- Plan Summary Box -->
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 14px;">
+                <div>
+                    <h3 style="color: #FAF7F0; font-size: 18px; margin-bottom: 4px;">{{ plan.name_ar }} ({{ plan.name }})</h3>
+                    <span style="font-size: 12px; color: #C5A059; background: rgba(197,160,89,0.15); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(197,160,89,0.3);">
+                        صلاحية {{ plan.duration_days }} يوماً
+                    </span>
+                </div>
+                <div style="text-align: left;">
+                    <span style="font-size: 24px; font-weight: bold; color: #C5A059;">
+                        {{ payment.amount }} {{ payment.currency }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Credits Details -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 13px;">
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border-left: 3px solid #4CAF50;">
+                    <div style="color: #8EBA9A;">الرصيد القياسي:</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #FFF; margin-top: 4px;">
+                        +{{ plan.standard_credits|floatformat:0 }} كريديت
+                    </div>
+                </div>
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border-left: 3px solid #C5A059;">
+                    <div style="color: #C5A059;">الرصيد المميز (Premium):</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #FFF; margin-top: 4px;">
+                        +{{ plan.premium_credits|floatformat:0 }} كريديت
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation Notice -->
+        <div style="background: rgba(197, 160, 89, 0.08); border-right: 4px solid #C5A059; padding: 12px 16px; border-radius: 4px; margin-bottom: 30px; font-size: 13px; color: #D1DED5; line-height: 1.6;">
+            <strong>تنبيه وضع الاختبار (Sandbox Mode):</strong><br>
+            يمكنك تأكيد الدفع الفوري لتفعيل اشتراكك وإضافة الرصيد إلى محفظتك واختبار نظام عمولات المسوقين تلقائياً.
+        </div>
+
+        <!-- Form Actions -->
+        <form method="POST" style="display: flex; flex-direction: column; gap: 14px;">
+            {% csrf_token %}
+            <button type="submit" name="action" value="confirm" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(197,160,89,0.3);">
+                ✓ إتمام الدفع وتفعيل الباقة فورياً (Confirm & Activate)
+            </button>
+            <button type="submit" name="action" value="cancel" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #A0B2A6; font-size: 14px; padding: 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s;">
+                ✕ إلغاء عملية الدفع (Cancel)
+            </button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

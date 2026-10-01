@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}تذكرة #{{ ticket.id }}: {{ ticket.subject }} | NexMedia Support{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 40px auto; padding: 0 20px; color: #FAF7F0;">
+    
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <h1 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 24px; color: #C5A059; margin: 0;">
+                    تذكرة #{{ ticket.id }}: {{ ticket.subject }}
+                </h1>
+                <span style="display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; {% if ticket.status == 'Open' %}background: rgba(33,150,243,0.2); color: #2196F3; border: 1px solid #2196F3;{% elif ticket.status == 'InProgress' %}background: rgba(255,193,7,0.2); color: #FFC107; border: 1px solid #FFC107;{% else %}background: rgba(76,175,80,0.2); color: #4CAF50; border: 1px solid #4CAF50;{% endif %}">
+                    {{ ticket.get_status_display }}
+                </span>
+            </div>
+            <p style="color: #A0B2A6; font-size: 13px; margin: 0;">
+                تاريخ الإنشاء: {{ ticket.created_at|date:"d M Y H:i" }}
+            </p>
+        </div>
+        <a href="{% url 'support_list' %}" style="text-decoration: none; border: 1px solid rgba(197,160,89,0.4); color: #C5A059; padding: 8px 16px; border-radius: 8px; font-size: 13px;">
+            ← قائمة التذاكر
+        </a>
+    </div>
+
+    <!-- Messages Conversation Thread -->
+    <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 35px;">
+        {% for msg in messages %}
+        <div style="background: {% if msg.is_admin_message %}rgba(197, 160, 89, 0.08); border-right: 4px solid #C5A059;{% else %}rgba(255, 255, 255, 0.04); border-left: 4px solid #4CAF50;{% endif %} border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px;">
+                <div style="font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                    {% if msg.is_admin_message %}
+                        <span style="color: #C5A059;">🛡️ الدعم الفني الملكي (NexMedia Support)</span>
+                    {% else %}
+                        <span style="color: #4CAF50;">👤 {{ msg.sender.username|default:"أنت" }}</span>
+                    {% endif %}
+                </div>
+                <div style="color: #A0B2A6; font-size: 12px;">
+                    {{ msg.created_at|date:"d M Y H:i" }}
+                </div>
+            </div>
+
+            <div style="line-height: 1.7; font-size: 15px; color: #FAF7F0; white-space: pre-wrap;">{{ msg.content }}</div>
+
+            {% if msg.attachment_url %}
+            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
+                <a href="{{ msg.attachment_url }}" target="_blank" style="color: #C5A059; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                    📎 عرض المرفق المرفق بالتذكرة
+                </a>
+            </div>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Reply Box -->
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 16px; padding: 25px;">
+        <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 18px; color: #C5A059; margin-top: 0; margin-bottom: 14px;">
+            إضافة رد جديد (Reply)
+        </h3>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 14px;">
+                <textarea name="content" required rows="3" placeholder="اكتب ردك هنا..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <input type="url" name="attachment_url" placeholder="رابط مرفق إضافي (اختياري)" style="flex: 1; min-width: 250px; padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+                <button type="submit" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
+                    إرسال الرد
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

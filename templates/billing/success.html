@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}تم تفعيل الاشتراك بنجاح | NexMedia Royal Studio{% endblock %}
+
+{% block content %}
+<div style="min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
+    <div style="max-width: 620px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 2px solid #C5A059; border-radius: 20px; padding: 45px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); backdrop-filter: blur(12px); color: #FAF7F0; text-align: center;">
+        
+        <!-- Royal Stamp -->
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 84px; height: 84px; border-radius: 50%; background: rgba(76, 175, 80, 0.15); border: 2px solid #4CAF50; font-size: 38px; color: #4CAF50; margin-bottom: 24px;">
+            ✓
+        </div>
+
+        <h1 style="font-family: 'Amiri', 'Cinzel', serif; color: #C5A059; font-size: 32px; margin-bottom: 12px;">
+            تهانينا! تم تفعيل اشتراكك بنجاح
+        </h1>
+        <p style="color: #A0B2A6; font-size: 15px; margin-bottom: 30px;">
+            Subscription Successfully Activated • مرحباً بك في نخبة مبدعي نيكس ميديا
+        </p>
+
+        <!-- Subscription Card -->
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 14px; padding: 24px; text-align: right; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                <span style="color: #8EBA9A;">الباقة المفعلة:</span>
+                <strong style="color: #FFF; font-size: 18px;">{{ plan.name_ar }}</strong>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                <span style="color: #8EBA9A;">رقم المعاملة:</span>
+                <span style="font-family: monospace; color: #C5A059;">{{ payment.payment_id }}</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                <span style="color: #8EBA9A;">المبلغ المدفوع:</span>
+                <span style="color: #FFF; font-weight: bold;">{{ payment.amount }} {{ payment.currency }}</span>
+            </div>
+
+            {% if subscription %}
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                <span style="color: #8EBA9A;">صلاحية الاشتراك حتى:</span>
+                <span style="color: #FFF;">{{ subscription.end_date|date:"d M Y" }}</span>
+            </div>
+            {% endif %}
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px;">
+                <div style="background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 8px; padding: 12px; text-align: center;">
+                    <div style="font-size: 12px; color: #8EBA9A;">الرصيد القياسي المضاف</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #4CAF50; margin-top: 4px;">+{{ plan.standard_credits|floatformat:0 }}</div>
+                </div>
+                <div style="background: rgba(197, 160, 89, 0.1); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 8px; padding: 12px; text-align: center;">
+                    <div style="font-size: 12px; color: #C5A059;">الرصيد المميز المضاف</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #C5A059; margin-top: 4px;">+{{ plan.premium_credits|floatformat:0 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <a href="/studio/" style="display: inline-block; width: 100%; text-decoration: none; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 17px; padding: 16px; border-radius: 10px; box-shadow: 0 4px 20px rgba(197,160,89,0.4); transition: transform 0.2s;">
+            ✨ الدخول إلى الاستوديو وبدء الإنتاج (Enter Studio)
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -32,6 +32,9 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.billing',
     'apps.history',
+    'apps.support',
+    'apps.content_cms',
+    'apps.affiliate',
 
     # Independent AI Tool Apps
     'apps.tools.tts',
@@ -46,6 +49,9 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.ApplicationUser'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'studio'
+LOGOUT_REDIRECT_URL = 'home'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.affiliate.middleware.AffiliateReferralMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

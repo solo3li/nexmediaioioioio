@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}الملف الشخصي والمحفظة | NexMedia Profile{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 40px auto; padding: 0 20px; color: #FAF7F0;">
+    
+    <!-- Top Welcome Card -->
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 16px; padding: 30px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(197, 160, 89, 0.15); border: 2px solid #C5A059; line-height: 70px; text-align: center; font-size: 30px;">
+                👑
+            </div>
+            <div>
+                <h1 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 26px; color: #C5A059; margin-bottom: 4px;">
+                    أهلاً بك، {{ user.username }}
+                </h1>
+                <p style="color: #A0B2A6; font-size: 14px;">
+                    {{ user.email }} • انضممت في {{ user.created_at|date:"d M Y" }}
+                </p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <a href="/studio/" style="text-decoration: none; background: #C5A059; color: #0E2218; font-weight: bold; padding: 10px 20px; border-radius: 8px; font-size: 14px;">
+                🎨 دخول الاستوديو
+            </a>
+            <a href="{% url 'affiliate_dashboard' %}" style="text-decoration: none; border: 1px solid #C5A059; color: #C5A059; font-weight: bold; padding: 10px 20px; border-radius: 8px; font-size: 14px;">
+                🤝 لوحة المسوق (Affiliate)
+            </a>
+            <a href="{% url 'invoices_list' %}" style="text-decoration: none; border: 1px solid rgba(255,255,255,0.2); color: #FAF7F0; padding: 10px 20px; border-radius: 8px; font-size: 14px;">
+                📄 الفواتير
+            </a>
+        </div>
+    </div>
+
+    <!-- Dual Wallets & Active Plan Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom: 35px;">
+        
+        <!-- Standard Credits Wallet -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 14px; padding: 25px; position: relative; overflow: hidden;">
+            <div style="color: #8EBA9A; font-size: 14px; margin-bottom: 8px;">الرصيد القياسي (Standard Credits)</div>
+            <div style="font-size: 36px; font-weight: bold; color: #4CAF50;">
+                {{ user.standard_credits|floatformat:2 }}
+            </div>
+            <p style="font-size: 12px; color: #A0B2A6; margin-top: 8px;">
+                مخصص لتوليد الصوت (TTS)، تحويل الصوت لنص (STT)، وموديلات الفيديو القياسية.
+            </p>
+        </div>
+
+        <!-- Premium Credits Wallet -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 14px; padding: 25px; position: relative; overflow: hidden;">
+            <div style="color: #C5A059; font-size: 14px; margin-bottom: 8px;">الرصيد المميز (Premium Credits)</div>
+            <div style="font-size: 36px; font-weight: bold; color: #C5A059;">
+                {{ user.premium_credits|floatformat:2 }}
+            </div>
+            <p style="font-size: 12px; color: #A0B2A6; margin-top: 8px;">
+                مخصص لتوليد الفيديو السينمائي 4K (Kling / Veo) والموديلات العصبية الفائقة.
+            </p>
+        </div>
+
+        <!-- Active Subscription -->
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 25px;">
+            <div style="color: #A0B2A6; font-size: 14px; margin-bottom: 8px;">الباقة الحالية</div>
+            {% if active_sub %}
+                <div style="font-size: 24px; font-weight: bold; color: #FAF7F0; margin-bottom: 4px;">
+                    {{ active_sub.plan.name_ar }}
+                </div>
+                <div style="font-size: 13px; color: #4CAF50; margin-bottom: 8px;">
+                    نشطة حتى {{ active_sub.end_date|date:"d M Y" }}
+                </div>
+            {% else %}
+                <div style="font-size: 20px; font-weight: bold; color: #FAF7F0; margin-bottom: 4px;">
+                    الباقة المجانية التجريبية
+                </div>
+                <div style="font-size: 13px; color: #A0B2A6; margin-bottom: 12px;">
+                    لا يوجد اشتراك مفعل حالياً
+                </div>
+                <a href="/#pricing" style="display: inline-block; font-size: 13px; color: #0E2218; background: #C5A059; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                    ترقية الباقة الآن
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Payments History Table -->
+    <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.25); border-radius: 16px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
+        <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 20px; color: #C5A059; margin-bottom: 20px;">
+            سجل المدفوعات والاشتراكات
+        </h3>
+
+        {% if recent_payments %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid rgba(197, 160, 89, 0.3); color: #8EBA9A;">
+                        <th style="padding: 12px 16px;">رقم المعاملة</th>
+                        <th style="padding: 12px 16px;">الباقة</th>
+                        <th style="padding: 12px 16px;">المبلغ</th>
+                        <th style="padding: 12px 16px;">طريقة الدفع</th>
+                        <th style="padding: 12px 16px;">الحالة</th>
+                        <th style="padding: 12px 16px;">التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pay in recent_payments %}
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                        <td style="padding: 14px 16px; font-family: monospace; color: #C5A059;">{{ pay.payment_id }}</td>
+                        <td style="padding: 14px 16px;">{{ pay.plan.name_ar|default:pay.plan.name }}</td>
+                        <td style="padding: 14px 16px; font-weight: bold;">{{ pay.amount }} {{ pay.currency }}</td>
+                        <td style="padding: 14px 16px; color: #A0B2A6;">{{ pay.method }}</td>
+                        <td style="padding: 14px 16px;">
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; {% if pay.status == 'Completed' %}background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid rgba(76,175,80,0.3);{% else %}background: rgba(255,193,7,0.15); color: #FFC107; border: 1px solid rgba(255,193,7,0.3);{% endif %}">
+                                {{ pay.status }}
+                            </span>
+                        </td>
+                        <td style="padding: 14px 16px; color: #A0B2A6;">{{ pay.created_at|date:"d M Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #A0B2A6; font-size: 14px; text-align: center; padding: 20px;">
+            لا توجد مدفوعات سابقة بعد.
+        </p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
