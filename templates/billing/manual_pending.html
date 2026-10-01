@@ -1,25 +1,41 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}تم استلام إيصال الدفع | NexMedia{% endblock %}
+{% block title %}
+{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == 'en' %}Payment Receipt Received | NexMedia{% else %}تم استلام إيصال الدفع | NexMedia{% endif %}
+{% endblock %}
 
 {% block content %}
+{% get_current_language as LANGUAGE_CODE %}
 <div style="min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
-    <div style="max-width: 540px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid #C5A059; border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0; text-align: center;">
+    <div style="max-width: 560px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid #C5A059; border-radius: 16px; padding: 45px 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0; text-align: center;">
         
-        <div style="display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: rgba(197, 160, 89, 0.15); border: 2px solid #C5A059; font-size: 32px; color: #C5A059; margin-bottom: 20px;">
-            ⏳
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 76px; height: 76px; border-radius: 50%; background: rgba(197, 160, 89, 0.15); border: 2px solid #C5A059; margin-bottom: 20px;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#C5A059" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         </div>
 
-        <h2 style="font-family: 'Amiri', 'Cinzel', serif; color: #C5A059; font-size: 26px; margin-bottom: 10px;">
-            تم إرسال إيصال التحويل بنجاح!
+        <h2 style="font-family: {% if LANGUAGE_CODE == 'en' %}'Cinzel', 'Outfit', sans-serif{% else %}'Amiri', 'Cinzel', serif{% endif %}; color: #C5A059; font-size: 26px; margin-bottom: 12px;">
+            {% if LANGUAGE_CODE == 'en' %}Payment Receipt Submitted Successfully!{% else %}تم إرسال إيصال التحويل بنجاح!{% endif %}
         </h2>
-        <p style="color: #A0B2A6; font-size: 14px; margin-bottom: 25px; line-height: 1.6;">
-            طلب الدفع رقم <strong style="color: #FFF;">#{{ payment.id }}</strong> قيد المراجعة الآن من قِبل المشرفين.<br>
-            سيتم تفعيل الباقة وإضافة الرصيد إلى محفظتك فور التحقق من المعاملة (خلال دقائق معدودة).
+        <p style="color: #A0B2A6; font-size: 15px; margin-bottom: 28px; line-height: 1.7;">
+            {% if LANGUAGE_CODE == 'en' %}
+                Payment order <strong style="color: #FFF; font-family: monospace;">#{{ payment.id }}</strong> is now under verification by our financial supervisors.<br>
+                Your package credits will be activated immediately upon transaction confirmation (usually within a few minutes).
+            {% else %}
+                طلب الدفع رقم <strong style="color: #FFF; font-family: monospace;">#{{ payment.id }}</strong> قيد المراجعة الآن من قِبل المشرفين.<br>
+                سيتم تفعيل الباقة وإضافة الرصيد إلى محفظتك فور التحقق من المعاملة (خلال دقائق معدودة).
+            {% endif %}
         </p>
 
-        <a href="/" style="display: inline-block; background: #C5A059; color: #0E2218; font-weight: bold; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 15px;">
-            العودة للرئيسية
+        <a href="/" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #C5A059; color: #0E2218; font-weight: bold; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-size: 15px; transition: all 0.2s;">
+            {% if LANGUAGE_CODE == 'en' %}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Return to Homepage</span>
+            {% else %}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            <span>العودة للرئيسية</span>
+            {% endif %}
         </a>
     </div>
 </div>

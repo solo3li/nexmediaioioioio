@@ -1,19 +1,21 @@
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ LANGUAGE_CODE|default:'ar' }}" dir="{% if LANGUAGE_CODE == 'en' %}ltr{% else %}rtl{% endif %}">
 <head>
     <meta charset="UTF-8">
-    <title>فاتورة ضريبية #{{ invoice.invoice_number }} | NexMedia</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    <title>{% if LANGUAGE_CODE == 'en' %}Tax Invoice #{{ invoice.invoice_number }} | NexMedia{% else %}فاتورة ضريبية #{{ invoice.invoice_number }} | نيكس ميديا{% endif %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Amiri', serif;
+            font-family: {% if LANGUAGE_CODE == 'en' %}'Outfit', sans-serif{% else %}'Amiri', serif{% endif %};
             background: #F4EFE6;
             color: #1A2E22;
             margin: 0;
             padding: 40px;
         }
         .invoice-card {
-            max-width: 800px;
+            max-width: 820px;
             margin: 0 auto;
             background: #FFF;
             border: 2px solid #C5A059;
@@ -31,9 +33,11 @@
             margin-bottom: 30px;
         }
         .logo-title {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             color: #0E3A1F;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.5px;
         }
         .invoice-num {
             font-family: 'Cinzel', monospace;
@@ -55,7 +59,7 @@
         }
         th, td {
             padding: 14px;
-            text-align: right;
+            text-align: {% if LANGUAGE_CODE == 'en' %}left{% else %}right{% endif %};
             border-bottom: 1px solid #E2D9CC;
         }
         th {
@@ -63,8 +67,8 @@
             color: #FAF7F0;
         }
         .totals {
-            margin-right: auto;
-            width: 300px;
+            {% if LANGUAGE_CODE == 'en' %}margin-left: auto;{% else %}margin-right: auto;{% endif %}
+            width: 320px;
             margin-bottom: 40px;
         }
         .totals-row {
@@ -83,7 +87,7 @@
         .stamp {
             position: absolute;
             bottom: 40px;
-            left: 50px;
+            {% if LANGUAGE_CODE == 'en' %}right: 50px;{% else %}left: 50px;{% endif %}
             width: 120px;
             height: 120px;
             border: 3px double #C5A059;
@@ -96,7 +100,8 @@
             font-weight: bold;
             transform: rotate(-15deg);
             opacity: 0.85;
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.4;
         }
         @media print {
             body { padding: 0; background: #FFF; }
@@ -107,19 +112,22 @@
 </head>
 <body>
 
-<div style="text-align: center; margin-bottom: 20px;" class="no-print">
-    <button onclick="window.print()" style="background: #0E3A1F; color: #FAF7F0; border: none; padding: 12px 28px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px;">
-        🖨️ طباعة الفاتورة أو الحفظ كـ PDF
+<div style="text-align: center; margin-bottom: 24px;" class="no-print">
+    <button onclick="window.print()" style="display: inline-flex; align-items: center; gap: 8px; background: #0E3A1F; color: #FAF7F0; border: none; padding: 12px 28px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(14,58,31,0.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        <span>{% if LANGUAGE_CODE == 'en' %}Print Invoice or Save as PDF{% else %}طباعة الفاتورة أو الحفظ كـ PDF{% endif %}</span>
     </button>
 </div>
 
 <div class="invoice-card">
     <div class="header">
         <div>
-            <div class="logo-title">نيكس ميديا | NEXMEDIA</div>
-            <div style="font-size: 13px; color: #666; margin-top: 4px;">الاستوديو الإبداعي للوسائط بالذكاء الاصطناعي</div>
+            <div class="logo-title">NEXMEDIA • نيكس ميديا</div>
+            <div style="font-size: 13px; color: #666; margin-top: 4px;">
+                {% if LANGUAGE_CODE == 'en' %}AI Creative Media Production Suite{% else %}الاستوديو الإبداعي للوسائط بالذكاء الاصطناعي{% endif %}
+            </div>
         </div>
-        <div style="text-align: left; direction: ltr;">
+        <div style="text-align: {% if LANGUAGE_CODE == 'en' %}right{% else %}left{% endif %}; direction: ltr;">
             <div class="invoice-num">INVOICE #{{ invoice.invoice_number }}</div>
             <div style="font-size: 13px; color: #666; margin-top: 4px;">{{ invoice.created_at|date:"F d, Y" }}</div>
         </div>
@@ -127,39 +135,55 @@
 
     <div class="meta-grid">
         <div>
-            <strong style="color: #0E3A1F;">فاتورة صادرة إلى:</strong><br>
-            الاسم: {{ invoice.user.username }}<br>
-            البريد: {{ invoice.user.email }}<br>
-            {% if invoice.user.phone_number %}الهاتف: {{ invoice.user.phone_number }}<br>{% endif %}
+            <strong style="color: #0E3A1F;">{% if LANGUAGE_CODE == 'en' %}Billed To:{% else %}فاتورة صادرة إلى:{% endif %}</strong><br>
+            {% if LANGUAGE_CODE == 'en' %}Name:{% else %}الاسم:{% endif %} {{ invoice.user.username }}<br>
+            {% if LANGUAGE_CODE == 'en' %}Email:{% else %}البريد:{% endif %} {{ invoice.user.email }}<br>
+            {% if invoice.user.phone_number %}{% if LANGUAGE_CODE == 'en' %}Phone:{% else %}الهاتف:{% endif %} {{ invoice.user.phone_number }}<br>{% endif %}
         </div>
-        <div style="text-align: left; direction: ltr;">
+        <div style="text-align: {% if LANGUAGE_CODE == 'en' %}right{% else %}left{% endif %}; direction: ltr;">
             <strong style="color: #0E3A1F;">ISSUER:</strong><br>
             NexMedia Creative Suite Ltd.<br>
             Tax ID: EG-782-901-224<br>
-            support@nexmedia.io
+            billing@nexmedia.io
         </div>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>الوصف (Description)</th>
-                <th>المدة</th>
-                <th>طريقة الدفع</th>
-                <th style="text-align: left; direction: ltr;">المبلغ</th>
+                <th>{% if LANGUAGE_CODE == 'en' %}Description{% else %}الوصف (Description){% endif %}</th>
+                <th>{% if LANGUAGE_CODE == 'en' %}Duration{% else %}المدة{% endif %}</th>
+                <th>{% if LANGUAGE_CODE == 'en' %}Payment Method{% else %}طريقة الدفع{% endif %}</th>
+                <th style="text-align: {% if LANGUAGE_CODE == 'en' %}right{% else %}left{% endif %}; direction: ltr;">{% if LANGUAGE_CODE == 'en' %}Amount{% else %}المبلغ{% endif %}</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>
-                    <strong>اشتراك: {{ plan.name_ar|default:plan.name }}</strong><br>
+                    <strong>
+                        {% if LANGUAGE_CODE == 'en' %}
+                            Subscription: {{ plan.name|default:plan.name_ar }}
+                        {% else %}
+                            اشتراك: {{ plan.name_ar|default:plan.name }}
+                        {% endif %}
+                    </strong><br>
                     <small style="color: #666;">
-                        باقة إنتاج ذكاء اصطناعي شاملة (+{{ plan.standard_credits|floatformat:0 }} قياسي / +{{ plan.premium_credits|floatformat:0 }} مميز)
+                        {% if LANGUAGE_CODE == 'en' %}
+                            Full AI Media Suite Access (+{{ plan.standard_credits|floatformat:0 }} Standard / +{{ plan.premium_credits|floatformat:0 }} Premium Credits)
+                        {% else %}
+                            باقة إنتاج ذكاء اصطناعي شاملة (+{{ plan.standard_credits|floatformat:0 }} قياسي / +{{ plan.premium_credits|floatformat:0 }} مميز)
+                        {% endif %}
                     </small>
                 </td>
-                <td>{{ plan.duration_days|default:"30" }} يوماً</td>
-                <td>{{ invoice.payment.method|default:"Online" }}</td>
-                <td style="text-align: left; direction: ltr; font-weight: bold;">
+                <td>
+                    {% if LANGUAGE_CODE == 'en' %}
+                        {{ plan.duration_days|default:"30" }} Days
+                    {% else %}
+                        {{ plan.duration_days|default:"30" }} يوماً
+                    {% endif %}
+                </td>
+                <td>{{ invoice.payment.method|default:"Online Gateway" }}</td>
+                <td style="text-align: {% if LANGUAGE_CODE == 'en' %}right{% else %}left{% endif %}; direction: ltr; font-weight: bold; font-family: 'Cinzel', monospace;">
                     {{ invoice.subtotal }} {{ invoice.currency }}
                 </td>
             </tr>
@@ -168,21 +192,23 @@
 
     <div class="totals">
         <div class="totals-row">
-            <span>المجموع الفرعي:</span>
-            <span style="direction: ltr;">{{ invoice.subtotal }} {{ invoice.currency }}</span>
+            <span>{% if LANGUAGE_CODE == 'en' %}Subtotal:{% else %}المجموع الفرعي:{% endif %}</span>
+            <span style="direction: ltr; font-family: 'Cinzel', monospace;">{{ invoice.subtotal }} {{ invoice.currency }}</span>
         </div>
         <div class="totals-row">
-            <span>ضريبة القيمة المضافة:</span>
-            <span style="direction: ltr;">{{ invoice.tax }} {{ invoice.currency }}</span>
+            <span>{% if LANGUAGE_CODE == 'en' %}Value Added Tax (VAT 0%):{% else %}ضريبة القيمة المضافة (0%):{% endif %}</span>
+            <span style="direction: ltr; font-family: 'Cinzel', monospace;">{{ invoice.tax }} {{ invoice.currency }}</span>
         </div>
         <div class="totals-row grand-total">
-            <span>الإجمالي المسدد:</span>
-            <span style="direction: ltr;">{{ invoice.total }} {{ invoice.currency }}</span>
+            <span>{% if LANGUAGE_CODE == 'en' %}Total Paid:{% else %}الإجمالي المسدد:{% endif %}</span>
+            <span style="direction: ltr; font-family: 'Cinzel', monospace;">{{ invoice.total }} {{ invoice.currency }}</span>
         </div>
     </div>
 
     <div class="stamp">
-        PAID<br>مدفوعة بالكامل<br>NEXMEDIA
+        PAID<br>
+        {% if LANGUAGE_CODE == 'en' %}VERIFIED{% else %}مدفوعة بالكامل{% endif %}<br>
+        NEXMEDIA
     </div>
 </div>
 

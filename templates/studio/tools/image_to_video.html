@@ -1,4 +1,6 @@
 {% extends 'studio/base_studio.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 
 {% block tool_controls %}
 <form id="i2v-form" onsubmit="event.preventDefault(); handleI2VSubmit();">
@@ -6,7 +8,7 @@
     <!-- Model Selection (Name ONLY, no tech leaks) -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
-            نموذج تحريك الصور (I2V Model)
+            {% if CURRENT_LANGUAGE == 'en' %}AI Image-to-Video Model{% else %}نموذج تحريك الصور (I2V Model){% endif %}
         </label>
         <select id="i2v-model" onchange="onModelChanged();" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; font-weight: 600;">
             {% for m in models %}
@@ -53,8 +55,12 @@
     <!-- 1. Primary Source / Start Frame Image (إلزامي للجميع) -->
     <div id="i2v-start-frame-container" style="margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label id="start-frame-title" style="font-size: 13px; color: #1C120B; font-weight: 700;">صورة البداية / المشهد الأساسي</label>
-            <span style="font-size: 11px; color: #0E3A1F; font-weight: 600; background: rgba(14,58,31,0.08); padding: 2px 8px; border-radius: 4px;">إلزامية</span>
+            <label id="start-frame-title" style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                {% if CURRENT_LANGUAGE == 'en' %}Source / Start Frame Image{% else %}صورة البداية / المشهد الأساسي{% endif %}
+            </label>
+            <span style="font-size: 11px; color: #0E3A1F; font-weight: 600; background: rgba(14,58,31,0.08); padding: 2px 8px; border-radius: 4px;">
+                {% if CURRENT_LANGUAGE == 'en' %}Required{% else %}إلزامية{% endif %}
+            </span>
         </div>
         <div style="border: 2px dashed rgba(197, 160, 89, 0.45); border-radius: 10px; padding: 18px; text-align: center; background: #FAF7F0; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('i2v-file-start').click();">
             <input type="file" id="i2v-file-start" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'i2v-image-url', 'preview-start-img', 'preview-start-box');">
@@ -64,20 +70,30 @@
             <div style="color: #0E3A1F; margin-bottom: 4px;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
             </div>
-            <div style="font-size: 12.5px; color: #1C120B; font-weight: 600;">اضغط لاختيار صورة المشهد أو اسحبها هنا</div>
-            <div style="font-size: 11px; color: #6A5847;">PNG, JPG, WebP حتى 20 ميغابايت</div>
+            <div style="font-size: 12.5px; color: #1C120B; font-weight: 600;">
+                {% if CURRENT_LANGUAGE == 'en' %}Click to select image or drag and drop here{% else %}اضغط لاختيار صورة المشهد أو اسحبها هنا{% endif %}
+            </div>
+            <div style="font-size: 11px; color: #6A5847;">
+                {% if CURRENT_LANGUAGE == 'en' %}PNG, JPG, WebP up to 20MB{% else %}PNG, JPG, WebP حتى 20 ميغابايت{% endif %}
+            </div>
         </div>
-        <input id="i2v-image-url" type="url" placeholder="أو أدخل رابط الصورة المباشر: https://example.com/start.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 10px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
+        <input id="i2v-image-url" type="url" placeholder="{% if CURRENT_LANGUAGE == 'en' %}Or paste direct image URL: https://example.com/start.jpg{% else %}أو أدخل رابط الصورة المباشر: https://example.com/start.jpg{% endif %}" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 10px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
     </div>
 
     <!-- 2. End Frame Container (يظهر فقط في نمط start_end) -->
     <div id="i2v-end-frame-container" style="margin-bottom: 20px; display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-                <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">صورة النهاية (End Frame)</label>
-                <span style="font-size: 10.5px; color: #8C6820; background: rgba(197,160,89,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 600;">انتقال تدريجي بين لقطتين</span>
+                <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">
+                    {% if CURRENT_LANGUAGE == 'en' %}End Frame Image{% else %}صورة النهاية (End Frame){% endif %}
+                </label>
+                <span style="font-size: 10.5px; color: #8C6820; background: rgba(197,160,89,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 600;">
+                    {% if CURRENT_LANGUAGE == 'en' %}Smooth morph transition between frames{% else %}انتقال تدريجي بين لقطتين{% endif %}
+                </span>
             </div>
-            <span style="font-size: 11px; color: #6A5847;">اختياري</span>
+            <span style="font-size: 11px; color: #6A5847;">
+                {% if CURRENT_LANGUAGE == 'en' %}Optional{% else %}اختياري{% endif %}
+            </span>
         </div>
         <div style="border: 2px dashed rgba(197, 160, 89, 0.45); border-radius: 10px; padding: 16px; text-align: center; background: #FAF7F0; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('i2v-file-end').click();">
             <input type="file" id="i2v-file-end" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'i2v-end-image-url', 'preview-end-img', 'preview-end-box');">
@@ -87,67 +103,75 @@
             <div style="color: #C5A059; margin-bottom: 4px;">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
             </div>
-            <div style="font-size: 12px; color: #1C120B; font-weight: 600;">رفع صورة نهاية اللقطة (للانتقال نحوها بسلاسة)</div>
+            <div style="font-size: 12px; color: #1C120B; font-weight: 600;">
+                {% if CURRENT_LANGUAGE == 'en' %}Upload end-frame image (to morph smoothly towards){% else %}رفع صورة نهاية اللقطة (للانتقال نحوها بسلاسة){% endif %}
+            </div>
         </div>
-        <input id="i2v-end-image-url" type="url" placeholder="أو أدخل رابط صورة النهاية: https://example.com/end.jpg" style="width: 100%; padding: 9px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 12.5px; box-sizing: border-box;">
+        <input id="i2v-end-image-url" type="url" placeholder="{% if CURRENT_LANGUAGE == 'en' %}Or paste direct end image URL: https://example.com/end.jpg{% else %}أو أدخل رابط صورة النهاية: https://example.com/end.jpg{% endif %}" style="width: 100%; padding: 9px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 12.5px; box-sizing: border-box;">
     </div>
 
     <!-- 3. Multi-Image Reference Slots (حتى 5 صور - يظهر في نمط multi_5) -->
     <div id="i2v-multi-container" style="margin-bottom: 22px; display: none; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); padding: 16px; border-radius: 12px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <div>
-                <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">الصور المرجعية الإضافية (حتى 4 صور إضافية)</label>
-                <span style="display: block; font-size: 11px; color: #6A5847; margin-top: 2px;">تثبيت ملامح الشخصيات، الأزياء، زوايا المشهد، أو كادرات التوجيه</span>
+                <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">
+                    {% if CURRENT_LANGUAGE == 'en' %}Additional Reference Images (Up to 4 slots){% else %}الصور المرجعية الإضافية (حتى 4 صور إضافية){% endif %}
+                </label>
+                <span style="display: block; font-size: 11px; color: #6A5847; margin-top: 2px;">
+                    {% if CURRENT_LANGUAGE == 'en' %}Preserve character consistency, wardrobe, and scene styles{% else %}تثبيت ملامح الشخصيات، الأزياء، زوايا المشهد، أو كادرات التوجيه{% endif %}
+                </span>
             </div>
-            <span style="font-size: 11px; color: #0E3A1F; font-weight: 700; background: rgba(14,58,31,0.09); padding: 3px 8px; border-radius: 6px;">حتى 5 صور</span>
+            <span style="font-size: 11px; color: #0E3A1F; font-weight: 700; background: rgba(14,58,31,0.09); padding: 3px 8px; border-radius: 6px;">
+                {% if CURRENT_LANGUAGE == 'en' %}Up to 5 images{% else %}حتى 5 صور{% endif %}
+            </span>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;" id="multi-slots-grid">
             <!-- Slot 2 -->
             <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
-                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 2</span>
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">{% if CURRENT_LANGUAGE == 'en' %}Ref 2{% else %}مرجع 2{% endif %}</span>
                 <input type="file" id="multi-file-2" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-2', 'multi-img-2', 'multi-box-2');">
                 <div id="multi-box-2" style="display: none; margin-bottom: 4px; position: relative;">
                     <img id="multi-img-2" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
                     <span onclick="clearSlot(2);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
                 </div>
-                <button type="button" onclick="document.getElementById('multi-file-2').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <button type="button" onclick="document.getElementById('multi-file-2').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ {% if CURRENT_LANGUAGE == 'en' %}Upload{% else %}رفع{% endif %}</button>
                 <input type="hidden" id="multi-url-2">
             </div>
 
             <!-- Slot 3 -->
             <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
-                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 3</span>
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">{% if CURRENT_LANGUAGE == 'en' %}Ref 3{% else %}مرجع 3{% endif %}</span>
                 <input type="file" id="multi-file-3" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-3', 'multi-img-3', 'multi-box-3');">
                 <div id="multi-box-3" style="display: none; margin-bottom: 4px; position: relative;">
                     <img id="multi-img-3" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
                     <span onclick="clearSlot(3);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
                 </div>
-                <button type="button" onclick="document.getElementById('multi-file-3').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <button type="button" onclick="document.getElementById('multi-file-3').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ {% if CURRENT_LANGUAGE == 'en' %}Upload{% else %}رفع{% endif %}</button>
                 <input type="hidden" id="multi-url-3">
             </div>
 
             <!-- Slot 4 -->
             <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
-                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 4</span>
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">{% if CURRENT_LANGUAGE == 'en' %}Ref 4{% else %}مرجع 4{% endif %}</span>
                 <input type="file" id="multi-file-4" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-4', 'multi-img-4', 'multi-box-4');">
                 <div id="multi-box-4" style="display: none; margin-bottom: 4px; position: relative;">
                     <img id="multi-img-4" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
                     <span onclick="clearSlot(4);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
                 </div>
-                <button type="button" onclick="document.getElementById('multi-file-4').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <button type="button" onclick="document.getElementById('multi-file-4').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ {% if CURRENT_LANGUAGE == 'en' %}Upload{% else %}رفع{% endif %}</button>
                 <input type="hidden" id="multi-url-4">
             </div>
 
             <!-- Slot 5 -->
             <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
-                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 5</span>
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">{% if CURRENT_LANGUAGE == 'en' %}Ref 5{% else %}مرجع 5{% endif %}</span>
                 <input type="file" id="multi-file-5" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-5', 'multi-img-5', 'multi-box-5');">
                 <div id="multi-box-5" style="display: none; margin-bottom: 4px; position: relative;">
                     <img id="multi-img-5" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
                     <span onclick="clearSlot(5);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
                 </div>
-                <button type="button" onclick="document.getElementById('multi-file-5').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <button type="button" onclick="document.getElementById('multi-file-5').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ {% if CURRENT_LANGUAGE == 'en' %}Upload{% else %}رفع{% endif %}</button>
                 <input type="hidden" id="multi-url-5">
             </div>
         </div>
@@ -156,27 +180,35 @@
     <!-- Motion Description (Prompt) -->
     <div style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">وصف الحركة والتوجيه (Motion Prompt)</label>
-            <span style="font-size: 11px; color: #6A5847;">صف اتجاه الحركة وحركة الكاميرا وعناصر المشهد</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                {% if CURRENT_LANGUAGE == 'en' %}Motion Guidance & Prompt{% else %}وصف الحركة والتوجيه (Motion Prompt){% endif %}
+            </label>
+            <span style="font-size: 11px; color: #6A5847;">
+                {% if CURRENT_LANGUAGE == 'en' %}Describe direction of motion, camera dynamics and scene events{% else %}صف اتجاه الحركة وحركة الكاميرا وعناصر المشهد{% endif %}
+            </span>
         </div>
-        <textarea id="i2v-prompt" required rows="3" placeholder="مثال: تحريك شعر الشخصية بنعومة مع نسمات الهواء الهادئة، دوران تدريجي بطيء للكاميرا نحو اليسار مع ثبات ملامح الوجه الواقعية..." style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+        <textarea id="i2v-prompt" required rows="3" placeholder="{% if CURRENT_LANGUAGE == 'en' %}Example: Gentle wind blowing character's hair, slow camera pan to the left while keeping realistic facial expressions...{% else %}مثال: تحريك شعر الشخصية بنعومة مع نسمات الهواء الهادئة، دوران تدريجي بطيء للكاميرا نحو اليسار مع ثبات ملامح الوجه الواقعية...{% endif %}" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
     </div>
 
     <!-- Quick Ideas Pills -->
     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
         <span onclick="document.getElementById('i2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
-            تحريك الشخصية بابتسامة طبيعية وحركة رمش بطيئة مع ثبات الملامح
+            {% if CURRENT_LANGUAGE == 'en' %}Natural subtle character smile and slow blink with facial consistency{% else %}تحريك الشخصية بابتسامة طبيعية وحركة رمش بطيئة مع ثبات الملامح{% endif %}
         </span>
         <span onclick="document.getElementById('i2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
-            حركة كاميرا سينمائية تقترب ببطء (Slow Zoom In) مع هبوب الرياح
+            {% if CURRENT_LANGUAGE == 'en' %}Cinematic slow camera zoom in with atmospheric breeze{% else %}حركة كاميرا سينمائية تقترب ببطء (Slow Zoom In) مع هبوب الرياح{% endif %}
         </span>
     </div>
 
     <!-- Dynamic Resolution Selection (480p, 720p, 1080p, 4K) -->
     <div style="margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">دقة الفيديو (Resolution)</label>
-            <span style="font-size: 11px; color: #6A5847;">الجودات المتاحة لهذا النموذج</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                {% if CURRENT_LANGUAGE == 'en' %}Video Resolution{% else %}دقة الفيديو (Resolution){% endif %}
+            </label>
+            <span style="font-size: 11px; color: #6A5847;">
+                {% if CURRENT_LANGUAGE == 'en' %}Supported resolutions for model{% else %}الجودات المتاحة لهذا النموذج{% endif %}
+            </span>
         </div>
         <div style="display: flex; gap: 8px;" id="i2v-res-container">
             <label id="res-lbl-480p" class="i2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
@@ -197,10 +229,12 @@
     <!-- Dynamic Duration Slider Bar (ثانية بثانية) -->
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197, 160, 89, 0.35); padding: 18px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(44, 30, 16, 0.03);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <label style="font-size: 13.5px; color: #1C120B; font-weight: 700; margin: 0;">المدة الزمنية (Duration)</label>
+            <label style="font-size: 13.5px; color: #1C120B; font-weight: 700; margin: 0;">
+                {% if CURRENT_LANGUAGE == 'en' %}Duration{% else %}المدة الزمنية (Duration){% endif %}
+            </label>
             <div style="display: flex; align-items: baseline; gap: 5px; background: #FAF7F0; border: 1.5px solid rgba(197, 160, 89, 0.45); padding: 5px 14px; border-radius: 8px;">
                 <span id="duration-display-val" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">5</span>
-                <span style="font-size: 12px; color: #6A5847; font-weight: 600;">ثوانٍ</span>
+                <span id="duration-unit-label" style="font-size: 12px; color: #6A5847; font-weight: 600;">{% if CURRENT_LANGUAGE == 'en' %}sec{% else %}ثوانٍ{% endif %}</span>
             </div>
         </div>
 
@@ -216,37 +250,41 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #6A5847; font-weight: 600;">
-            <span id="slider-min-label">4 ثوانٍ</span>
-            <span style="color: #8C6820; font-size: 11px;">تغيير المدة ثانية بثانية</span>
-            <span id="slider-max-label">15 ثانية</span>
+            <span id="slider-min-label">4 {% if CURRENT_LANGUAGE == 'en' %}sec{% else %}ثوانٍ{% endif %}</span>
+            <span style="color: #8C6820; font-size: 11px;">{% if CURRENT_LANGUAGE == 'en' %}Second-by-second adjustment{% else %}تغيير المدة ثانية بثانية{% endif %}</span>
+            <span id="slider-max-label">15 {% if CURRENT_LANGUAGE == 'en' %}sec{% else %}ثانية{% endif %}</span>
         </div>
     </div>
 
     <!-- Motion Intensity Slider -->
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197, 160, 89, 0.35); padding: 14px 18px; border-radius: 12px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">شدة الحركة (Motion Intensity)</label>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">
+                {% if CURRENT_LANGUAGE == 'en' %}Motion Intensity{% else %}شدة الحركة (Motion Intensity){% endif %}
+            </label>
             <span id="motion-val-label" style="font-size: 14px; font-weight: 800; color: #0E3A1F;">5 / 10</span>
         </div>
         <input type="range" id="i2v-motion-range" min="1" max="10" value="5" oninput="document.getElementById('motion-val-label').innerText = this.value + ' / 10'" style="width: 100%; height: 6px; border-radius: 4px; background: #E8E0D0; accent-color: #0E3A1F; cursor: pointer;">
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #6A5847; margin-top: 4px;">
-            <span>حركة سينمائية هادئة</span>
-            <span>حركة سريعة وديناميكية</span>
+            <span>{% if CURRENT_LANGUAGE == 'en' %}Gentle Cinematic{% else %}حركة سينمائية هادئة{% endif %}</span>
+            <span>{% if CURRENT_LANGUAGE == 'en' %}Fast & Dynamic{% else %}حركة سريعة وديناميكية{% endif %}</span>
         </div>
     </div>
 
     <!-- Camera Trajectory Selection -->
     <div style="margin-bottom: 22px;">
-        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">مسار حركة الكاميرا (Camera Control)</label>
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
+            {% if CURRENT_LANGUAGE == 'en' %}Camera Trajectory{% else %}مسار حركة الكاميرا (Camera Control){% endif %}
+        </label>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" id="i2v-camera-container">
             <label class="i2v-cam-pill" style="text-align: center; background: rgba(14,58,31,0.09); border: 1.5px solid #0E3A1F; padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
-                <input type="radio" name="cam" value="static" checked onchange="updateCamPillStyles();" style="display: none;"> ثبات الكاميرا
+                <input type="radio" name="cam" value="static" checked onchange="updateCamPillStyles();" style="display: none;"> {% if CURRENT_LANGUAGE == 'en' %}Static Camera{% else %}ثبات الكاميرا{% endif %}
             </label>
             <label class="i2v-cam-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
-                <input type="radio" name="cam" value="zoom_in" onchange="updateCamPillStyles();" style="display: none;"> تقريب تدريجي
+                <input type="radio" name="cam" value="zoom_in" onchange="updateCamPillStyles();" style="display: none;"> {% if CURRENT_LANGUAGE == 'en' %}Slow Zoom In{% else %}تقريب تدريجي{% endif %}
             </label>
             <label class="i2v-cam-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
-                <input type="radio" name="cam" value="pan_right" onchange="updateCamPillStyles();" style="display: none;"> دوران جانبي
+                <input type="radio" name="cam" value="pan_right" onchange="updateCamPillStyles();" style="display: none;"> {% if CURRENT_LANGUAGE == 'en' %}Pan Right{% else %}دوران جانبي{% endif %}
             </label>
         </div>
     </div>
@@ -254,21 +292,26 @@
     <!-- Live Dynamic Credit Cost Calculator (Directly from Admin Settings) -->
     <div id="i2v-cost-calculator" style="margin-bottom: 22px; padding: 14px 18px; background: rgba(14, 58, 31, 0.08); border: 1.5px solid rgba(197, 160, 89, 0.4); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <span style="font-size: 13px; color: #1C120B; font-weight: 700;">التكلفة التقديرية للإنتاج:</span>
+            <span style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                {% if CURRENT_LANGUAGE == 'en' %}Estimated Production Cost:{% else %}التكلفة التقديرية للإنتاج:{% endif %}
+            </span>
             <span id="cost-calc-breakdown" style="display: block; font-size: 11px; color: #6A5847; margin-top: 2px;">
-                قراءة حية للتسعير من إعدادات الأداة
+                {% if CURRENT_LANGUAGE == 'en' %}Real-time pricing synced from tool settings{% else %}قراءة حية للتسعير من إعدادات الأداة{% endif %}
             </span>
         </div>
         <div style="text-align: left; display: flex; align-items: baseline; gap: 4px;">
             <span id="cost-calc-value" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">45.00</span>
-            <span style="font-size: 12px; color: #8C6820; font-weight: 700;">كريديت</span>
+            <span style="font-size: 12px; color: #8C6820; font-weight: 700;">{% if CURRENT_LANGUAGE == 'en' %}credits{% else %}كريديت{% endif %}</span>
         </div>
     </div>
 
-    <!-- Submit Button -->
-    <button type="submit" style="width: 100%; background: #0E3A1F; color: #FAF7F0; border: 1.5px solid #C5A059; font-weight: 700; font-size: 15px; padding: 15px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 16px rgba(14, 58, 31, 0.22); transition: all 0.2s ease;">
-        بدء تحريك الصورة إلى فيديو
+    <!-- Submit Button with Lucide Film Icon -->
+    <button type="submit" style="width: 100%; background: #0E3A1F; color: #FAF7F0; border: 1.5px solid #C5A059; font-weight: 700; font-size: 15px; padding: 15px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 16px rgba(14, 58, 31, 0.22); transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><path d="m14 8 2 2-2 2"/></svg>
+        <span>{% if CURRENT_LANGUAGE == 'en' %}Animate Image to Video{% else %}بدء تحريك الصورة إلى فيديو{% endif %}</span>
     </button>
+
+</form>
 
 </form>
 
@@ -319,13 +362,16 @@ function onModelChanged() {
     const endFrameContainer = document.getElementById('i2v-end-frame-container');
     const multiContainer = document.getElementById('i2v-multi-container');
 
+    const isEn = document.documentElement.lang === 'en';
     if (inputType === 'multi_5') {
         badgeEl.style.display = 'flex';
         badgeEl.style.background = 'rgba(14, 58, 31, 0.08)';
         badgeEl.style.color = '#0E3A1F';
         badgeEl.style.border = '1px solid rgba(14, 58, 31, 0.2)';
-        badgeEl.innerHTML = '⚡ <b>نمط المراجع المتعددة:</b> يدعم هذا النموذج حتى 5 صور لتثبيت ملامح الشخصية أو تسلسل اللقطات.';
-        startTitle.innerText = 'صورة الأساس / البداية (إلزامية)';
+        badgeEl.innerHTML = isEn 
+            ? '⚡ <b>Multi-Reference Mode:</b> This model supports up to 5 reference images to preserve character likeness and continuity.'
+            : '⚡ <b>نمط المراجع المتعددة:</b> يدعم هذا النموذج حتى 5 صور لتثبيت ملامح الشخصية أو تسلسل اللقطات.';
+        startTitle.innerText = isEn ? 'Primary / Base Image (Required)' : 'صورة الأساس / البداية (إلزامية)';
         endFrameContainer.style.display = 'none';
         multiContainer.style.display = 'block';
     } else if (inputType === 'start_end') {
@@ -333,13 +379,15 @@ function onModelChanged() {
         badgeEl.style.background = 'rgba(197, 160, 89, 0.12)';
         badgeEl.style.color = '#8C6820';
         badgeEl.style.border = '1px solid rgba(197, 160, 89, 0.3)';
-        badgeEl.innerHTML = '🎬 <b>نمط التحول بين لقطتين:</b> يدعم رفع صورة بداية وصورة نهاية للانتقال بينهما.';
-        startTitle.innerText = 'صورة البداية (Start Frame)';
+        badgeEl.innerHTML = isEn 
+            ? '🎬 <b>Start-to-End Morph Mode:</b> Supports start frame and end frame images to morph smoothly between them.'
+            : '🎬 <b>نمط التحول بين لقطتين:</b> يدعم رفع صورة بداية وصورة نهاية للانتقال بينهما.';
+        startTitle.innerText = isEn ? 'Start Frame Image' : 'صورة البداية (Start Frame)';
         endFrameContainer.style.display = 'block';
         multiContainer.style.display = 'none';
     } else {
         badgeEl.style.display = 'none';
-        startTitle.innerText = 'صورة المشهد المصدرية (Source Image)';
+        startTitle.innerText = isEn ? 'Source Image' : 'صورة المشهد المصدرية (Source Image)';
         endFrameContainer.style.display = 'none';
         multiContainer.style.display = 'none';
     }
@@ -415,8 +463,9 @@ function onModelChanged() {
     slider.value = targetDuration;
     currentSelectedDuration = targetDuration;
 
-    minLabel.innerText = `${minSec} ثوانٍ`;
-    maxLabel.innerText = `${maxSec} ثانية`;
+    const isEn = document.documentElement.lang === 'en';
+    minLabel.innerText = isEn ? `${minSec} sec` : `${minSec} ثوانٍ`;
+    maxLabel.innerText = isEn ? `${maxSec} sec` : `${maxSec} ثانية`;
     document.getElementById('duration-display-val').innerText = currentSelectedDuration;
 
     updateResPillStyles();
@@ -490,13 +539,18 @@ function updateLiveCostCalculation() {
 
     let totalCost = 0;
     let breakdownText = '';
+    const isEn = document.documentElement.lang === 'en';
 
     if (pricingType === 'per_second') {
         totalCost = rate * duration;
-        breakdownText = `حساب بالثانية (${rate.toFixed(2)} كريديت/ث × ${duration} ثوانٍ لدقة ${res.toUpperCase()})`;
+        breakdownText = isEn 
+            ? `Per-second billing (${rate.toFixed(2)} credits/s × ${duration}s for ${res.toUpperCase()})`
+            : `حساب بالثانية (${rate.toFixed(2)} كريديت/ث × ${duration} ثوانٍ لدقة ${res.toUpperCase()})`;
     } else {
         totalCost = rate;
-        breakdownText = `حساب ثابت بالعملية لدقة ${res.toUpperCase()}`;
+        breakdownText = isEn
+            ? `Fixed cost per generation for ${res.toUpperCase()}`
+            : `حساب ثابت بالعملية لدقة ${res.toUpperCase()}`;
     }
 
     document.getElementById('cost-calc-value').innerText = totalCost.toFixed(2);

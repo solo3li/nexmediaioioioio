@@ -16,17 +16,28 @@ def home(request):
 
 
 def studio(request):
-    """Render the Unified AI Generation Studio with live wallet and tools."""
-    user = request.user
-    if not user.is_authenticated:
-        user = User.objects.filter(is_superuser=True).first()
+    """Redirect to the active modular AI Generation Studio."""
+    from django.shortcuts import redirect
+    return redirect('studio_tool', tool_slug='text-to-video')
 
-    context = {
-        'active_user': user,
-        'tts_models': TtsModelConfig.objects.filter(is_active=True),
-        'tts_voices': TtsVoice.objects.filter(is_active=True),
-        'video_models': TextToVideoModelConfig.objects.filter(is_active=True),
-        'image_models': TextToImageModelConfig.objects.filter(is_active=True),
-        'recent_history': GenerationHistory.objects.filter(user=user).order_by('-created_at')[:8] if user else [],
-    }
-    return render(request, 'studio.html', context)
+
+def set_language_view(request):
+    """Switch site language seamlessly between Arabic and English."""
+    from django.utils import translation
+    from django.conf import settings
+    from django.http import HttpResponseRedirect
+    
+    lang_code = request.GET.get('language') or request.POST.get('language') or 'ar'
+    next_url = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or '/'
+    
+    valid_langs = [code for code, _ in getattr(settings, 'LANGUAGES', [('ar', 'Arabic'), ('en', 'English')])]
+    if lang_code in valid_langs:
+        translation.activate(lang_code)
+        response = HttpResponseRedirect(next_url)
+        cookie_name = getattr(settings, 'LANGUAGE_COOKIE_NAME', 'django_language')
+        response.set_cookie(cookie_name, lang_code, max_age=365 * 24 * 60 * 60, samesite='Lax')
+        if hasattr(request, 'session'):
+            request.session['_language'] = lang_code
+        return response
+    return HttpResponseRedirect(next_url)
+

@@ -1,4 +1,6 @@
 {% extends 'studio/base_studio.html' %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 
 {% block tool_controls %}
 <form id="t2i-form" onsubmit="event.preventDefault(); handleT2ISubmit();">
@@ -6,7 +8,7 @@
     <!-- Model Selection (Name ONLY, no tech leaks) -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
-            نموذج توليد الصور (Image Model)
+            {% if CURRENT_LANGUAGE == 'en' %}AI Image Model{% else %}نموذج توليد الصور (Image Model){% endif %}
         </label>
         <select id="t2i-model" onchange="onT2IModelChanged();" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; font-weight: 600;">
             {% for m in models %}
@@ -36,26 +38,30 @@
     <!-- Prompt Area -->
     <div style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">وصف الصورة (Prompt)</label>
-            <span style="font-size: 11px; color: #6A5847;">صف عناصر المشهد، الإضاءة، والزوايا بدقة</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                {% if CURRENT_LANGUAGE == 'en' %}Image Prompt{% else %}وصف الصورة (Prompt){% endif %}
+            </label>
+            <span style="font-size: 11px; color: #6A5847;">
+                {% if CURRENT_LANGUAGE == 'en' %}Specify scene elements, lighting, lens and composition{% else %}صف عناصر المشهد، الإضاءة، والزوايا بدقة{% endif %}
+            </span>
         </div>
-        <textarea id="t2i-prompt" required rows="4" placeholder="مثال: لقطة بورتريه احترافية فائقة الواقعية لرائد أعمال في مكتب حديث ذو واجهة زجاجية تطل على أفق المدينة ليلاً، إضاءة سينمائية دافئة (Rim Light)، عمق ميدان ضحل، وتفاصيل دقيقة للملابس والملامح..." style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+        <textarea id="t2i-prompt" required rows="4" placeholder="{% if CURRENT_LANGUAGE == 'en' %}Example: Ultra-realistic cinematic portrait of an entrepreneur in a high-rise office overlooking the city skyline at night, warm rim lighting, shallow depth of field, 8K hyper-detailed texture...{% else %}مثال: لقطة بورتريه احترافية فائقة الواقعية لرائد أعمال في مكتب حديث ذو واجهة زجاجية تطل على أفق المدينة ليلاً، إضاءة سينمائية دافئة (Rim Light)، عمق ميدان ضحل، وتفاصيل دقيقة للملابس والملامح...{% endif %}" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
     </div>
 
     <!-- Quick Prompt Ideas -->
     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
         <span onclick="document.getElementById('t2i-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
-            تصميم إعلاني تجاري لزجاجة عطر فاخرة على صخرة سوداء وسط مياه هادئة بإضاءة ذهبية
+            {% if CURRENT_LANGUAGE == 'en' %}Commercial product photo of luxury perfume bottle on volcanic rock surrounded by calm water, golden hour studio lighting{% else %}تصميم إعلاني تجاري لزجاجة عطر فاخرة على صخرة سوداء وسط مياه هادئة بإضاءة ذهبية{% endif %}
         </span>
         <span onclick="document.getElementById('t2i-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
-            منظر طبيعي ساحر لجبال الألب في الخريف وقت الشروق مع ضباب في الوديان وبحيرة مرآوية
+            {% if CURRENT_LANGUAGE == 'en' %}Breathtaking autumn alpine mountains at sunrise with misty valley and reflective mirror lake{% else %}منظر طبيعي ساحر لجبال الألب في الخريف وقت الشروق مع ضباب في الوديان وبحيرة مرآوية{% endif %}
         </span>
     </div>
 
     <!-- Negative Prompt -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 12.5px; color: #4A3B2C; margin-bottom: 6px; font-weight: 600;">
-            الاستبعاد السلبي (Negative Prompt)
+            {% if CURRENT_LANGUAGE == 'en' %}Negative Prompt (Excluded Elements){% else %}الاستبعاد السلبي (Negative Prompt){% endif %}
         </label>
         <input id="t2i-neg-prompt" type="text" placeholder="blurry, distorted, low quality, artifacts, watermark, deformed limbs" style="width: 100%; padding: 10px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
     </div>
@@ -63,24 +69,24 @@
     <!-- Artistic Style Presets -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
-            النمط الفني (Style Preset)
+            {% if CURRENT_LANGUAGE == 'en' %}Artistic Style Preset{% else %}النمط الفني (Style Preset){% endif %}
         </label>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px;" id="t2i-style-container">
             <label class="t2i-style-pill" style="background: rgba(14,58,31,0.09); border: 1.5px solid #0E3A1F; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #0E3A1F; font-size: 12.5px; font-weight: bold; transition: all 0.2s;">
                 <input type="radio" name="art_style" value="photorealistic" checked onchange="updateStylePills();" style="display: none;">
-                فوتوغرافي واقعي
+                {% if CURRENT_LANGUAGE == 'en' %}Photorealistic{% else %}فوتوغرافي واقعي{% endif %}
             </label>
             <label class="t2i-style-pill" style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; transition: all 0.2s;">
                 <input type="radio" name="art_style" value="cinematic" onchange="updateStylePills();" style="display: none;">
-                سينمائي درامي
+                {% if CURRENT_LANGUAGE == 'en' %}Cinematic Drama{% else %}سينمائي درامي{% endif %}
             </label>
             <label class="t2i-style-pill" style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; transition: all 0.2s;">
                 <input type="radio" name="art_style" value="commercial_product" onchange="updateStylePills();" style="display: none;">
-                إعلان تجاري
+                {% if CURRENT_LANGUAGE == 'en' %}Product Ad{% else %}إعلان تجاري{% endif %}
             </label>
             <label class="t2i-style-pill" style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; transition: all 0.2s;">
                 <input type="radio" name="art_style" value="concept_art" onchange="updateStylePills();" style="display: none;">
-                رسم تخيلي (Art)
+                {% if CURRENT_LANGUAGE == 'en' %}Concept Art{% else %}رسم تخيلي (Art){% endif %}
             </label>
         </div>
     </div>
@@ -88,8 +94,12 @@
     <!-- Dynamic Resolution Selection (1K Standard, 2K HD, 4K Ultra) -->
     <div style="margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">دقة الصورة (Resolution)</label>
-            <span id="t2i-res-hint" style="font-size: 11px; color: #6A5847;">الجودات المتاحة للنموذج</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                {% if CURRENT_LANGUAGE == 'en' %}Image Resolution{% else %}دقة الصورة (Resolution){% endif %}
+            </label>
+            <span id="t2i-res-hint" style="font-size: 11px; color: #6A5847;">
+                {% if CURRENT_LANGUAGE == 'en' %}Supported resolutions for model{% else %}الجودات المتاحة للنموذج{% endif %}
+            </span>
         </div>
         <div style="display: flex; gap: 8px;" id="t2i-res-container">
             <label id="res-lbl-1k" class="t2i-option-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
@@ -113,23 +123,27 @@
     <!-- Image Count / Batch Size (1, 2, 4) -->
     <div style="margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">عدد الصور المولدة (Image Batch)</label>
-            <span style="font-size: 11px; color: #6A5847;">توليد نسخ متعددة للمقارنة واختيار الأفضل</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                {% if CURRENT_LANGUAGE == 'en' %}Image Batch Count{% else %}عدد الصور المولدة (Image Batch){% endif %}
+            </label>
+            <span style="font-size: 11px; color: #6A5847;">
+                {% if CURRENT_LANGUAGE == 'en' %}Generate multiple variations to compare{% else %}توليد نسخ متعددة للمقارنة واختيار الأفضل{% endif %}
+            </span>
         </div>
         <div style="display: flex; gap: 8px;" id="t2i-count-container">
             <label id="count-lbl-1" class="t2i-count-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
                 <input type="radio" name="num_images" value="1" checked onchange="updateT2ILiveCost();" style="display: none;">
-                <div>صورة واحدة</div>
+                <div>{% if CURRENT_LANGUAGE == 'en' %}1 Image{% else %}صورة واحدة{% endif %}</div>
                 <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">1×</div>
             </label>
             <label id="count-lbl-2" class="t2i-count-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
                 <input type="radio" name="num_images" value="2" onchange="updateT2ILiveCost();" style="display: none;">
-                <div>صورتان</div>
+                <div>{% if CURRENT_LANGUAGE == 'en' %}2 Images{% else %}صورتان{% endif %}</div>
                 <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">2×</div>
             </label>
             <label id="count-lbl-4" class="t2i-count-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
                 <input type="radio" name="num_images" value="4" onchange="updateT2ILiveCost();" style="display: none;">
-                <div>4 صور</div>
+                <div>{% if CURRENT_LANGUAGE == 'en' %}4 Images{% else %}4 صور{% endif %}</div>
                 <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">4×</div>
             </label>
         </div>
@@ -138,33 +152,33 @@
     <!-- Aspect Ratio Selection -->
     <div style="margin-bottom: 25px;">
         <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
-            أبعاد ومقاس الصورة (Aspect Ratio)
+            {% if CURRENT_LANGUAGE == 'en' %}Aspect Ratio{% else %}أبعاد ومقاس الصورة (Aspect Ratio){% endif %}
         </label>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px;" id="t2i-aspect-container">
             <label class="t2i-aspect-pill" style="text-align: center; background: rgba(14,58,31,0.09); border: 1.5px solid #0E3A1F; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
                 <input type="radio" name="img_aspect" value="1:1" checked onchange="updateAspectPills();" style="display: none;">
                 <div>1:1</div>
-                <div style="font-size: 10px; opacity: 0.8;">مربع</div>
+                <div style="font-size: 10px; opacity: 0.8;">{% if CURRENT_LANGUAGE == 'en' %}Square{% else %}مربع{% endif %}</div>
             </label>
             <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
                 <input type="radio" name="img_aspect" value="16:9" onchange="updateAspectPills();" style="display: none;">
                 <div>16:9</div>
-                <div style="font-size: 10px; opacity: 0.8;">عريض</div>
+                <div style="font-size: 10px; opacity: 0.8;">{% if CURRENT_LANGUAGE == 'en' %}Cinema{% else %}عريض{% endif %}</div>
             </label>
             <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
                 <input type="radio" name="img_aspect" value="9:16" onchange="updateAspectPills();" style="display: none;">
                 <div>9:16</div>
-                <div style="font-size: 10px; opacity: 0.8;">ستوري</div>
+                <div style="font-size: 10px; opacity: 0.8;">{% if CURRENT_LANGUAGE == 'en' %}Story/Reels{% else %}ستوري{% endif %}</div>
             </label>
             <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
                 <input type="radio" name="img_aspect" value="4:3" onchange="updateAspectPills();" style="display: none;">
                 <div>4:3</div>
-                <div style="font-size: 10px; opacity: 0.8;">كلاسيكي</div>
+                <div style="font-size: 10px; opacity: 0.8;">{% if CURRENT_LANGUAGE == 'en' %}Classic{% else %}كلاسيكي{% endif %}</div>
             </label>
             <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
                 <input type="radio" name="img_aspect" value="3:4" onchange="updateAspectPills();" style="display: none;">
                 <div>3:4</div>
-                <div style="font-size: 10px; opacity: 0.8;">بورتريه</div>
+                <div style="font-size: 10px; opacity: 0.8;">{% if CURRENT_LANGUAGE == 'en' %}Portrait{% else %}بورتريه{% endif %}</div>
             </label>
         </div>
     </div>
@@ -177,34 +191,38 @@
                 <span style="font-size: 13px; font-weight: 700; color: #1C120B;" id="t2i-calc-model-name">Nano Banana 2</span>
             </div>
             <span id="t2i-calc-rate-badge" style="background: rgba(14,58,31,0.1); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
-                2.00 كريديت / صورة
+                2.00 {% if CURRENT_LANGUAGE == 'en' %}credits / image{% else %}كريديت / صورة{% endif %}
             </span>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 10px; border-top: 1px dashed rgba(197,160,89,0.35);">
             <div>
-                <div style="font-size: 12px; color: #6A5847;" id="t2i-calc-formula-text">1 صورة × 2.00 كريديت (دقة 1K)</div>
-                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">خصم مباشر وديناميكي من رصيدك</div>
+                <div style="font-size: 12px; color: #6A5847;" id="t2i-calc-formula-text">1 {% if CURRENT_LANGUAGE == 'en' %}image{% else %}صورة{% endif %} × 2.00 {% if CURRENT_LANGUAGE == 'en' %}credits{% else %}كريديت{% endif %} (1K)</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">
+                    {% if CURRENT_LANGUAGE == 'en' %}Direct live deduction from your balance{% else %}خصم مباشر وديناميكي من رصيدك{% endif %}
+                </div>
             </div>
             <div style="text-align: left;">
-                <div style="font-size: 10px; color: #6A5847; text-transform: uppercase;">إجمالي التكلفة</div>
+                <div style="font-size: 10px; color: #6A5847; text-transform: uppercase;">
+                    {% if CURRENT_LANGUAGE == 'en' %}Total Cost{% else %}إجمالي التكلفة{% endif %}
+                </div>
                 <div style="font-size: 24px; font-weight: 800; color: #0E3A1F; line-height: 1;">
                     <span id="t2i-total-cost">2.00</span>
-                    <span style="font-size: 13px; font-weight: 600; color: #9E7D3B;">كريديت</span>
+                    <span style="font-size: 13px; font-weight: 600; color: #9E7D3B;">{% if CURRENT_LANGUAGE == 'en' %}credits{% else %}كريديت{% endif %}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Submit Action Button -->
+    <!-- Submit Action Button with Lucide Image / Palette Icon -->
     <button id="t2i-submit-btn" type="submit" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #16562E); color: #FFF; font-weight: bold; font-size: 16px; padding: 16px; border: 1.5px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 6px 20px rgba(14,58,31,0.25); display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.25s;">
         <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect width="18" height="18" x="3" y="3" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <path d="M21 15l-5-5L5 21"/>
+            <circle cx="9" cy="9" r="2"/>
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
         </svg>
-        <span>توليد الصورة الآن</span>
+        <span>{% if CURRENT_LANGUAGE == 'en' %}Generate AI Image{% else %}توليد الصورة الآن{% endif %}</span>
         <span id="t2i-btn-cost-tag" style="background: rgba(197,160,89,0.25); border: 1px solid #C5A059; color: #FAF7F0; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin-right: 6px;">
-            2.00 كريديت
+            2.00 {% if CURRENT_LANGUAGE == 'en' %}credits{% else %}كريديت{% endif %}
         </span>
     </button>
 
@@ -263,11 +281,18 @@ function updateT2ILiveCost() {
     const totalCost = (rate * countVal).toFixed(2);
 
     // Update UI Elements
+    const isEn = document.documentElement.lang === 'en';
     document.getElementById('t2i-calc-model-name').innerText = modelName;
-    document.getElementById('t2i-calc-rate-badge').innerText = rate.toFixed(2) + ' كريديت / صورة';
-    document.getElementById('t2i-calc-formula-text').innerText = countVal + ' صورة × ' + rate.toFixed(2) + ' كريديت (دقة ' + resVal.toUpperCase() + ')';
+    document.getElementById('t2i-calc-rate-badge').innerText = isEn 
+        ? `${rate.toFixed(2)} credits / image` 
+        : `${rate.toFixed(2)} كريديت / صورة`;
+    document.getElementById('t2i-calc-formula-text').innerText = isEn
+        ? `${countVal} image(s) × ${rate.toFixed(2)} credits (${resVal.toUpperCase()})`
+        : `${countVal} صورة × ${rate.toFixed(2)} كريديت (دقة ${resVal.toUpperCase()})`;
     document.getElementById('t2i-total-cost').innerText = totalCost;
-    document.getElementById('t2i-btn-cost-tag').innerText = totalCost + ' كريديت';
+    document.getElementById('t2i-btn-cost-tag').innerText = isEn 
+        ? `${totalCost} credits` 
+        : `${totalCost} كريديت`;
 
     // Update Pill styling
     ['1k', '2k', '4k'].forEach(r => {

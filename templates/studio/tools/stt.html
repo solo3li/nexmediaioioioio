@@ -1,4 +1,5 @@
 {% extends 'studio/base_studio.html' %}
+{% load i18n %}
 
 {% block tool_controls %}
 <form id="stt-form" onsubmit="event.preventDefault(); handleSttSubmit();">
@@ -7,10 +8,10 @@
     <div style="margin-bottom: 22px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                محرك التعرف وتفريغ الصوت (Speech Recognition Engine)
+                {% trans "محرك التعرف وتفريغ الصوت (Speech Recognition Engine)" %}
             </label>
             <span id="stt-model-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(14,58,31,0.2);">
-                دقة لغوية فائقة
+                {% trans "دقة لغوية فائقة" %}
             </span>
         </div>
         <select id="stt-model" onchange="onSttModelChanged();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); border-radius: 10px; color: #1C120B; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;">
@@ -40,15 +41,15 @@
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                المقطع الصوتي المراد تفريغه (Audio Source)
+                {% trans "المقطع الصوتي المراد تفريغه (Audio Source)" %}
             </label>
             <!-- Source Mode Switcher -->
             <div style="display: flex; background: #FAF7F0; border: 1px solid rgba(197,160,89,0.35); border-radius: 8px; padding: 2px;">
                 <button type="button" id="tab-btn-upload" onclick="switchAudioTab('upload');" style="padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; border: none; background: #0E3A1F; color: #FFF; cursor: pointer; transition: all 0.2s;">
-                    رفع ملف صوتي
+                    {% trans "رفع ملف صوتي" %}
                 </button>
                 <button type="button" id="tab-btn-record" onclick="switchAudioTab('record');" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #6E5A44; cursor: pointer; transition: all 0.2s;">
-                    تسجيل صوتي حي
+                    {% trans "تسجيل صوتي حي" %}
                 </button>
             </div>
         </div>
@@ -60,19 +61,19 @@
                 <svg style="width: 32px; height: 32px; color: #0E3A1F; margin-bottom: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 10v4"/><path d="M7 6v12"/><path d="M11 3v18"/><path d="M15 8v8"/><path d="M19 5v14"/><path d="M23 10v4"/>
                 </svg>
-                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">انقر أو اسحب ملف الصوت أو الفيديو هنا</div>
-                <div style="font-size: 11.5px; color: #8C7864; margin-top: 4px;">MP3, WAV, M4A, OGG, FLAC أو MP4 (حتى 50 ميغابايت)</div>
+                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">{% trans "انقر أو اسحب ملف الصوت أو الفيديو هنا" %}</div>
+                <div style="font-size: 11.5px; color: #8C7864; margin-top: 4px;">{% trans "MP3, WAV, M4A, OGG, FLAC أو MP4 (حتى 50 ميغابايت)" %}</div>
             </div>
 
             <!-- Uploaded Audio Preview -->
             <div id="stt-upload-preview" style="margin-top: 12px; display: none; background: #FAF7F0; padding: 12px 16px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.4); align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;">
                     <div style="width: 36px; height: 36px; border-radius: 50%; background: #0E3A1F; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 15px;">
-                        🎙️
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                     </div>
                     <div style="overflow: hidden;">
                         <div id="stt-file-name" style="font-size: 13px; font-weight: 700; color: #1C120B; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">audio.mp3</div>
-                        <div id="stt-file-meta" style="font-size: 11px; color: #8C7864;">0 ثانية</div>
+                        <div id="stt-file-meta" style="font-size: 11px; color: #8C7864;">0 {% trans "ثانية" %}</div>
                     </div>
                 </div>
                 <button type="button" onclick="clearSttFile();" style="background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-right: 8px;">✕</button>
@@ -96,10 +97,10 @@
 
                 <div style="display: flex; gap: 10px;">
                     <button type="button" id="btn-start-record" onclick="startMicRecording();" style="padding: 10px 18px; border-radius: 8px; border: none; background: #0E3A1F; color: #FFF; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        <span>بدء التسجيل</span>
+                        <span>{% trans "بدء التسجيل" %}</span>
                     </button>
                     <button type="button" id="btn-stop-record" onclick="stopMicRecording();" disabled style="padding: 10px 18px; border-radius: 8px; border: none; background: #A93226; color: #FFF; font-weight: 700; font-size: 13px; cursor: not-allowed; opacity: 0.5; display: flex; align-items: center; gap: 6px;">
-                        <span>إيقاف وحفظ</span>
+                        <span>{% trans "إيقاف وحفظ" %}</span>
                     </button>
                 </div>
 
@@ -118,28 +119,28 @@
         <!-- Language Selection -->
         <div>
             <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
-                لغة الحديث في التسجيل
+                {% trans "لغة الحديث في التسجيل" %}
             </label>
             <select id="stt-lang" style="width: 100%; padding: 11px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 13px; font-weight: 600; outline: none;">
-                <option value="ar" selected>العربية (كافة اللهجات والفصحى)</option>
-                <option value="auto">كشف تلقائي عن اللغة (Auto Detect)</option>
-                <option value="en">الإنجليزية (English)</option>
-                <option value="fr">الفرنسية (Français)</option>
-                <option value="es">الإسبانية (Español)</option>
-                <option value="de">الألمانية (Deutsch)</option>
-                <option value="tr">التركية (Türkçe)</option>
-                <option value="ru">الروسية (Русский)</option>
+                <option value="ar" selected>{% trans "العربية (كافة اللهجات والفصحى)" %}</option>
+                <option value="auto">{% trans "كشف تلقائي عن اللغة (Auto Detect)" %}</option>
+                <option value="en">{% trans "الإنجليزية (English)" %}</option>
+                <option value="fr">{% trans "الفرنسية (Français)" %}</option>
+                <option value="es">{% trans "الإسبانية (Español)" %}</option>
+                <option value="de">{% trans "الألمانية (Deutsch)" %}</option>
+                <option value="tr">{% trans "التركية (Türkçe)" %}</option>
+                <option value="ru">{% trans "الروسية (Русский)" %}</option>
             </select>
         </div>
 
         <!-- Task Mode -->
         <div>
             <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
-                نوع المهمة الصوتية
+                {% trans "نوع المهمة الصوتية" %}
             </label>
             <select id="stt-task" style="width: 100%; padding: 11px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 13px; font-weight: 600; outline: none;">
-                <option value="transcribe" selected>تفريغ النص باللغة الأصلية (Transcription)</option>
-                <option value="translate">تفريغ مع ترجمة مباشرة إلى الإنجليزية (Translate to EN)</option>
+                <option value="transcribe" selected>{% trans "تفريغ النص باللغة الأصلية (Transcription)" %}</option>
+                <option value="translate">{% trans "تفريغ مع ترجمة مباشرة إلى الإنجليزية (Translate to EN)" %}</option>
             </select>
         </div>
 
@@ -148,20 +149,20 @@
     <!-- 4. Export Format Selector -->
     <div style="margin-bottom: 22px;">
         <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
-            صيغة المخرجات والتفريغ المطلوبة
+            {% trans "صيغة المخرجات والتفريغ المطلوبة" %}
         </label>
         <div id="stt-format-pills" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
             <button type="button" class="format-pill active" data-format="txt" onclick="selectFormat('txt');" style="padding: 10px 4px; border-radius: 8px; border: 2px solid #0E3A1F; background: rgba(14,58,31,0.08); color: #0E3A1F; font-size: 12.5px; font-weight: 700; cursor: pointer;">
-                نص كامل (TXT)
+                {% trans "نص كامل (TXT)" %}
             </button>
             <button type="button" class="format-pill" data-format="srt" onclick="selectFormat('srt');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer;">
-                ترجمة فيديو (SRT)
+                {% trans "ترجمة فيديو (SRT)" %}
             </button>
             <button type="button" class="format-pill" data-format="vtt" onclick="selectFormat('vtt');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer;">
-                ترجمة ويب (VTT)
+                {% trans "ترجمة ويب (VTT)" %}
             </button>
             <button type="button" class="format-pill" data-format="json" onclick="selectFormat('json');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer;">
-                توقيت بالكلمة (JSON)
+                {% trans "توقيت بالكلمة (JSON)" %}
             </button>
         </div>
         <input type="hidden" id="selected-format" value="txt">
@@ -170,16 +171,16 @@
     <!-- 5. Realtime Dynamic Credit Cost Badge -->
     <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,160,89,0.12), rgba(14,58,31,0.06)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">التكلفة التقديرية للتفريغ:</div>
+            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">{% trans "التكلفة التقديرية للتفريغ:" %}</div>
             <div id="stt-cost-breakdown" style="font-size: 11.5px; color: #6E5A44; margin-top: 2px;">
-                1.00 رصيد/دقيقة (تُحسب بالثواني الفعلية)
+                1.00 {% trans "رصيد/دقيقة (تُحسب بالثواني الفعلية)" %}
             </div>
         </div>
         <div style="text-align: left;">
             <div id="stt-total-cost" style="font-size: 22px; font-weight: 800; color: #0E3A1F; font-family: monospace;">
                 1.00
             </div>
-            <div style="font-size: 11px; color: #8C7864;">رصيد تقديري</div>
+            <div style="font-size: 11px; color: #8C7864;">{% trans "رصيد تقديري" %}</div>
         </div>
     </div>
 
@@ -190,7 +191,7 @@
             <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
             <line x1="12" x2="12" y1="19" y2="22"/>
         </svg>
-        <span>بدء التفريغ الصوتي الذكي</span>
+        <span>{% trans "بدء التفريغ الصوتي الذكي" %}</span>
     </button>
 
 </form>
@@ -243,10 +244,13 @@ function handleSttFileSelection(file) {
     audio.preload = 'metadata';
     audio.src = URL.createObjectURL(file);
     audio.onloadedmetadata = function() {
+        const isEn = document.documentElement.lang === 'en';
         URL.revokeObjectURL(audio.src);
         detectedDurationSeconds = Math.round(audio.duration) || 60;
         const mins = (detectedDurationSeconds / 60).toFixed(1);
-        document.getElementById('stt-file-meta').textContent = `${detectedDurationSeconds} ثانية (${mins} دقيقة) • ${(file.size / (1024*1024)).toFixed(2)} MB`;
+        document.getElementById('stt-file-meta').textContent = isEn
+            ? `${detectedDurationSeconds}s (${mins}m) • ${(file.size / (1024*1024)).toFixed(2)} MB`
+            : `${detectedDurationSeconds} ثانية (${mins} دقيقة) • ${(file.size / (1024*1024)).toFixed(2)} MB`;
         recalculateSttCost();
     };
 }
@@ -260,6 +264,7 @@ function clearSttFile() {
 }
 
 async function startMicRecording() {
+    const isEn = document.documentElement.lang === 'en';
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(stream);
@@ -308,7 +313,12 @@ async function startMicRecording() {
         }, 500);
 
     } catch (err) {
-        alert('يرجى السماح بالوصول إلى المايكروفون لبدء التسجيل الصوتي.');
+        const msg = isEn ? 'Please grant microphone access to start recording.' : 'يرجى السماح بالوصول إلى المايكروفون لبدء التسجيل الصوتي.';
+        if (window.showStudioNotification) {
+            window.showStudioNotification(msg, 'error');
+        } else {
+            alert(msg);
+        }
     }
 }
 
@@ -356,6 +366,7 @@ function onSttModelChanged() {
 }
 
 function recalculateSttCost() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('stt-model');
     const opt = sel.options[sel.selectedIndex];
     if (!opt) return;
@@ -364,25 +375,39 @@ function recalculateSttCost() {
     const durSec = detectedDurationSeconds || 60;
     const ratePerSec = ratePerMin / 60.0;
     const total = Math.max(0.05, durSec * ratePerSec);
+    const creditWord = isEn ? 'credits' : 'رصيد';
 
-    document.getElementById('stt-cost-breakdown').textContent = `${ratePerMin.toFixed(2)} رصيد/دقيقة × ${durSec} ثانية (${(durSec/60).toFixed(1)} دقيقة)`;
+    document.getElementById('stt-cost-breakdown').textContent = isEn
+        ? `${ratePerMin.toFixed(2)} ${creditWord}/min × ${durSec}s (${(durSec/60).toFixed(1)}m)`
+        : `${ratePerMin.toFixed(2)} رصيد/دقيقة × ${durSec} ثانية (${(durSec/60).toFixed(1)} دقيقة)`;
     document.getElementById('stt-total-cost').textContent = total.toFixed(2);
 }
 
 function handleSttSubmit() {
+    const isEn = document.documentElement.lang === 'en';
     let finalAudio = null;
     let fileName = '';
 
     if (currentAudioMode === 'upload') {
         if (!selectedAudioFile) {
-            alert('يرجى اختيار أو سحب ملف صوتي أولاً');
+            const msg = isEn ? 'Please choose or drag an audio file first' : 'يرجى اختيار أو سحب ملف صوتي أولاً';
+            if (window.showStudioNotification) {
+                window.showStudioNotification(msg, 'error');
+            } else {
+                alert(msg);
+            }
             return;
         }
         finalAudio = selectedAudioFile;
         fileName = selectedAudioFile.name;
     } else {
         if (!recordedAudioBlob) {
-            alert('يرجى تسجيل مقطع صوتي عبر المايكروفون أولاً');
+            const msg = isEn ? 'Please record an audio snippet via microphone first' : 'يرجى تسجيل مقطع صوتي عبر المايكروفون أولاً';
+            if (window.showStudioNotification) {
+                window.showStudioNotification(msg, 'error');
+            } else {
+                alert(msg);
+            }
             return;
         }
         finalAudio = new File([recordedAudioBlob], 'mic_recording.webm', { type: 'audio/webm' });

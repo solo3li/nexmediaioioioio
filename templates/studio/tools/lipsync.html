@@ -1,4 +1,5 @@
 {% extends 'studio/base_studio.html' %}
+{% load i18n %}
 
 {% block tool_controls %}
 <form id="lipsync-form" onsubmit="event.preventDefault(); handleLipsyncSubmit();">
@@ -6,7 +7,7 @@
     <!-- Model Selection (Clean Name ONLY) -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
-            محرك مزامنة الشفاه (LipSync Model)
+            {% trans "محرك مزامنة الشفاه (LipSync Model)" %}
         </label>
         <select id="lipsync-model" onchange="onLipSyncModelChanged();" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; font-weight: 600;">
             {% for m in models %}
@@ -49,10 +50,10 @@
     <div style="margin-bottom: 20px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(44,30,16,0.03);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                وسيط الوجه المستهدف (Target Face Media)
+                {% trans "وسيط الوجه المستهدف (Target Face Media)" %}
             </label>
             <span id="lipsync-target-hint" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 12px;">
-                فيديو أو صورة ثابتة
+                {% trans "فيديو أو صورة ثابتة" %}
             </span>
         </div>
         
@@ -63,8 +64,8 @@
                 <circle cx="9" cy="9" r="2"/>
                 <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
             </svg>
-            <div style="font-size: 13px; font-weight: 600; color: #1C120B;">انقر أو اسحب مقطع فيديو أو صورة بورتريه للوجه</div>
-            <div style="font-size: 11px; color: #8C7864; margin-top: 3px;">MP4, MOV, WEBM أو JPG, PNG (أقصى حجم 100MB)</div>
+            <div style="font-size: 13px; font-weight: 600; color: #1C120B;">{% trans "انقر أو اسحب مقطع فيديو أو صورة بورتريه للوجه" %}</div>
+            <div style="font-size: 11px; color: #8C7864; margin-top: 3px;">{% trans "MP4, MOV, WEBM أو JPG, PNG (أقصى حجم 100MB)" %}</div>
         </div>
 
         <!-- Target Media Preview -->
@@ -79,9 +80,9 @@
     <div style="margin-bottom: 20px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(44,30,16,0.03);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                المقطع الصوتي المنطوق (Driving Audio Track)
+                {% trans "المقطع الصوتي المنطوق (Driving Audio Track)" %}
             </label>
-            <span style="font-size: 11px; color: #8C7864;">يقود حركة الشفاه والفك</span>
+            <span style="font-size: 11px; color: #8C7864;">{% trans "يقود حركة الشفاه والفك" %}</span>
         </div>
         
         <div id="lipsync-audio-dropzone" onclick="document.getElementById('lipsync-audio-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
@@ -91,14 +92,14 @@
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
                 <line x1="12" x2="12" y1="19" y2="22"/>
             </svg>
-            <div style="font-size: 13px; font-weight: 600; color: #1C120B;">انقر أو اسحب ملف الصوت أو التعليق الصوتي</div>
-            <div style="font-size: 11px; color: #8C7864; margin-top: 3px;">MP3, WAV, M4A, OGG (أقصى حجم 25MB)</div>
+            <div style="font-size: 13px; font-weight: 600; color: #1C120B;">{% trans "انقر أو اسحب ملف الصوت أو التعليق الصوتي" %}</div>
+            <div style="font-size: 11px; color: #8C7864; margin-top: 3px;">{% trans "MP3, WAV, M4A, OGG (أقصى حجم 25MB)" %}</div>
         </div>
 
         <!-- Audio Preview Box -->
         <div id="lipsync-audio-preview-box" style="margin-top: 10px; display: none; background: #FAF7F0; padding: 12px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.4); align-items: center; justify-content: space-between;">
             <div style="display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden;">
-                <span style="font-size: 18px;">🎙️</span>
+                <svg style="width: 20px; height: 20px; color: #0E3A1F;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                 <span id="lipsync-audio-name" style="font-size: 12.5px; font-weight: 600; color: #1C120B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">speech.mp3</span>
             </div>
             <audio id="lipsync-audio-el" controls style="height: 32px; max-width: 180px;"></audio>
@@ -109,18 +110,18 @@
     <!-- Precision / Mode Selection -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
-            دقة مطابقة مخارج الحروف وتعبير الوجه
+            {% trans "دقة مطابقة مخارج الحروف وتعبير الوجه" %}
         </label>
         <div style="display: flex; gap: 8px;" id="lipsync-mode-container">
             <label class="lipsync-mode-pill" style="flex: 1; text-align: center; background: rgba(14,58,31,0.09); border: 1.5px solid #0E3A1F; padding: 10px; border-radius: 8px; cursor: pointer; color: #0E3A1F; font-size: 12.5px; font-weight: bold; transition: all 0.2s;">
                 <input type="radio" name="lip_mode" value="precise" checked onchange="updateModePills();" style="display: none;">
-                <div>دقيق سينمائي</div>
-                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">تطابق دقيق لمخارج الحروف الطبيعية</div>
+                <div>{% trans "دقيق سينمائي" %}</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">{% trans "تطابق دقيق لمخارج الحروف الطبيعية" %}</div>
             </label>
             <label class="lipsync-mode-pill" style="flex: 1; text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; cursor: pointer; color: #362A1F; font-size: 12.5px; transition: all 0.2s;">
                 <input type="radio" name="lip_mode" value="expressive" onchange="updateModePills();" style="display: none;">
-                <div>تعبيرات حركية كاملة</div>
-                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">حركة رأس وحواجب متناغمة مع الانفعال</div>
+                <div>{% trans "تعبيرات حركية كاملة" %}</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">{% trans "حركة رأس وحواجب متناغمة مع الانفعال" %}</div>
             </label>
         </div>
     </div>
@@ -128,8 +129,8 @@
     <!-- Dynamic Resolution Selection (480p, 720p, 1080p, 4K) -->
     <div style="margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">دقة المعالجة (Resolution)</label>
-            <span id="lipsync-res-hint" style="font-size: 11px; color: #6A5847;">الجودات المتاحة لهذا النموذج</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">{% trans "دقة المعالجة (Resolution)" %}</label>
+            <span id="lipsync-res-hint" style="font-size: 11px; color: #6A5847;">{% trans "الجودات المتاحة لهذا النموذج" %}</span>
         </div>
         <div style="display: flex; gap: 8px;" id="lipsync-res-container">
             <label id="lip-res-lbl-480p" class="lipsync-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
@@ -150,19 +151,19 @@
     <!-- Duration Slider Bar (Step = 1s) -->
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); padding: 18px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(44,30,16,0.03);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <label style="font-size: 13.5px; color: #1C120B; font-weight: 700; margin: 0;">المدة المستهدفة (Duration)</label>
+            <label style="font-size: 13.5px; color: #1C120B; font-weight: 700; margin: 0;">{% trans "المدة المستهدفة (Duration)" %}</label>
             <div style="display: flex; align-items: baseline; gap: 5px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); padding: 5px 14px; border-radius: 8px;">
                 <span id="lipsync-duration-display-val" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">5</span>
-                <span style="font-size: 12px; color: #9E7D3B; font-weight: bold;">ثوانٍ</span>
+                <span id="lipsync-duration-unit" style="font-size: 12px; color: #9E7D3B; font-weight: bold;">{% trans "ثوانٍ" %}</span>
             </div>
         </div>
 
         <input type="range" id="lipsync-duration-slider" min="3" max="30" step="1" value="5" oninput="onLipSyncDurationSliderInput(this.value);" style="width: 100%; accent-color: #0E3A1F; height: 7px; cursor: pointer; border-radius: 4px; background: #EAE3D2;">
 
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #6A5847; margin-top: 8px;">
-            <span id="lipsync-slider-min-lbl">3 ثوانٍ</span>
-            <span id="lipsync-discrete-hint" style="color: #9E7D3B; font-weight: 600; font-size: 11px;">شريط تحكم سلس ثانية بثانية</span>
-            <span id="lipsync-slider-max-lbl">30 ثانية</span>
+            <span id="lipsync-slider-min-lbl">3 {% trans "ثوانٍ" %}</span>
+            <span id="lipsync-discrete-hint" style="color: #9E7D3B; font-weight: 600; font-size: 11px;">{% trans "شريط تحكم سلس ثانية بثانية" %}</span>
+            <span id="lipsync-slider-max-lbl">30 {% trans "ثانية" %}</span>
         </div>
     </div>
 
@@ -174,19 +175,19 @@
                 <span style="font-size: 13px; font-weight: 700; color: #1C120B;" id="lipsync-calc-model-name">AI LipSync Pro</span>
             </div>
             <span id="lipsync-calc-rate-badge" style="background: rgba(14,58,31,0.1); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
-                3.50 كريديت / ثانية
+                3.50 {% trans "كريديت / ثانية" %}
             </span>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 10px; border-top: 1px dashed rgba(197,160,89,0.35);">
             <div>
-                <div style="font-size: 12px; color: #6A5847;" id="lipsync-calc-formula-text">5 ثوانٍ × 3.50 كريديت (دقة 1080p)</div>
-                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">خصم دقيق بالثانية من رصيدك</div>
+                <div style="font-size: 12px; color: #6A5847;" id="lipsync-calc-formula-text">5 {% trans "ثوانٍ" %} × 3.50 {% trans "كريديت" %} (1080p)</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "خصم دقيق بالثانية من رصيدك" %}</div>
             </div>
             <div style="text-align: left;">
-                <div style="font-size: 10px; color: #6A5847; text-transform: uppercase;">إجمالي التكلفة</div>
+                <div style="font-size: 10px; color: #6A5847; text-transform: uppercase;">{% trans "إجمالي التكلفة" %}</div>
                 <div style="font-size: 24px; font-weight: 800; color: #0E3A1F; line-height: 1;">
                     <span id="lipsync-total-cost">17.50</span>
-                    <span style="font-size: 13px; font-weight: 600; color: #9E7D3B;">كريديت</span>
+                    <span style="font-size: 13px; font-weight: 600; color: #9E7D3B;">{% trans "كريديت" %}</span>
                 </div>
             </div>
         </div>
@@ -195,12 +196,13 @@
     <!-- Submit Action Button -->
     <button id="lipsync-submit-btn" type="submit" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #16562E); color: #FFF; font-weight: bold; font-size: 16px; padding: 16px; border: 1.5px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 6px 20px rgba(14,58,31,0.25); display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.25s;">
         <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 12c3-4 7-6 10-6s7 2 10 6c-3 4-7 6-10 6s-7-2-10-6Z"/>
-            <path d="M8 12c1.5 2 2.5 3 4 3s2.5-1 4-3"/>
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
         </svg>
-        <span>بدء مزامنة حركة الشفاه الآن</span>
+        <span>{% trans "بدء مزامنة حركة الشفاه الآن" %}</span>
         <span id="lipsync-btn-cost-tag" style="background: rgba(197,160,89,0.25); border: 1px solid #C5A059; color: #FAF7F0; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin-right: 6px;">
-            17.50 كريديت
+            17.50 {% trans "كريديت" %}
         </span>
     </button>
 
@@ -211,6 +213,7 @@ let selectedTargetMediaFile = null;
 let selectedAudioTrackFile = null;
 
 function onLipSyncModelChanged() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('lipsync-model');
     const opt = sel.options[sel.selectedIndex];
     if (!opt) return;
@@ -219,11 +222,11 @@ function onLipSyncModelChanged() {
     const targetMedia = opt.getAttribute('data-target-media') || 'both';
     const hintEl = document.getElementById('lipsync-target-hint');
     if (targetMedia === 'video_only') {
-        hintEl.innerText = 'فيديو فقط';
+        hintEl.innerText = isEn ? 'Video only' : 'فيديو فقط';
     } else if (targetMedia === 'image_only') {
-        hintEl.innerText = 'صورة وجه فقط';
+        hintEl.innerText = isEn ? 'Portrait photo only' : 'صورة وجه فقط';
     } else {
-        hintEl.innerText = 'فيديو أو صورة ثابتة';
+        hintEl.innerText = isEn ? 'Video or portrait image' : 'فيديو أو صورة ثابتة';
     }
 
     // Resolution pill availability
@@ -257,9 +260,9 @@ function onLipSyncModelChanged() {
         slider.min = minVal;
         slider.max = maxVal;
         slider.value = parts.includes(defDur) ? defDur : minVal;
-        document.getElementById('lipsync-slider-min-lbl').innerText = minVal + ' ثوانٍ';
-        document.getElementById('lipsync-slider-max-lbl').innerText = maxVal + ' ثانية';
-        document.getElementById('lipsync-discrete-hint').innerText = 'المدد المعتمدة: ' + parts.join(', ') + ' ث';
+        document.getElementById('lipsync-slider-min-lbl').innerText = isEn ? `${minVal}s` : `${minVal} ثوانٍ`;
+        document.getElementById('lipsync-slider-max-lbl').innerText = isEn ? `${maxVal}s` : `${maxVal} ثانية`;
+        document.getElementById('lipsync-discrete-hint').innerText = isEn ? `Allowed durations: ${parts.join(', ')}s` : `المدد المعتمدة: ${parts.join(', ')} ث`;
     } else {
         const rangeParts = allowedDur.split('-').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
         const minVal = rangeParts[0] || 3;
@@ -267,20 +270,24 @@ function onLipSyncModelChanged() {
         slider.min = minVal;
         slider.max = maxVal;
         slider.value = defDur >= minVal && defDur <= maxVal ? defDur : minVal;
-        document.getElementById('lipsync-slider-min-lbl').innerText = minVal + ' ثوانٍ';
-        document.getElementById('lipsync-slider-max-lbl').innerText = maxVal + ' ثانية';
-        document.getElementById('lipsync-discrete-hint').innerText = 'نطاق مرن: ' + minVal + ' إلى ' + maxVal + ' ثانية';
+        document.getElementById('lipsync-slider-min-lbl').innerText = isEn ? `${minVal}s` : `${minVal} ثوانٍ`;
+        document.getElementById('lipsync-slider-max-lbl').innerText = isEn ? `${maxVal}s` : `${maxVal} ثانية`;
+        document.getElementById('lipsync-discrete-hint').innerText = isEn ? `Flexible range: ${minVal}s to ${maxVal}s` : `نطاق مرن: ${minVal} إلى ${maxVal} ثانية`;
     }
 
     onLipSyncDurationSliderInput(slider.value);
 }
 
 function onLipSyncDurationSliderInput(val) {
+    const isEn = document.documentElement.lang === 'en';
     document.getElementById('lipsync-duration-display-val').innerText = val;
+    const unitEl = document.getElementById('lipsync-duration-unit');
+    if (unitEl) unitEl.innerText = isEn ? 's' : 'ثوانٍ';
     updateLipSyncLiveCost();
 }
 
 function updateLipSyncLiveCost() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('lipsync-model');
     const opt = sel.options[sel.selectedIndex];
     if (!opt) return;
@@ -306,11 +313,25 @@ function updateLipSyncLiveCost() {
     let totalCost = (pricingType === 'per_second') ? (rate * duration) : rate;
     totalCost = totalCost.toFixed(2);
 
+    const creditWord = isEn ? 'credits' : 'كريديت';
+    const perSecWord = isEn ? 'credits / sec' : 'كريديت / ثانية';
+    const perTaskWord = isEn ? 'credits / job' : 'كريديت / عملية';
+
     document.getElementById('lipsync-calc-model-name').innerText = modelName;
-    document.getElementById('lipsync-calc-rate-badge').innerText = rate.toFixed(2) + ' كريديت / ' + (pricingType === 'per_second' ? 'ثانية' : 'عملية');
-    document.getElementById('lipsync-calc-formula-text').innerText = (pricingType === 'per_second' ? (duration + ' ثوانٍ × ' + rate.toFixed(2) + ' كريديت') : ('سعر ثابت: ' + rate.toFixed(2) + ' كريديت')) + ' (دقة ' + resVal + ')';
+    document.getElementById('lipsync-calc-rate-badge').innerText = `${rate.toFixed(2)} ${pricingType === 'per_second' ? perSecWord : perTaskWord}`;
+    
+    if (pricingType === 'per_second') {
+        document.getElementById('lipsync-calc-formula-text').innerText = isEn 
+            ? `${duration}s × ${rate.toFixed(2)} ${creditWord} (${resVal})`
+            : `${duration} ثوانٍ × ${rate.toFixed(2)} ${creditWord} (دقة ${resVal})`;
+    } else {
+        document.getElementById('lipsync-calc-formula-text').innerText = isEn
+            ? `Flat rate: ${rate.toFixed(2)} ${creditWord} (${resVal})`
+            : `سعر ثابت: ${rate.toFixed(2)} ${creditWord} (دقة ${resVal})`;
+    }
+
     document.getElementById('lipsync-total-cost').innerText = totalCost;
-    document.getElementById('lipsync-btn-cost-tag').innerText = totalCost + ' كريديت';
+    document.getElementById('lipsync-btn-cost-tag').innerText = `${totalCost} ${creditWord}`;
 
     // Highlight active pill
     ['480p', '720p', '1080p', '4k'].forEach(r => {
@@ -423,20 +444,23 @@ function clearAudioTrack() {
 }
 
 function handleLipsyncSubmit() {
+    const isEn = document.documentElement.lang === 'en';
     if (!selectedTargetMediaFile) {
+        const msg = isEn ? 'Please upload target face video or image first' : 'يرجى رفع فيديو أو صورة الوجه أولاً';
         if (window.showStudioNotification) {
-            window.showStudioNotification('يرجى رفع فيديو أو صورة الوجه أولاً', 'error');
+            window.showStudioNotification(msg, 'error');
         } else {
-            alert('يرجى رفع فيديو أو صورة الوجه أولاً');
+            alert(msg);
         }
         return;
     }
 
     if (!selectedAudioTrackFile) {
+        const msg = isEn ? 'Please upload spoken audio track first' : 'يرجى رفع المقطع الصوتي المنطوق أولاً';
         if (window.showStudioNotification) {
-            window.showStudioNotification('يرجى رفع المقطع الصوتي المنطوق أولاً', 'error');
+            window.showStudioNotification(msg, 'error');
         } else {
-            alert('يرجى رفع المقطع الصوتي أولاً');
+            alert(msg);
         }
         return;
     }
@@ -469,11 +493,11 @@ function handleLipsyncSubmit() {
         .then(res => {
             if (res.status === 'success') {
                 if (window.showStudioNotification) {
-                    window.showStudioNotification('تم إرسال مهمة مزامنة الشفاه إلى طابور المعالجة بنجاح', 'success');
+                    window.showStudioNotification(isEn ? 'LipSync job queued successfully' : 'تم إرسال مهمة مزامنة الشفاه إلى طابور المعالجة بنجاح', 'success');
                 }
             } else {
                 if (window.showStudioNotification) {
-                    window.showStudioNotification(res.message || 'حدث خطأ أثناء الإرسال', 'error');
+                    window.showStudioNotification(res.message || (isEn ? 'Error submitting job' : 'حدث خطأ أثناء الإرسال'), 'error');
                 }
             }
         })

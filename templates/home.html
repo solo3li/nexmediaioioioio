@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 
-{% block title %}نكس ميديا | nexmedia.ai — استوديو الإنتاج الإبداعي وصناعة الوسائط بالذكاء الاصطناعي{% endblock %}
+{% block title %}{% if CURRENT_LANGUAGE == 'en' %}NexMedia | AI Media Production & Creative Studio{% else %}نكس ميديا | nexmedia.ai — استوديو الإنتاج الإبداعي وصناعة الوسائط بالذكاء الاصطناعي{% endif %}{% endblock %}
 
 {% block content %}
 <!-- ========================================================================
@@ -13,28 +15,41 @@
             <!-- Right Column: Hero Typography & Actions (RTL) -->
             <div class="hero-text-col">
                 <h1 class="hero-main-title">
+                    {% if CURRENT_LANGUAGE == 'en' %}
+                    Creative AI Media Studio <br>
+                    <span class="title-brand">Cinema 4K Video, Neural Voice & Art</span>
+                    {% else %}
                     استوديو الإنتاج الإبداعي <br>
                     <span class="title-brand">صناعة الفيديو والصوت والصور</span>
+                    {% endif %}
                 </h1>
 
                 <div class="hero-subtitle-block">
                     <p class="subtitle-highlight">
+                        {% if CURRENT_LANGUAGE == 'en' %}
+                        Unified production platform for creators & media enterprises: 4K video generation, ultra-realistic voice acting, and high-resolution generative design.
+                        {% else %}
                         منصة موحدة لصناع المحتوى والإنتاج الإعلامي: توليد الفيديو، التعليق الصوتي الواقعي، وتصميم الصور بأعلى جودة.
+                        {% endif %}
                     </p>
                     <p class="hero-desc">
+                        {% if CURRENT_LANGUAGE == 'en' %}
+                        Comprehensive AI toolkit including text/image to video, voice cloning, lip sync, and generative image creation with enterprise-grade quality and speed.
+                        {% else %}
                         مجموعة أدوات متكاملة تشمل توليد الفيديو من النصوص والصور، استنساخ الأصوات، مزامنة الشفاه، وتوليد وتعديل الصور بدقة احترافية وسرعة فائقة.
+                        {% endif %}
                     </p>
                 </div>
 
                 <div class="hero-action-buttons">
                     <a href="#three-portals" class="btn-royal-forest btn-glow-pulse" id="hero-explore-btn">
-                        <span>استكشف أدوات الإنتاج</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Explore Studio Tools{% else %}استكشف أدوات الإنتاج{% endif %}</span>
                         <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>
                     </a>
-                    <a href="#simulator" class="btn-ghost" id="hero-demo-btn">
-                        <span>تجربة محاكي التوليد</span>
+                    <a href="/studio/" class="btn-ghost" id="hero-demo-btn">
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Open AI Studio{% else %}دخول الاستوديو الحي{% endif %}</span>
                         <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
                         </svg>
@@ -98,9 +113,9 @@
 <section class="portals-section" id="three-portals" style="padding: 80px 0; background: var(--bg-cream-base);">
     <div class="container">
         <div class="section-header-block" style="margin-bottom: 48px;">
-            <h2 class="section-title">أقسام الاستوديو المتخصصة</h2>
+            <h2 class="section-title">{% if CURRENT_LANGUAGE == 'en' %}Specialized AI Production Suites{% else %}أقسام الاستوديو المتخصصة{% endif %}</h2>
             <p class="section-subtitle">
-                استوديو هندسة الصوت والكلام، استوديو إنتاج الفيديو 4K، واستوديو التصميم وتوليد الصور
+                {% if CURRENT_LANGUAGE == 'en' %}Neural Voice & Speech Engineering, 4K Cinema Video Generation, and Generative Visual Design{% else %}استوديو هندسة الصوت والكلام، استوديو إنتاج الفيديو 4K، واستوديو التصميم وتوليد الصور{% endif %}
             </p>
         </div>
 
@@ -109,7 +124,7 @@
             <div class="portal-card" id="audio-suite">
                 <div class="portal-arch-header">
                     <div class="arch-title-badge">
-                        <h3 class="arch-name">استوديو الصوت والكلام</h3>
+                        <h3 class="arch-name">{% if CURRENT_LANGUAGE == 'en' %}Audio & Voice Studio{% else %}استوديو الصوت والكلام{% endif %}</h3>
                     </div>
                     <!-- Arch Shape Overlay -->
                     <svg class="arch-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
@@ -131,22 +146,24 @@
                         <button type="button" class="btn-royal-forest" id="audio-play-toggle" style="width: 100%; font-size: 0.8125rem; justify-content: center;">
                             <svg class="icon-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             <svg class="icon-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                            <span>تجربة عينة صوتية حية</span>
+                            <span>{% if CURRENT_LANGUAGE == 'en' %}Play Audio Sample{% else %}تجربة عينة صوتية حية{% endif %}</span>
                         </button>
                     </div>
 
-                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">ميزات استوديو الصوت:</h4>
+                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">
+                        {% if CURRENT_LANGUAGE == 'en' %}Audio Studio Features:{% else %}ميزات استوديو الصوت:{% endif %}
+                    </h4>
                     <ul class="portal-features" style="list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 8px; font-size: 0.875rem; color: var(--color-mocha-text);">
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> تحويل النصوص إلى تعليق صوتي واقعي (TTS)</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> تفريغ الصوت إلى نصوص وملفات ترجمة (STT)</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> استنساخ نبرات الصوت بدقة عالية</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> عزل الموسيقى وتنقية التشويش</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Text to Realistic Speech (TTS){% else %}تحويل النصوص إلى تعليق صوتي واقعي (TTS){% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Speech to Text & Subtitles (STT Whisper){% else %}تفريغ الصوت إلى نصوص وملفات ترجمة (STT){% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}High-Fidelity Persona Voice Modeling{% else %}استنساخ نبرات الصوت بدقة عالية{% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Lossless Audio Denoising & Enhancement{% else %}عزل الموسيقى وتنقية التشويش{% endif %}</li>
                     </ul>
 
                     <div class="portal-footer" style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(197, 160, 89, 0.2);">
                         <a href="/studio/tts/" class="portal-link" style="color: var(--color-forest-green); font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: space-between;">
-                            <span>دخول استوديو الصوتيات</span>
-                            <span class="arrow">←</span>
+                            <span>{% if CURRENT_LANGUAGE == 'en' %}Launch Voice Studio{% else %}دخول استوديو الصوتيات{% endif %}</span>
+                            <span class="arrow">{% if CURRENT_LANGUAGE == 'en' %}→{% else %}←{% endif %}</span>
                         </a>
                     </div>
                 </div>
@@ -156,7 +173,7 @@
             <div class="portal-card portal-card-featured" id="cinema-studio">
                 <div class="portal-arch-header header-emerald">
                     <div class="arch-title-badge">
-                        <h3 class="arch-name">استوديو إنتاج الفيديو 4K</h3>
+                        <h3 class="arch-name">{% if CURRENT_LANGUAGE == 'en' %}4K Cinema Video Studio{% else %}استوديو إنتاج الفيديو 4K{% endif %}</h3>
                     </div>
                     <svg class="arch-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
                         <path d="M0,20 Q50,-10 100,20 Z" fill="currentColor"/>
@@ -169,23 +186,25 @@
                         <div style="background: linear-gradient(135deg, #1C120B 0%, #0E3A1F 100%); border-radius: 8px; padding: 34px 16px; position: relative;">
                             <button type="button" class="btn-royal-forest" id="cinema-play-btn" style="margin: 12px auto 0; font-size: 0.8125rem; justify-content: center; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4);">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                                <span>معاينة نموذج إخراج 4K</span>
+                                <span>{% if CURRENT_LANGUAGE == 'en' %}Preview 4K Render Sample{% else %}معاينة نموذج إخراج 4K{% endif %}</span>
                             </button>
                         </div>
                     </div>
 
-                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">أدوات إنتاج الفيديو:</h4>
+                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">
+                        {% if CURRENT_LANGUAGE == 'en' %}Video Studio Tools:{% else %}أدوات إنتاج الفيديو:{% endif %}
+                    </h4>
                     <ul class="portal-features" style="list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 8px; font-size: 0.875rem; color: var(--color-mocha-text);">
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> توليد مشاهد الفيديو من النصوص (Text to Video)</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> تحريك الصور الثابتة إلى لقطات حية (Image to Video)</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> مزامنة حركة الشفاه بدقة مع الصوت (Lip Sync)</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> توليد الفيديو مع الحفاظ على هوية الشخصيات بدقة 4K</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Text to Cinema Video (T2V 4K){% else %}توليد مشاهد الفيديو من النصوص (Text to Video){% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Image to Video Animation (I2V){% else %}تحريك الصور الثابتة إلى لقطات حية (Image to Video){% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Precision LipSync with Audio Tracks{% else %}مزامنة حركة الشفاه بدقة مع الصوت (Lip Sync){% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Multi-Reference Character Consistency{% else %}توليد الفيديو مع الحفاظ على هوية الشخصيات بدقة 4K{% endif %}</li>
                     </ul>
 
                     <div class="portal-footer" style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(197, 160, 89, 0.2);">
                         <a href="/studio/text-to-video/" class="portal-link btn-featured" style="color: var(--color-forest-green); font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: space-between;">
-                            <span>دخول استوديو الفيديو 4K</span>
-                            <span class="arrow">←</span>
+                            <span>{% if CURRENT_LANGUAGE == 'en' %}Launch Video Studio{% else %}دخول استوديو الفيديو 4K{% endif %}</span>
+                            <span class="arrow">{% if CURRENT_LANGUAGE == 'en' %}→{% else %}←{% endif %}</span>
                         </a>
                     </div>
                 </div>
@@ -195,7 +214,7 @@
             <div class="portal-card" id="visual-arts">
                 <div class="portal-arch-header">
                     <div class="arch-title-badge">
-                        <h3 class="arch-name">استوديو التصميم وتوليد الصور</h3>
+                        <h3 class="arch-name">{% if CURRENT_LANGUAGE == 'en' %}Visual Design & Image Studio{% else %}استوديو التصميم وتوليد الصور{% endif %}</h3>
                     </div>
                     <svg class="arch-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
                         <path d="M0,20 Q50,-10 100,20 Z" fill="currentColor"/>
@@ -207,32 +226,34 @@
                     <div class="interactive-slider-widget" style="margin-bottom: 24px;">
                         <div class="comparison-container" id="comparison-slider" style="position: relative; height: 140px; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--color-gold); cursor: ew-resize; background: #1C120B;">
                             <div class="comparison-layer after-layer" style="position: absolute; inset: 0; background: linear-gradient(135deg, #0E3A1F 0%, #162C1D 100%); display: flex; align-items: center; justify-content: flex-start; padding: 14px;">
-                                <span style="font-size: 0.75rem; background: rgba(0,0,0,0.6); color: #FFF; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--color-gold);">المعالجة (Enhanced 4K)</span>
+                                <span style="font-size: 0.75rem; background: rgba(0,0,0,0.6); color: #FFF; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--color-gold);">{% if CURRENT_LANGUAGE == 'en' %}Enhanced 4K{% else %}المعالجة (Enhanced 4K){% endif %}</span>
                             </div>
                             <div class="comparison-layer before-layer" id="before-layer" style="position: absolute; inset: 0; width: 50%; background: linear-gradient(135deg, #2D1D13 0%, #1B100B 100%); border-left: 2px solid var(--color-gold-bright); display: flex; align-items: center; justify-content: flex-end; padding: 14px; overflow: hidden;">
-                                <span style="font-size: 0.75rem; background: rgba(0,0,0,0.6); color: #C5A059; padding: 2px 8px; border-radius: 4px;">الأصل (Original)</span>
+                                <span style="font-size: 0.75rem; background: rgba(0,0,0,0.6); color: #C5A059; padding: 2px 8px; border-radius: 4px;">{% if CURRENT_LANGUAGE == 'en' %}Original{% else %}الأصل (Original){% endif %}</span>
                             </div>
                             <div class="slider-handle-bar" id="slider-handle" style="position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #FFF; pointer-events: none;">
                                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 26px; height: 26px; border-radius: 50%; background: var(--color-forest-green); border: 2px solid var(--color-gold); display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 0.7rem;">↔</div>
                             </div>
                         </div>
                         <span style="display: block; text-align: center; font-size: 0.75rem; color: var(--color-mocha-muted); margin-top: 8px;">
-                            اسحب المقبض لمقارنة دقة المعالجة وإزالة الخلفيات
+                            {% if CURRENT_LANGUAGE == 'en' %}Drag handle to compare resolution & generative enhancements{% else %}اسحب المقبض لمقارنة دقة المعالجة وإزالة الخلفيات{% endif %}
                         </span>
                     </div>
 
-                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">أدوات التصميم والصور:</h4>
+                    <h4 style="font-family: var(--font-arabic-title); font-size: 1.05rem; color: var(--color-mocha-deep); margin-bottom: 12px;">
+                        {% if CURRENT_LANGUAGE == 'en' %}Design & Image Tools:{% else %}أدوات التصميم والصور:{% endif %}
+                    </h4>
                     <ul class="portal-features" style="list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 8px; font-size: 0.875rem; color: var(--color-mocha-text);">
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> توليد صور إعلانية وتصميمات واقعية بدقة عالية</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> إزالة وتفريغ الخلفيات المعقدة بضغطة زر</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> توسيع أبعاد الصور وملء المحيط (Outpainting)</li>
-                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> صناعة الأفاتار وتوليد الشخصيات الافتراضية</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Text to High-Resolution Images (1K, 2K, 4K){% else %}توليد صور إعلانية وتصميمات واقعية بدقة عالية{% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}One-Click Subject Segmentation & Backgrounds{% else %}إزالة وتفريغ الخلفيات المعقدة بضغطة زر{% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Smart Canvas Outpainting & Dimension Expand{% else %}توسيع أبعاد الصور وملء المحيط (Outpainting){% endif %}</li>
+                        <li><span style="color: #2ECC71; font-weight: bold; margin-left: 6px;">✓</span> {% if CURRENT_LANGUAGE == 'en' %}Digital Talking Avatars & Character Creation{% else %}صناعة الأفاتار وتوليد الشخصيات الافتراضية{% endif %}</li>
                     </ul>
 
                     <div class="portal-footer" style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(197, 160, 89, 0.2);">
                         <a href="/studio/text-to-image/" class="portal-link" style="color: var(--color-forest-green); font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: space-between;">
-                            <span>دخول استوديو الصور</span>
-                            <span class="arrow">←</span>
+                            <span>{% if CURRENT_LANGUAGE == 'en' %}Launch Image Studio{% else %}دخول استوديو الصور{% endif %}</span>
+                            <span class="arrow">{% if CURRENT_LANGUAGE == 'en' %}→{% else %}←{% endif %}</span>
                         </a>
                     </div>
                 </div>
@@ -247,9 +268,9 @@
 <section class="simulator-section" id="simulator" style="padding: 80px 0; background: radial-gradient(circle at 30% 50%, rgba(14, 58, 31, 0.06) 0%, transparent 70%); border-top: var(--border-hairline); border-bottom: var(--border-hairline);">
     <div class="container">
         <div class="section-header-block" style="margin-bottom: 48px;">
-            <h2 class="section-title">محاكاة مسار الإنتاج</h2>
+            <h2 class="section-title">{% if CURRENT_LANGUAGE == 'en' %}Interactive AI Production Pipeline{% else %}محاكاة مسار الإنتاج{% endif %}</h2>
             <p class="section-subtitle">
-                شاهد خطوات معالجة الفكرة وتحويلها إلى وسائط احترافية جاهزة للاستخدام
+                {% if CURRENT_LANGUAGE == 'en' %}Watch step-by-step how your creative prompt transforms into broadcast-ready media{% else %}شاهد خطوات معالجة الفكرة وتحويلها إلى وسائط احترافية جاهزة للاستخدام{% endif %}
             </p>
         </div>
 
@@ -262,7 +283,9 @@
                     <span style="width: 10px; height: 10px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
                     <span style="font-family: var(--font-english-display); font-size: 0.8125rem; color: #C5A059; margin-right: 12px;">nexmedia.ai/studio-pipeline</span>
                 </div>
-                <span class="badge-status-ready" id="sim-status-badge" style="font-size: 0.75rem; background: rgba(46, 204, 113, 0.15); color: #2ECC71; border: 1px solid #2ECC71; padding: 2px 10px; border-radius: 20px;">جاهز للتنفيذ</span>
+                <span class="badge-status-ready" id="sim-status-badge" style="font-size: 0.75rem; background: rgba(46, 204, 113, 0.15); color: #2ECC71; border: 1px solid #2ECC71; padding: 2px 10px; border-radius: 20px;">
+                    {% if CURRENT_LANGUAGE == 'en' %}Pipeline Ready{% else %}جاهز للتنفيذ{% endif %}
+                </span>
             </div>
 
             <div style="padding: 32px 28px; display: grid; grid-template-columns: 240px 1fr; gap: 32px; align-items: center;">
@@ -275,24 +298,24 @@
                         </svg>
                         <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                             <span id="sim-percentage" style="font-family: var(--font-english-display); font-size: 2rem; font-weight: 700; color: #FFFDF8;">0%</span>
-                            <span id="sim-task-status" style="font-size: 0.6875rem; color: #C5A059;">في وضع الاستعداد</span>
+                            <span id="sim-task-status" style="font-size: 0.6875rem; color: #C5A059;">{% if CURRENT_LANGUAGE == 'en' %}Standby{% else %}في وضع الاستعداد{% endif %}</span>
                         </div>
                     </div>
                     <button type="button" class="btn-royal-forest" id="btn-start-simulation" style="width: 100%; justify-content: center; font-size: 0.875rem;">
-                        <span>إطلاق محاكاة الإنتاج</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Run Pipeline Simulation{% else %}إطلاق محاكاة الإنتاج{% endif %}</span>
                     </button>
                 </div>
 
                 <!-- Terminal Logs -->
                 <div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #C5A059; margin-bottom: 8px;">
-                        <span>سجل خطوات دورة الإنتاج:</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Generation Logs:{% else %}سجل خطوات دورة الإنتاج:{% endif %}</span>
                         <span id="sim-task-id" style="font-family: monospace; color: #A89F91;">Status: READY</span>
                     </div>
                     <div id="terminal-logs" style="height: 180px; background: #0A0705; border: 1px solid rgba(197, 160, 89, 0.25); border-radius: 10px; padding: 14px; font-family: 'Courier New', Courier, monospace; font-size: 0.8125rem; color: #2ECC71; overflow-y: auto; line-height: 1.6;">
-                        <div class="log-line">[الاستوديو] النظام جاهز ومحركات التوليد مستعدة لاستقبال أمر التشغيل.</div>
-                        <div class="log-line">[الجودة] معايير التصدير مضبوطة على دقة 4K وتردد صوتي 48kHz.</div>
-                        <div class="log-line text-gold">[جاهز] اضغط على 'إطلاق محاكاة الإنتاج' لمتابعة خطوات تحويل الفكرة إلى منتج نهائي.</div>
+                        <div class="log-line">{% if CURRENT_LANGUAGE == 'en' %}[Studio] AI engines standby and initialized to receive production prompt.{% else %}[الاستوديو] النظام جاهز ومحركات التوليد مستعدة لاستقبال أمر التشغيل.{% endif %}</div>
+                        <div class="log-line">{% if CURRENT_LANGUAGE == 'en' %}[Quality] Target output locked at 4K resolution and 48kHz audio fidelity.{% else %}[الجودة] معايير التصدير مضبوطة على دقة 4K وتردد صوتي 48kHz.{% endif %}</div>
+                        <div class="log-line text-gold">{% if CURRENT_LANGUAGE == 'en' %}[Ready] Click 'Run Pipeline Simulation' to observe the generative process.{% else %}[جاهز] اضغط على 'إطلاق محاكاة الإنتاج' لمتابعة خطوات تحويل الفكرة إلى منتج نهائي.{% endif %}</div>
                     </div>
                 </div>
             </div>
@@ -306,9 +329,9 @@
 <section class="pricing-calculator-section" id="pricing-calculator" style="padding: 80px 0; background: var(--bg-cream-base);">
     <div class="container">
         <div class="section-header-block" style="margin-bottom: 48px;">
-            <h2 class="section-title">باقات الاشتراك وحاسبة الرصيد</h2>
+            <h2 class="section-title">{% if CURRENT_LANGUAGE == 'en' %}Subscription Plans & Credit Calculator{% else %}باقات الاشتراك وحاسبة الرصيد{% endif %}</h2>
             <p class="section-subtitle">
-                اختر الباقة المناسبة لمستوى إنتاجك، أو استخدم الحاسبة لتقدير استهلاكك من الرصيد القياسي والمميز
+                {% if CURRENT_LANGUAGE == 'en' %}Select a tailored plan for your volume, or calculate your estimated monthly consumption{% else %}اختر الباقة المناسبة لمستوى إنتاجك، أو استخدم الحاسبة لتقدير استهلاكك من الرصيد القياسي والمميز{% endif %}
             </p>
         </div>
 
@@ -318,38 +341,38 @@
             <div class="portal-card {% if plan.name == 'Pro Quarterly' or plan.name == 'Basic Monthly' %}portal-card-featured{% endif %}" style="padding: 28px 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                     <span style="font-size: 0.75rem; background: rgba(197, 160, 89, 0.15); color: var(--color-gold); padding: 3px 10px; border-radius: 20px; font-weight: 700;">
-                        {% if plan.is_free_trial %}تجربة مجانية{% else %}{{ plan.duration_days }} يوم{% endif %}
+                        {% if plan.is_free_trial %}{% if CURRENT_LANGUAGE == 'en' %}Free Trial{% else %}تجربة مجانية{% endif %}{% else %}{{ plan.duration_days }} {% if CURRENT_LANGUAGE == 'en' %}Days{% else %}يوم{% endif %}{% endif %}
                     </span>
                     <span style="font-size: 0.8125rem; color: var(--color-mocha-muted);">{{ plan.price_egp }} EGP</span>
                 </div>
 
                 <h3 style="font-family: var(--font-arabic-title); font-size: 1.4rem; color: var(--color-mocha-deep); margin-bottom: 6px;">
-                    {{ plan.name_ar }}
+                    {% if CURRENT_LANGUAGE == 'en' %}{{ plan.name }}{% else %}{{ plan.name_ar|default:plan.name }}{% endif %}
                 </h3>
                 <p style="font-size: 0.8125rem; color: var(--color-mocha-muted); min-height: 40px; margin-bottom: 16px;">
-                    {{ plan.description_ar|default:plan.description }}
+                    {% if CURRENT_LANGUAGE == 'en' %}{{ plan.description }}{% else %}{{ plan.description_ar|default:plan.description }}{% endif %}
                 </p>
 
                 <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;">
                     <span style="font-size: 1.25rem; color: var(--color-forest-green); font-weight: 700;">$</span>
                     <span style="font-family: var(--font-english-display); font-size: 2.25rem; font-weight: 700; color: var(--color-forest-green);">{{ plan.price_usd }}</span>
-                    <span style="font-size: 0.8125rem; color: var(--color-mocha-muted);">/ الفترة</span>
+                    <span style="font-size: 0.8125rem; color: var(--color-mocha-muted);">/{% if CURRENT_LANGUAGE == 'en' %}period{% else %}الفترة{% endif %}</span>
                 </div>
 
                 <div style="background: rgba(197, 160, 89, 0.08); border: 1px dashed var(--color-gold-border); border-radius: 10px; padding: 12px; margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; font-size: 0.8125rem; margin-bottom: 6px;">
-                        <span>رصيد قياسي:</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Standard Credits:{% else %}رصيد قياسي:{% endif %}</span>
                         <strong style="color: var(--color-forest-green);">{{ plan.standard_credits|floatformat:0 }}</strong>
                     </div>
                     <div style="display: flex; justify-content: space-between; font-size: 0.8125rem;">
-                        <span>رصيد مميز:</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Premium Credits:{% else %}رصيد مميز:{% endif %}</span>
                         <strong style="color: var(--color-gold);">{{ plan.premium_credits|floatformat:0 }}</strong>
                     </div>
                 </div>
 
-                <a href="/admin/billing/subscription/add/" class="btn-royal-forest" style="width: 100%; justify-content: center; font-size: 0.875rem; text-decoration: none; margin-top: auto;">
-                    <span>اختيار الباقة</span>
-                    <span style="font-size: 0.9rem;">←</span>
+                <a href="/studio/" class="btn-royal-forest" style="width: 100%; justify-content: center; font-size: 0.875rem; text-decoration: none; margin-top: auto;">
+                    <span>{% if CURRENT_LANGUAGE == 'en' %}Select Plan{% else %}اختيار الباقة{% endif %}</span>
+                    <span style="font-size: 0.9rem;">{% if CURRENT_LANGUAGE == 'en' %}→{% else %}←{% endif %}</span>
                 </a>
             </div>
             {% endfor %}
@@ -360,14 +383,14 @@
             <!-- Sliders Card -->
             <div class="calc-sliders-card" style="background-color: var(--bg-cream-highlight); border: var(--border-gold-fine); border-radius: 16px; padding: 36px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 28px;">
                 <h3 style="font-family: var(--font-arabic-title); font-size: 1.3rem; color: var(--color-mocha-deep);">
-                    حاسبة الاحتياج الشهري التقديري
+                    {% if CURRENT_LANGUAGE == 'en' %}Monthly Consumption Estimator{% else %}حاسبة الاحتياج الشهري التقديري{% endif %}
                 </h3>
 
                 <!-- Video Slider -->
                 <div class="calc-slider-group">
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: var(--color-mocha-deep); margin-bottom: 8px;">
-                        <span>دقائق الفيديو 4K المطلوبة:</span>
-                        <span style="color: var(--color-forest-green);"><strong id="val-video-num">10</strong> دقيقة</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}4K Video Minutes Required:{% else %}دقائق الفيديو 4K المطلوبة:{% endif %}</span>
+                        <span style="color: var(--color-forest-green);"><strong id="val-video-num">10</strong> {% if CURRENT_LANGUAGE == 'en' %}min{% else %}دقيقة{% endif %}</span>
                     </div>
                     <input type="range" id="slider-video" min="0" max="60" value="10" step="1" style="width: 100%; accent-color: var(--color-forest-green);">
                 </div>
@@ -375,8 +398,8 @@
                 <!-- Audio Slider -->
                 <div class="calc-slider-group">
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: var(--color-mocha-deep); margin-bottom: 8px;">
-                        <span>ساعات الصوت والاستنساخ:</span>
-                        <span style="color: var(--color-forest-green);"><strong id="val-audio-num">5</strong> ساعات</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Voice Synthesis & Audio Hours:{% else %}ساعات الصوت والاستنساخ:{% endif %}</span>
+                        <span style="color: var(--color-forest-green);"><strong id="val-audio-num">5</strong> {% if CURRENT_LANGUAGE == 'en' %}hours{% else %}ساعات{% endif %}</span>
                     </div>
                     <input type="range" id="slider-audio" min="0" max="30" value="5" step="1" style="width: 100%; accent-color: var(--color-forest-green);">
                 </div>
@@ -384,8 +407,8 @@
                 <!-- Images Slider -->
                 <div class="calc-slider-group">
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; color: var(--color-mocha-deep); margin-bottom: 8px;">
-                        <span>الصور المولدة عالية الدقة:</span>
-                        <span style="color: var(--color-forest-green);"><strong id="val-image-num">50</strong> صورة</span>
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Generated Ultra-HD Images:{% else %}الصور المولدة عالية الدقة:{% endif %}</span>
+                        <span style="color: var(--color-forest-green);"><strong id="val-image-num">50</strong> {% if CURRENT_LANGUAGE == 'en' %}images{% else %}صورة{% endif %}</span>
                     </div>
                     <input type="range" id="slider-image" min="0" max="300" value="50" step="5" style="width: 100%; accent-color: var(--color-forest-green);">
                 </div>
@@ -394,27 +417,29 @@
             <!-- Result Card -->
             <div class="calc-result-card" style="background: linear-gradient(135deg, #1C130E 0%, #152418 60%, #1A120E 100%); border: 2px solid var(--color-gold); border-radius: 16px; padding: 40px 32px; color: #FFFDF9; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
-                    <span style="font-size: 0.8125rem; color: #C5A059; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">الرصيد الموصى به:</span>
+                    <span style="font-size: 0.8125rem; color: #C5A059; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
+                        {% if CURRENT_LANGUAGE == 'en' %}Recommended Balance:{% else %}الرصيد الموصى به:{% endif %}
+                    </span>
                     <div style="display: flex; align-items: baseline; gap: 8px; margin: 12px 0 16px;">
                         <span id="calc-total-credits" style="font-family: var(--font-english-display); font-size: 2.75rem; font-weight: 900; color: var(--color-gold-bright);">475</span>
-                        <span style="font-size: 0.9375rem; color: #E8DFC8;">رصيد نقطي</span>
+                        <span style="font-size: 0.9375rem; color: #E8DFC8;">{% if CURRENT_LANGUAGE == 'en' %}Credits{% else %}رصيد نقطي{% endif %}</span>
                     </div>
                     <div style="padding: 10px 14px; background: rgba(255,255,255,0.06); border-radius: 8px; border: 1px solid rgba(197, 160, 89, 0.3); margin-bottom: 20px;">
-                        <span style="font-size: 0.75rem; color: #A89F91;">الباقة الملائمة لاحتياجك:</span>
-                        <div id="calc-tier-name" style="font-family: var(--font-arabic-title); font-size: 1.15rem; color: #2ECC71; font-weight: 700; margin-top: 4px;">باقة المبدعين (Starter)</div>
+                        <span style="font-size: 0.75rem; color: #A89F91;">{% if CURRENT_LANGUAGE == 'en' %}Matching Tier for You:{% else %}الباقة الملائمة لاحتياجك:{% endif %}</span>
+                        <div id="calc-tier-name" style="font-family: var(--font-arabic-title); font-size: 1.15rem; color: #2ECC71; font-weight: 700; margin-top: 4px;">{% if CURRENT_LANGUAGE == 'en' %}Creator Starter Plan{% else %}باقة المبدعين (Starter){% endif %}</div>
                     </div>
                 </div>
 
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(197, 160, 89, 0.25); padding-top: 16px; margin-bottom: 20px;">
-                        <span style="font-size: 0.875rem; color: #E8DFC8;">السعر التقديري:</span>
+                        <span style="font-size: 0.875rem; color: #E8DFC8;">{% if CURRENT_LANGUAGE == 'en' %}Estimated Price:{% else %}السعر التقديري:{% endif %}</span>
                         <div style="text-align: left;">
                             <span id="calc-price-usd" style="font-family: var(--font-english-display); font-size: 1.5rem; font-weight: 700; color: #FFFDF8;">$29</span>
                             <span style="font-size: 0.75rem; color: #C5A059; display: block;" id="calc-price-sar">~ 109 SAR</span>
                         </div>
                     </div>
-                    <a href="/admin/billing/subscription/add/" class="btn-royal-forest" style="width: 100%; justify-content: center; font-size: 0.9375rem; text-decoration: none;">
-                        <span>اختيار الباقة والاشتراك</span>
+                    <a href="/studio/" class="btn-royal-forest" style="width: 100%; justify-content: center; font-size: 0.9375rem; text-decoration: none;">
+                        <span>{% if CURRENT_LANGUAGE == 'en' %}Start Creating in Studio{% else %}اختيار الباقة والاشتراك{% endif %}</span>
                     </a>
                 </div>
             </div>

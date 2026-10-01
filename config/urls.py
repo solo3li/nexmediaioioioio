@@ -9,6 +9,8 @@ from apps.billing import views as billing_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('i18n/', include('django.conf.urls.i18n')),
+    path('set-language/', views.set_language_view, name='set_language'),
     path('', views.home, name='home'),
     path('studio/', include('apps.tools.urls')),
     path('accounts/', include('apps.accounts.urls')),

@@ -1,13 +1,15 @@
 {% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ CURRENT_LANGUAGE|default:'ar' }}" dir="{% if CURRENT_LANGUAGE == 'en' %}ltr{% else %}rtl{% endif %}" class="lang-{{ CURRENT_LANGUAGE|default:'ar' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}نكس ميديا | nexmedia.ai — استوديو الإنتاج الإبداعي وصناعة الوسائط بالذكاء الاصطناعي{% endblock %}</title>
+    <title>{% block title %}{% if CURRENT_LANGUAGE == 'en' %}NexMedia | AI Media Production & Creative Studio{% else %}نكس ميديا | nexmedia.ai — استوديو الإنتاج الإبداعي وصناعة الوسائط بالذكاء الاصطناعي{% endif %}{% endblock %}</title>
     
     <!-- Meta tags for SEO & Aesthetics -->
-    <meta name="description" content="منصة nexmedia.ai الاحترافية لإنتاج وتوليد الفيديو 4K، استنساخ وهندسة الصوت، والتصميم البصري الاحترافي.">
+    <meta name="description" content="{% if CURRENT_LANGUAGE == 'en' %}NexMedia.ai - Enterprise AI platform for 4K video generation, neural voice cloning, and generative digital art.{% else %}منصة nexmedia.ai الاحترافية لإنتاج وتوليد الفيديو 4K، استنساخ وهندسة الصوت، والتصميم البصري الاحترافي.{% endif %}">
     <meta name="theme-color" content="#FAF7F0">
     
     <!-- Google Fonts: Luxury Serif & Royal Arabic Calligraphy -->
@@ -48,6 +50,55 @@
         .royal-hero-section {
             padding-top: 15px !important;
         }
+
+        /* Bilingual Switcher Styling */
+        .lang-switch-toggle {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(14, 58, 31, 0.08);
+            border: 1px solid rgba(197, 160, 89, 0.45);
+            border-radius: 20px;
+            padding: 2px 5px;
+            gap: 2px;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+        .lang-badge {
+            color: #4A3E31;
+            text-decoration: none;
+            padding: 3px 8px;
+            border-radius: 14px;
+            transition: all 0.2s ease;
+            display: inline-block;
+            line-height: 1.2;
+        }
+        .lang-badge.active {
+            background: #0E3A1F;
+            color: #FAF7F0;
+            box-shadow: 0 2px 8px rgba(14, 58, 31, 0.28);
+        }
+        .lang-badge:hover:not(.active) {
+            color: #0E3A1F;
+            background: rgba(197, 160, 89, 0.22);
+        }
+        .lang-separator {
+            color: rgba(197, 160, 89, 0.6);
+            font-size: 10px;
+        }
+
+        /* LTR Adjustments for English */
+        html[dir="ltr"] body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            text-align: left;
+        }
+        html[dir="ltr"] .header-inner,
+        html[dir="ltr"] .footer-inner,
+        html[dir="ltr"] .footer-bottom-inner {
+            direction: ltr;
+        }
+        html[dir="ltr"] .brand-names {
+            text-align: left;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -72,41 +123,49 @@
                 </div>
                 <div class="brand-names">
                     <span class="brand-en">nexmedia<span class="ai-badge">ai</span></span>
-                    <span class="brand-ar">نكس ميديا</span>
+                    <span class="brand-ar">{% if CURRENT_LANGUAGE == 'en' %}Creative Studio{% else %}نكس ميديا{% endif %}</span>
                 </div>
             </a>
 
             <!-- Nav Links -->
             <nav class="nav-menu" aria-label="Main Navigation">
-                <a href="/studio/" class="nav-item" style="color: #C5A059; font-weight: 700;">الاستوديو</a>
-                <a href="/#pricing-calculator" class="nav-item">الباقات والأسعار</a>
-                <a href="{% url 'affiliate_dashboard' %}" class="nav-item">برنامج المسوقين</a>
-                <a href="{% url 'support_list' %}" class="nav-item">الدعم الفني</a>
+                <a href="/studio/" class="nav-item" style="color: #C5A059; font-weight: 700;">
+                    {% if CURRENT_LANGUAGE == 'en' %}AI Studio{% else %}الاستوديو{% endif %}
+                </a>
+                <a href="/#pricing-calculator" class="nav-item">
+                    {% if CURRENT_LANGUAGE == 'en' %}Pricing & Plans{% else %}الباقات والأسعار{% endif %}
+                </a>
+                <a href="{% url 'affiliate_dashboard' %}" class="nav-item">
+                    {% if CURRENT_LANGUAGE == 'en' %}Affiliates{% else %}برنامج المسوقين{% endif %}
+                </a>
+                <a href="{% url 'support_list' %}" class="nav-item">
+                    {% if CURRENT_LANGUAGE == 'en' %}Support{% else %}الدعم الفني{% endif %}
+                </a>
             </nav>
 
             <!-- Header Action Buttons & Language Switcher -->
             <div class="header-actions">
                 <!-- Instant Bilingual Switcher -->
-                <div class="lang-switch-toggle" id="lang-toggle-btn" role="button" tabindex="0" title="تبديل اللغة / Switch Language">
-                    <span class="lang-badge active" data-lang="ar">عربي</span>
+                <div class="lang-switch-toggle" id="lang-toggle-btn" role="navigation" aria-label="Language Switcher">
+                    <a href="/set-language/?language=ar&next={{ request.path }}" class="lang-badge {% if CURRENT_LANGUAGE != 'en' %}active{% endif %}" title="العربية">عربي</a>
                     <span class="lang-separator">/</span>
-                    <span class="lang-badge" data-lang="en">EN</span>
+                    <a href="/set-language/?language=en&next={{ request.path }}" class="lang-badge {% if CURRENT_LANGUAGE == 'en' %}active{% endif %}" title="English">EN</a>
                 </div>
 
                 {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" class="btn-ghost" title="الملف الشخصي والمحفظة" style="border-color: rgba(197,160,89,0.5); color: #C5A059;">
+                <a href="{% url 'profile' %}" class="btn-ghost" title="{% if CURRENT_LANGUAGE == 'en' %}Profile & Wallet{% else %}الملف الشخصي والمحفظة{% endif %}" style="border-color: rgba(197,160,89,0.5); color: #C5A059;">
                     👑 {{ user.username }}
                 </a>
-                <a href="{% url 'logout' %}" class="btn-ghost" style="color: #FFA8A8; font-size: 13px;">خروج</a>
+                <a href="{% url 'logout' %}" class="btn-ghost" style="color: #FFA8A8; font-size: 13px;">{% if CURRENT_LANGUAGE == 'en' %}Logout{% else %}خروج{% endif %}</a>
                 {% else %}
-                <a href="{% url 'login' %}" class="btn-ghost">دخول</a>
+                <a href="{% url 'login' %}" class="btn-ghost">{% if CURRENT_LANGUAGE == 'en' %}Sign In{% else %}دخول{% endif %}</a>
                 <a href="{% url 'register' %}" class="btn-royal-forest" id="cta-start-btn">
-                    <span>حساب جديد</span>
+                    <span>{% if CURRENT_LANGUAGE == 'en' %}Get Started{% else %}حساب جديد{% endif %}</span>
                 </a>
                 {% endif %}
 
                 <!-- Mobile Menu Button -->
-                <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="فتح القائمة">
+                <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Menu">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
@@ -118,21 +177,21 @@
     <!-- Mobile Drawer Navigation -->
     <div class="mobile-nav-drawer" id="mobile-drawer" aria-hidden="true">
         <div class="drawer-header">
-            <span class="drawer-title">نكس ميديا للوسائط الذكية</span>
-            <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="إغلاق">✕</button>
+            <span class="drawer-title">{% if CURRENT_LANGUAGE == 'en' %}NexMedia AI Studio{% else %}نكس ميديا للوسائط الذكية{% endif %}</span>
+            <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="Close">✕</button>
         </div>
         <nav class="drawer-menu">
-            <a href="/studio/" class="drawer-item" style="color: #C5A059; font-weight: bold;">الاستوديو</a>
-            <a href="/#pricing-calculator" class="drawer-item">الباقات والأسعار</a>
-            <a href="{% url 'affiliate_dashboard' %}" class="drawer-item">برنامج المسوقين والعمولات</a>
-            <a href="{% url 'support_list' %}" class="drawer-item">الدعم الفني والمساعدة</a>
+            <a href="/studio/" class="drawer-item" style="color: #C5A059; font-weight: bold;">{% if CURRENT_LANGUAGE == 'en' %}AI Studio{% else %}الاستوديو{% endif %}</a>
+            <a href="/#pricing-calculator" class="drawer-item">{% if CURRENT_LANGUAGE == 'en' %}Pricing & Plans{% else %}الباقات والأسعار{% endif %}</a>
+            <a href="{% url 'affiliate_dashboard' %}" class="drawer-item">{% if CURRENT_LANGUAGE == 'en' %}Affiliate Program{% else %}برنامج المسوقين والعمولات{% endif %}</a>
+            <a href="{% url 'support_list' %}" class="drawer-item">{% if CURRENT_LANGUAGE == 'en' %}Help & Support{% else %}الدعم الفني والمساعدة{% endif %}</a>
             {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="drawer-item">الملف الشخصي والمحفظة</a>
-            <a href="{% url 'invoices_list' %}" class="drawer-item">سجل الفواتير</a>
-            <a href="{% url 'logout' %}" class="drawer-item" style="color: #FF5757;">تسجيل الخروج</a>
+            <a href="{% url 'profile' %}" class="drawer-item">{% if CURRENT_LANGUAGE == 'en' %}Profile & Wallet{% else %}الملف الشخصي والمحفظة{% endif %}</a>
+            <a href="{% url 'invoices_list' %}" class="drawer-item">{% if CURRENT_LANGUAGE == 'en' %}Invoices{% else %}سجل الفواتير{% endif %}</a>
+            <a href="{% url 'logout' %}" class="drawer-item" style="color: #FF5757;">{% if CURRENT_LANGUAGE == 'en' %}Log Out{% else %}تسجيل الخروج{% endif %}</a>
             {% else %}
-            <a href="{% url 'login' %}" class="drawer-item">تسجيل الدخول</a>
-            <a href="{% url 'register' %}" class="drawer-item" style="color: #C5A059;">إنشاء حساب جديد</a>
+            <a href="{% url 'login' %}" class="drawer-item">{% if CURRENT_LANGUAGE == 'en' %}Sign In{% else %}تسجيل الدخول{% endif %}</a>
+            <a href="{% url 'register' %}" class="drawer-item" style="color: #C5A059;">{% if CURRENT_LANGUAGE == 'en' %}Create Account{% else %}إنشاء حساب جديد{% endif %}</a>
             {% endif %}
         </nav>
     </div>
@@ -150,51 +209,55 @@
             <div class="footer-brand">
                 <div class="brand-names">
                     <span class="brand-en">nexmedia.ai</span>
-                    <span class="brand-ar">استوديو نكس ميديا للوسائط الذكية</span>
+                    <span class="brand-ar">{% if CURRENT_LANGUAGE == 'en' %}NexMedia Creative Studio{% else %}استوديو نكس ميديا للوسائط الذكية{% endif %}</span>
                 </div>
                 <p class="footer-desc">
+                    {% if CURRENT_LANGUAGE == 'en' %}
+                    The unified creative studio for creators and enterprises to generate 4K cinematic video, clone voices, and design high-impact generative visual assets with state-of-the-art AI models.
+                    {% else %}
                     المنصة الإبداعية المتكاملة لصناع المحتوى والشركات لإنتاج وتوليد مقاطع الفيديو 4K، استنساخ وهندسة الصوت، وتصميم الصور التوليدية الاحترافية بأحدث نماذج الذكاء الاصطناعي.
+                    {% endif %}
                 </p>
             </div>
 
             <div class="footer-links-grid">
                 <div class="footer-col">
-                    <h4 class="col-title">استوديو الصوتيات</h4>
-                    <a href="/studio/tts/">تحويل النص إلى كلام (TTS)</a>
-                    <a href="/studio/stt/">تفريغ الصوت الذكي (STT)</a>
-                    <a href="/#three-portals">استنساخ الأصوات (Voice AI)</a>
-                    <a href="/#three-portals">تنقية وعزل الصوت</a>
+                    <h4 class="col-title">{% if CURRENT_LANGUAGE == 'en' %}Audio Studio{% else %}استوديو الصوتيات{% endif %}</h4>
+                    <a href="/studio/tts/">{% if CURRENT_LANGUAGE == 'en' %}Text to Speech (TTS){% else %}تحويل النص إلى كلام (TTS){% endif %}</a>
+                    <a href="/studio/stt/">{% if CURRENT_LANGUAGE == 'en' %}Speech to Text (STT){% else %}تفريغ الصوت الذكي (STT){% endif %}</a>
+                    <a href="/#three-portals">{% if CURRENT_LANGUAGE == 'en' %}Voice AI Cloning{% else %}استنساخ الأصوات (Voice AI){% endif %}</a>
+                    <a href="/#three-portals">{% if CURRENT_LANGUAGE == 'en' %}Audio Enhancement{% else %}تنقية وعزل الصوت{% endif %}</a>
                 </div>
                 <div class="footer-col">
-                    <h4 class="col-title">استوديو الفيديو 4K</h4>
-                    <a href="/studio/text-to-video/">توليد الفيديو من النص</a>
-                    <a href="/studio/image-to-video/">تحريك الصور الثابتة</a>
-                    <a href="/studio/lipsync/">مزامنة الشفاه الصوتية</a>
-                    <a href="/studio/reference-to-video/">الفيديو متعدد المراجع</a>
+                    <h4 class="col-title">{% if CURRENT_LANGUAGE == 'en' %}Video Studio 4K{% else %}استوديو الفيديو 4K{% endif %}</h4>
+                    <a href="/studio/text-to-video/">{% if CURRENT_LANGUAGE == 'en' %}Text to Video{% else %}توليد الفيديو من النص{% endif %}</a>
+                    <a href="/studio/image-to-video/">{% if CURRENT_LANGUAGE == 'en' %}Image to Video{% else %}تحريك الصور الثابتة{% endif %}</a>
+                    <a href="/studio/lipsync/">{% if CURRENT_LANGUAGE == 'en' %}Lip Sync Studio{% else %}مزامنة الشفاه الصوتية{% endif %}</a>
+                    <a href="/studio/reference-to-video/">{% if CURRENT_LANGUAGE == 'en' %}Reference to Video{% else %}الفيديو متعدد المراجع{% endif %}</a>
                 </div>
                 <div class="footer-col">
-                    <h4 class="col-title">استوديو التصميم والصور</h4>
-                    <a href="/studio/text-to-image/">توليد الصور التشكيلية</a>
-                    <a href="/studio/avatar-video/">استوديو الأفاتار المتكلم</a>
-                    <a href="/studio/motion-control/">التحكم الحركي الموجه</a>
-                    <a href="/#pricing-calculator">باقات الاشتراك والرصيد</a>
+                    <h4 class="col-title">{% if CURRENT_LANGUAGE == 'en' %}Visual Studio{% else %}استوديو التصميم والصور{% endif %}</h4>
+                    <a href="/studio/text-to-image/">{% if CURRENT_LANGUAGE == 'en' %}Text to Image{% else %}توليد الصور التشكيلية{% endif %}</a>
+                    <a href="/studio/avatar-video/">{% if CURRENT_LANGUAGE == 'en' %}Talking Avatar Video{% else %}استوديو الأفاتار المتكلم{% endif %}</a>
+                    <a href="/studio/motion-control/">{% if CURRENT_LANGUAGE == 'en' %}Motion Control{% else %}التحكم الحركي الموجه{% endif %}</a>
+                    <a href="/#pricing-calculator">{% if CURRENT_LANGUAGE == 'en' %}Pricing Plans{% else %}باقات الاشتراك والرصيد{% endif %}</a>
                 </div>
                 <div class="footer-col">
-                    <h4 class="col-title">المساعدة والدعم</h4>
-                    <a href="{% url 'support_list' %}">مركز الدعم الفني المباشر</a>
-                    <a href="{% url 'affiliate_dashboard' %}">برنامج التسويق والعمولات</a>
-                    <a href="/#pricing-calculator">حاسبة الرصيد الشهري</a>
-                    <a href="{% url 'profile' %}">إدارة المحفظة والحساب</a>
+                    <h4 class="col-title">{% if CURRENT_LANGUAGE == 'en' %}Help & Support{% else %}المساعدة والدعم{% endif %}</h4>
+                    <a href="{% url 'support_list' %}">{% if CURRENT_LANGUAGE == 'en' %}Help Center & Tickets{% else %}مركز الدعم الفني المباشر{% endif %}</a>
+                    <a href="{% url 'affiliate_dashboard' %}">{% if CURRENT_LANGUAGE == 'en' %}Affiliate Program{% else %}برنامج التسويق والعمولات{% endif %}</a>
+                    <a href="/#pricing-calculator">{% if CURRENT_LANGUAGE == 'en' %}Credit Calculator{% else %}حاسبة الرصيد الشهري{% endif %}</a>
+                    <a href="{% url 'profile' %}">{% if CURRENT_LANGUAGE == 'en' %}Wallet & Account{% else %}إدارة المحفظة والحساب{% endif %}</a>
                 </div>
             </div>
         </div>
 
         <div class="footer-bottom">
             <div class="container footer-bottom-inner">
-                <p class="copyright">© 2026 nexmedia.ai. جميع الحقوق محفوظة.</p>
+                <p class="copyright">© 2026 nexmedia.ai. {% if CURRENT_LANGUAGE == 'en' %}All rights reserved.{% else %}جميع الحقوق محفوظة.{% endif %}</p>
                 <div class="footer-status-tag">
                     <span class="pulse-indicator"></span>
-                    <span>جميع الأنظمة متصلة وتعمل بكفاءة</span>
+                    <span>{% if CURRENT_LANGUAGE == 'en' %}All systems operational{% else %}جميع الأنظمة متصلة وتعمل بكفاءة{% endif %}</span>
                 </div>
             </div>
         </div>

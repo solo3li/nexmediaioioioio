@@ -1,35 +1,42 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}بوابة الدفع التجريبية الملكية | NexMedia Checkout{% endblock %}
+{% block title %}
+{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == 'en' %}Secure Payment Simulation | NexMedia Checkout{% else %}بوابة الدفع التجريبية الملكية | NexMedia Checkout{% endif %}
+{% endblock %}
 
 {% block content %}
+{% get_current_language as LANGUAGE_CODE %}
 <div style="min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
-    <div style="max-width: 580px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0;">
+    <div style="max-width: 600px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.4); border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0;">
         
         <!-- Header -->
         <div style="text-align: center; margin-bottom: 30px;">
-            <div style="display: inline-block; width: 64px; height: 64px; border-radius: 50%; background: rgba(197, 160, 89, 0.15); border: 1px solid #C5A059; line-height: 64px; font-size: 28px; margin-bottom: 16px;">
-                💳
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 68px; height: 68px; border-radius: 50%; background: rgba(197, 160, 89, 0.15); border: 1px solid #C5A059; margin-bottom: 16px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#C5A059" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
             </div>
-            <h2 style="font-family: 'Amiri', 'Cinzel', serif; color: #C5A059; font-size: 28px; margin-bottom: 8px;">
-                بوابة الدفع الآمنة (بيئة الاختبار)
+            <h2 style="font-family: {% if LANGUAGE_CODE == 'en' %}'Cinzel', 'Outfit', sans-serif{% else %}'Amiri', 'Cinzel', serif{% endif %}; color: #C5A059; font-size: 26px; margin-bottom: 8px;">
+                {% if LANGUAGE_CODE == 'en' %}Secure Payment Simulator{% else %}بوابة الدفع الآمنة (بيئة الاختبار){% endif %}
             </h2>
-            <p style="color: #A0B2A6; font-size: 14px;">
-                Royal Andalusian Secure Payment Simulator • {{ gateway|upper }}
+            <p style="color: #A0B2A6; font-size: 14px; margin: 0;">
+                NexMedia Royal Secure Gateway • {{ gateway|upper }}
             </p>
         </div>
 
         <!-- Plan Summary Box -->
-        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 14px;">
                 <div>
-                    <h3 style="color: #FAF7F0; font-size: 18px; margin-bottom: 4px;">{{ plan.name_ar }} ({{ plan.name }})</h3>
+                    <h3 style="color: #FAF7F0; font-size: 18px; margin: 0 0 4px 0;">
+                        {% if LANGUAGE_CODE == 'en' %}{{ plan.name|default:plan.name_ar }}{% else %}{{ plan.name_ar|default:plan.name }}{% endif %}
+                    </h3>
                     <span style="font-size: 12px; color: #C5A059; background: rgba(197,160,89,0.15); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(197,160,89,0.3);">
-                        صلاحية {{ plan.duration_days }} يوماً
+                        {% if LANGUAGE_CODE == 'en' %}{{ plan.duration_days }} Days Validity{% else %}صلاحية {{ plan.duration_days }} يوماً{% endif %}
                     </span>
                 </div>
-                <div style="text-align: left;">
-                    <span style="font-size: 24px; font-weight: bold; color: #C5A059;">
+                <div style="text-align: {% if LANGUAGE_CODE == 'en' %}right{% else %}left{% endif %};">
+                    <span style="font-size: 24px; font-weight: bold; color: #C5A059; font-family: var(--font-english-display);">
                         {{ payment.amount }} {{ payment.currency }}
                     </span>
                 </div>
@@ -37,35 +44,41 @@
 
             <!-- Credits Details -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 13px;">
-                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border-left: 3px solid #4CAF50;">
-                    <div style="color: #8EBA9A;">الرصيد القياسي:</div>
-                    <div style="font-size: 16px; font-weight: bold; color: #FFF; margin-top: 4px;">
-                        +{{ plan.standard_credits|floatformat:0 }} كريديت
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; {% if LANGUAGE_CODE == 'en' %}border-left{% else %}border-right{% endif %}: 3px solid #4CAF50;">
+                    <div style="color: #8EBA9A;">{% if LANGUAGE_CODE == 'en' %}Standard Credits:{% else %}الرصيد القياسي:{% endif %}</div>
+                    <div style="font-size: 17px; font-weight: bold; color: #FFF; margin-top: 4px; font-family: var(--font-english-display);">
+                        +{{ plan.standard_credits|floatformat:0 }}
                     </div>
                 </div>
-                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border-left: 3px solid #C5A059;">
-                    <div style="color: #C5A059;">الرصيد المميز (Premium):</div>
-                    <div style="font-size: 16px; font-weight: bold; color: #FFF; margin-top: 4px;">
-                        +{{ plan.premium_credits|floatformat:0 }} كريديت
+                <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; {% if LANGUAGE_CODE == 'en' %}border-left{% else %}border-right{% endif %}: 3px solid #C5A059;">
+                    <div style="color: #C5A059;">{% if LANGUAGE_CODE == 'en' %}Premium Credits:{% else %}الرصيد المميز (Premium):{% endif %}</div>
+                    <div style="font-size: 17px; font-weight: bold; color: #FFF; margin-top: 4px; font-family: var(--font-english-display);">
+                        +{{ plan.premium_credits|floatformat:0 }}
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Simulation Notice -->
-        <div style="background: rgba(197, 160, 89, 0.08); border-right: 4px solid #C5A059; padding: 12px 16px; border-radius: 4px; margin-bottom: 30px; font-size: 13px; color: #D1DED5; line-height: 1.6;">
-            <strong>تنبيه وضع الاختبار (Sandbox Mode):</strong><br>
-            يمكنك تأكيد الدفع الفوري لتفعيل اشتراكك وإضافة الرصيد إلى محفظتك واختبار نظام عمولات المسوقين تلقائياً.
+        <div style="background: rgba(197, 160, 89, 0.08); {% if LANGUAGE_CODE == 'en' %}border-left{% else %}border-right{% endif %}: 4px solid #C5A059; padding: 14px 16px; border-radius: 6px; margin-bottom: 25px; font-size: 13px; color: #D1DED5; line-height: 1.6;">
+            <strong>{% if LANGUAGE_CODE == 'en' %}Sandbox Simulation Mode:{% else %}تنبيه وضع الاختبار (Sandbox Mode):{% endif %}</strong><br>
+            {% if LANGUAGE_CODE == 'en' %}
+                Confirming payment will instantly provision your account balance, activate subscription perks, and trigger automated affiliate attribution.
+            {% else %}
+                يمكنك تأكيد الدفع الفوري لتفعيل اشتراكك وإضافة الرصيد إلى محفظتك واختبار نظام عمولات المسوقين تلقائياً.
+            {% endif %}
         </div>
 
         <!-- Form Actions -->
         <form method="POST" style="display: flex; flex-direction: column; gap: 14px;">
             {% csrf_token %}
-            <button type="submit" name="action" value="confirm" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(197,160,89,0.3);">
-                ✓ إتمام الدفع وتفعيل الباقة فورياً (Confirm & Activate)
+            <button type="submit" name="action" value="confirm" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 15px; padding: 15px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(197,160,89,0.3);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>{% if LANGUAGE_CODE == 'en' %}Confirm Payment & Activate Plan{% else %}إتمام الدفع وتفعيل الباقة فورياً{% endif %}</span>
             </button>
-            <button type="submit" name="action" value="cancel" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #A0B2A6; font-size: 14px; padding: 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s;">
-                ✕ إلغاء عملية الدفع (Cancel)
+            <button type="submit" name="action" value="cancel" style="display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #A0B2A6; font-size: 14px; padding: 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <span>{% if LANGUAGE_CODE == 'en' %}Cancel Transaction{% else %}إلغاء عملية الدفع{% endif %}</span>
             </button>
         </form>
 

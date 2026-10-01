@@ -1,21 +1,27 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}مركز الدعم الفني | NexMedia Support{% endblock %}
+{% block title %}
+{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == 'en' %}Helpdesk & Support Center | NexMedia{% else %}مركز المساعدة والدعم الفني | NexMedia Support{% endif %}
+{% endblock %}
 
 {% block content %}
-<div style="max-width: 1000px; margin: 40px auto; padding: 0 20px; color: #FAF7F0;">
+{% get_current_language as LANGUAGE_CODE %}
+<div style="max-width: 1050px; margin: 40px auto; padding: 0 20px; color: #FAF7F0;">
     
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
         <div>
-            <h1 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 28px; color: #C5A059; margin: 0 0 6px 0;">
-                مركز المساعدة والدعم الفني
+            <h1 style="font-family: {% if LANGUAGE_CODE == 'en' %}'Cinzel', 'Outfit', sans-serif{% else %}'Amiri', 'Cinzel', serif{% endif %}; font-size: 28px; color: #C5A059; margin: 0 0 6px 0;">
+                {% if LANGUAGE_CODE == 'en' %}Support & Helpdesk Center{% else %}مركز المساعدة والدعم الفني{% endif %}
             </h1>
             <p style="color: #A0B2A6; font-size: 14px; margin: 0;">
-                فريق الدعم الفني والمساعدة المباشرة
+                {% if LANGUAGE_CODE == 'en' %}Direct live communication with technical specialists{% else %}فريق الدعم الفني المتخصص والمساعدة التقنية المباشرة{% endif %}
             </p>
         </div>
-        <button onclick="document.getElementById('newTicketModal').style.display='flex'" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(197,160,89,0.3);">
-            + فتح تذكرة دعم جديدة
+        <button onclick="document.getElementById('newTicketModal').style.display='flex'" style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(197,160,89,0.3);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>{% if LANGUAGE_CODE == 'en' %}Open New Support Ticket{% else %}فتح تذكرة دعم جديدة{% endif %}</span>
         </button>
     </div>
 
@@ -30,14 +36,14 @@
     <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 16px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);">
         {% if tickets %}
         <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px;">
+            <table style="width: 100%; border-collapse: collapse; text-align: {% if LANGUAGE_CODE == 'en' %}left{% else %}right{% endif %}; font-size: 14px;">
                 <thead>
                     <tr style="border-bottom: 1px solid rgba(197, 160, 89, 0.3); color: #8EBA9A;">
-                        <th style="padding: 12px 16px;">رقم التذكرة</th>
-                        <th style="padding: 12px 16px;">الموضوع</th>
-                        <th style="padding: 12px 16px;">الحالة</th>
-                        <th style="padding: 12px 16px;">آخر تحديث</th>
-                        <th style="padding: 12px 16px; text-align: center;">عرض</th>
+                        <th style="padding: 12px 16px;">{% if LANGUAGE_CODE == 'en' %}Ticket #{% else %}رقم التذكرة{% endif %}</th>
+                        <th style="padding: 12px 16px;">{% if LANGUAGE_CODE == 'en' %}Subject{% else %}الموضوع{% endif %}</th>
+                        <th style="padding: 12px 16px;">{% if LANGUAGE_CODE == 'en' %}Status{% else %}الحالة{% endif %}</th>
+                        <th style="padding: 12px 16px;">{% if LANGUAGE_CODE == 'en' %}Last Updated{% else %}آخر تحديث{% endif %}</th>
+                        <th style="padding: 12px 16px; text-align: center;">{% if LANGUAGE_CODE == 'en' %}Conversation{% else %}المحادثة{% endif %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,13 +53,18 @@
                         <td style="padding: 14px 16px; font-weight: bold; color: #FFF;">{{ ticket.subject }}</td>
                         <td style="padding: 14px 16px;">
                             <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; {% if ticket.status == 'Open' %}background: rgba(33,150,243,0.15); color: #2196F3; border: 1px solid #2196F3;{% elif ticket.status == 'InProgress' %}background: rgba(255,193,7,0.15); color: #FFC107; border: 1px solid #FFC107;{% else %}background: rgba(76,175,80,0.15); color: #4CAF50; border: 1px solid #4CAF50;{% endif %}">
-                                {{ ticket.get_status_display }}
+                                {% if LANGUAGE_CODE == 'en' %}
+                                    {% if ticket.status == 'Open' %}Open{% elif ticket.status == 'InProgress' %}In Progress{% elif ticket.status == 'Resolved' %}Resolved{% else %}{{ ticket.get_status_display }}{% endif %}
+                                {% else %}
+                                    {{ ticket.get_status_display }}
+                                {% endif %}
                             </span>
                         </td>
                         <td style="padding: 14px 16px; color: #A0B2A6;">{{ ticket.updated_at|date:"d M Y H:i" }}</td>
                         <td style="padding: 14px 16px; text-align: center;">
-                            <a href="{% url 'ticket_detail' ticket.id %}" style="text-decoration: none; color: #C5A059; border: 1px solid rgba(197,160,89,0.3); padding: 5px 12px; border-radius: 6px; font-size: 13px;">
-                                المحادثة ←
+                            <a href="{% url 'ticket_detail' ticket.id %}" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #C5A059; border: 1px solid rgba(197,160,89,0.3); padding: 5px 12px; border-radius: 6px; font-size: 13px; transition: all 0.2s; background: rgba(197,160,89,0.06);">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                <span>{% if LANGUAGE_CODE == 'en' %}Chat{% else %}المحادثة{% endif %}</span>
                             </a>
                         </td>
                     </tr>
@@ -62,9 +73,10 @@
             </table>
         </div>
         {% else %}
-        <p style="text-align: center; color: #A0B2A6; font-size: 14px; padding: 30px;">
-            ليس لديك أي تذاكر دعم حالياً. هل تواجه أي استفسار أو مشكلة تقنية؟ يسعدنا مساعدتك في أي وقت!
-        </p>
+        <div style="text-align: center; color: #A0B2A6; font-size: 14px; padding: 40px 20px;">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="rgba(197,160,89,0.5)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <p style="margin: 0;">{% if LANGUAGE_CODE == 'en' %}No support tickets found. Have an inquiry or need assistance? Create a ticket and our team will assist you!{% else %}ليس لديك أي تذاكر دعم حالياً. هل تواجه أي استفسار أو مشكلة تقنية؟ يسعدنا مساعدتك في أي وقت!{% endif %}</p>
+        </div>
         {% endif %}
     </div>
 
@@ -72,11 +84,11 @@
 
 <!-- New Ticket Modal -->
 <div id="newTicketModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 1000; padding: 20px;">
-    <div style="max-width: 540px; width: 100%; background: #0E1F16; border: 1px solid #C5A059; border-radius: 16px; padding: 35px; color: #FAF7F0;">
+    <div style="max-width: 560px; width: 100%; background: #0E1F16; border: 1px solid #C5A059; border-radius: 16px; padding: 35px; color: #FAF7F0;">
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(197,160,89,0.3); padding-bottom: 12px;">
-            <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 22px; color: #C5A059; margin: 0;">
-                فتح تذكرة دعم فني جديدة
+            <h3 style="font-family: {% if LANGUAGE_CODE == 'en' %}'Cinzel', 'Outfit', sans-serif{% else %}'Amiri', 'Cinzel', serif{% endif %}; font-size: 22px; color: #C5A059; margin: 0;">
+                {% if LANGUAGE_CODE == 'en' %}Open New Support Ticket{% else %}فتح تذكرة دعم فني جديدة{% endif %}
             </h3>
             <button onclick="document.getElementById('newTicketModal').style.display='none'" style="background: none; border: none; color: #A0B2A6; font-size: 22px; cursor: pointer;">
                 ✕
@@ -87,26 +99,33 @@
             {% csrf_token %}
             
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">عنوان المشكلة أو الاستفسار</label>
-                <input type="text" name="subject" required placeholder="مثال: استفسار حول رصيد باقة الـ 4K" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">
+                    {% if LANGUAGE_CODE == 'en' %}Subject or Inquired Topic{% else %}عنوان المشكلة أو الاستفسار{% endif %}
+                </label>
+                <input type="text" name="subject" required placeholder="{% if LANGUAGE_CODE == 'en' %}e.g. Question regarding Ultra 4K credits{% else %}مثال: استفسار حول رصيد باقة الـ 4K{% endif %}" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;">
             </div>
 
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">تفاصيل الرسالة</label>
-                <textarea name="content" required rows="4" placeholder="اشرح المشكلة أو الاستفسار بالتفصيل..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;"></textarea>
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">
+                    {% if LANGUAGE_CODE == 'en' %}Detailed Description{% else %}تفاصيل الرسالة{% endif %}
+                </label>
+                <textarea name="content" required rows="4" placeholder="{% if LANGUAGE_CODE == 'en' %}Explain the inquiry or issue in detail...{% else %}اشرح المشكلة أو الاستفسار بالتفصيل...{% endif %}" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;"></textarea>
             </div>
 
             <div style="margin-bottom: 24px;">
-                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">رابط صورة أو لقطة شاشة توضيحية (اختياري)</label>
-                <input type="url" name="attachment_url" placeholder="https://..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;">
+                <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 6px;">
+                    {% if LANGUAGE_CODE == 'en' %}Screenshot / Media Reference URL (Optional){% else %}رابط صورة أو لقطة شاشة توضيحية (اختياري){% endif %}
+                </label>
+                <input type="url" name="attachment_url" placeholder="https://..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; direction: ltr;">
             </div>
 
             <div style="display: flex; gap: 12px;">
-                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 15px; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
-                    إرسال التذكرة
+                <button type="submit" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 15px; padding: 12px; border: none; border-radius: 8px; cursor: pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <span>{% if LANGUAGE_CODE == 'en' %}Submit Ticket{% else %}إرسال التذكرة{% endif %}</span>
                 </button>
                 <button type="button" onclick="document.getElementById('newTicketModal').style.display='none'" style="border: 1px solid rgba(255,255,255,0.2); background: none; color: #A0B2A6; padding: 12px 20px; border-radius: 8px; cursor: pointer;">
-                    إلغاء
+                    {% if LANGUAGE_CODE == 'en' %}Cancel{% else %}إلغاء{% endif %}
                 </button>
             </div>
         </form>

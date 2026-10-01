@@ -1,4 +1,5 @@
 {% extends 'studio/base_studio.html' %}
+{% load i18n %}
 
 {% block tool_controls %}
 <form id="avatar-form" onsubmit="event.preventDefault(); handleAvatarSubmit();">
@@ -7,10 +8,10 @@
     <div style="margin-bottom: 22px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                محرك الأفاتار الرقمي (Digital Avatar Engine)
+                {% trans "محرك الأفاتار الرقمي (Digital Avatar Engine)" %}
             </label>
             <span id="avatar-model-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(14,58,31,0.2);">
-                28 نموذجاً متاحاً
+                {% trans "28 نموذجاً متاحاً" %}
             </span>
         </div>
         <select id="avatar-model" onchange="onAvatarModelChanged();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); border-radius: 10px; color: #1C120B; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;">
@@ -50,15 +51,15 @@
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                تحديد الشخصية الرقمية (Avatar Persona)
+                {% trans "تحديد الشخصية الرقمية (Avatar Persona)" %}
             </label>
             <!-- Persona Mode Switcher -->
             <div style="display: flex; background: #FAF7F0; border: 1px solid rgba(197,160,89,0.35); border-radius: 8px; padding: 2px;">
                 <button type="button" id="tab-btn-presets" onclick="switchPersonaTab('presets');" style="padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; border: none; background: #0E3A1F; color: #FFF; cursor: pointer; transition: all 0.2s;">
-                    شخصيات جاهزة
+                    {% trans "شخصيات جاهزة" %}
                 </button>
                 <button type="button" id="tab-btn-custom" onclick="switchPersonaTab('custom');" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #6E5A44; cursor: pointer; transition: all 0.2s;">
-                    صورة مخصصة
+                    {% trans "صورة مخصصة" %}
                 </button>
             </div>
         </div>
@@ -73,8 +74,8 @@
                     <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FAF7F0; border: 1.5px solid #C5A059; display: flex; align-items: center; justify-content: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E3A1F" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
-                    <div style="font-size: 12.5px; font-weight: 700; color: #0E3A1F;">مقدم رسمي وقور</div>
-                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">بيئة إخبارية رسمية</div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #0E3A1F;">{% trans "مقدم رسمي وقور" %}</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "بيئة إخبارية رسمية" %}</div>
                 </div>
 
                 <!-- Preset Card 2 -->
@@ -82,8 +83,8 @@
                     <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
                     </div>
-                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">مقدمة برامج ذكية</div>
-                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">استوديو تقني حديث</div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">{% trans "مقدمة برامج ذكية" %}</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "استوديو تقني حديث" %}</div>
                 </div>
 
                 <!-- Preset Card 3 -->
@@ -91,8 +92,8 @@
                     <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                     </div>
-                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">صانع محتوى عصري</div>
-                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">فلوجات وسوشيال ميديا</div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">{% trans "صانع محتوى عصري" %}</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "فلوجات وسوشيال ميديا" %}</div>
                 </div>
 
                 <!-- Preset Card 4 -->
@@ -100,8 +101,8 @@
                     <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><line x1="15" y1="8" x2="17" y2="8"/><line x1="15" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
                     </div>
-                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">سيدة أعمال قيادية</div>
-                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">مؤتمرات وأعمال</div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">{% trans "سيدة أعمال قيادية" %}</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "مؤتمرات وأعمال" %}</div>
                 </div>
 
                 <!-- Preset Card 5 -->
@@ -109,8 +110,8 @@
                     <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v8H4v-8"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
-                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">مذيع وثائقي</div>
-                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">سرد تاريخي ورصين</div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">{% trans "مذيع وثائقي" %}</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "سرد تاريخي ورصين" %}</div>
                 </div>
 
                 <!-- Preset Card 6 -->
@@ -118,8 +119,8 @@
                     <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     </div>
-                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">مدرب أكاديمي</div>
-                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">دروس وشروحات</div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">{% trans "مدرب أكاديمي" %}</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "دروس وشروحات" %}</div>
                 </div>
 
             </div>
@@ -134,8 +135,8 @@
                     <circle cx="9" cy="9" r="2"/>
                     <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                 </svg>
-                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">انقر أو اسحب صورة شخصية واضحة للوجه</div>
-                <div style="font-size: 11.5px; color: #8C7864; margin-top: 4px;">JPG, PNG, WEBM (يوصى بلقطة بورتريه مستقيمة بإضاءة واضحة)</div>
+                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">{% trans "انقر أو اسحب صورة شخصية واضحة للوجه" %}</div>
+                <div style="font-size: 11.5px; color: #8C7864; margin-top: 4px;">{% trans "JPG, PNG, WEBM (يوصى بلقطة بورتريه مستقيمة بإضاءة واضحة)" %}</div>
             </div>
 
             <!-- Custom Photo Preview -->
@@ -151,15 +152,15 @@
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                مصدر الحديث والصوت (Presenter Speech Source)
+                {% trans "مصدر الحديث والصوت (Presenter Speech Source)" %}
             </label>
             <!-- Speech Source Switcher -->
             <div style="display: flex; background: #FAF7F0; border: 1px solid rgba(197,160,89,0.35); border-radius: 8px; padding: 2px;">
                 <button type="button" id="tab-btn-text" onclick="switchSpeechTab('text');" style="padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; border: none; background: #0E3A1F; color: #FFF; cursor: pointer; transition: all 0.2s;">
-                    كتابة نص
+                    {% trans "كتابة نص" %}
                 </button>
                 <button type="button" id="tab-btn-audio" onclick="switchSpeechTab('audio');" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #6E5A44; cursor: pointer; transition: all 0.2s;">
-                    رفع ملف صوتي
+                    {% trans "رفع ملف صوتي" %}
                 </button>
             </div>
         </div>
@@ -167,37 +168,37 @@
         <!-- Mode A: Text Script -->
         <div id="pane-speech-text" style="display: block;">
             <div style="position: relative;">
-                <textarea id="avatar-script-input" rows="4" placeholder="اكتب النص الذي سيلقيه الأفاتار أمام الكاميرا، مثلاً: أهلاً بكم في استوديو الإنتاج الرقمي، حيث ندمج الذكاء الاصطناعي مع أعلى معايير الواقعية السينمائية..." style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 13.5px; line-height: 1.6; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+                <textarea id="avatar-script-input" rows="4" placeholder="{% trans 'اكتب النص الذي سيلقيه الأفاتار أمام الكاميرا، مثلاً: أهلاً بكم في استوديو الإنتاج الرقمي، حيث ندمج الذكاء الاصطناعي مع أعلى معايير الواقعية السينمائية...' %}" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 13.5px; line-height: 1.6; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
             </div>
 
             <!-- Quick Script Snippets -->
             <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
                 <button type="button" class="script-chip" onclick="setScript('أهلاً ومرحباً بكم في منصة الإنتاج الإبداعي المتقدمة، حيث يتحول الخيال إلى واقع مرئي فائق الدقة بتنسيق سينمائي مبهر.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
-                    افتتاحية رسمية
+                    {% trans "افتتاحية رسمية" %}
                 </button>
                 <button type="button" class="script-chip" onclick="setScript('يسرنا اليوم الإعلان عن إطلاق جيلنا الجديد من الحلول الرقمية الذكية المصممة لتمكين المبدعين وصناع المحتوى حول العالم.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
-                    إعلان تجاري
+                    {% trans "إعلان تجاري" %}
                 </button>
                 <button type="button" class="script-chip" onclick="setScript('في هذا المقطع التدريبي سنستعرض خطوة بخطوة كيف يمكنك توظيف تقنيات الأفاتار الرقمي لإنتاج محتوى تعليمي تفاعلي جذاب.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
-                    شرح تدريبي
+                    {% trans "شرح تدريبي" %}
                 </button>
             </div>
 
             <!-- Emotional Tone & Expression -->
             <div style="margin-top: 14px;">
-                <label style="display: block; font-size: 12px; color: #6E5A44; margin-bottom: 6px; font-weight: 600;">نبرة وتعبيرات الإلقاء</label>
+                <label style="display: block; font-size: 12px; color: #6E5A44; margin-bottom: 6px; font-weight: 600;">{% trans "نبرة وتعبيرات الإلقاء" %}</label>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <label style="flex: 1; min-width: 100px; text-align: center; background: rgba(14,58,31,0.08); border: 1.5px solid #0E3A1F; padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #0E3A1F; font-weight: 700;">
-                        <input type="radio" name="speech_tone" value="formal" checked style="display: none;" onchange="updateToneHighlight();"> رسمي وقور
+                        <input type="radio" name="speech_tone" value="formal" checked style="display: none;" onchange="updateToneHighlight();"> {% trans "رسمي وقور" %}
                     </label>
                     <label style="flex: 1; min-width: 100px; text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; font-weight: 600;">
-                        <input type="radio" name="speech_tone" value="neutral" style="display: none;" onchange="updateToneHighlight();"> إخباري محايد
+                        <input type="radio" name="speech_tone" value="neutral" style="display: none;" onchange="updateToneHighlight();"> {% trans "إخباري محايد" %}
                     </label>
                     <label style="flex: 1; min-width: 100px; text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; font-weight: 600;">
-                        <input type="radio" name="speech_tone" value="warm" style="display: none;" onchange="updateToneHighlight();"> دافئ ومشجع
+                        <input type="radio" name="speech_tone" value="warm" style="display: none;" onchange="updateToneHighlight();"> {% trans "دافئ ومشجع" %}
                     </label>
                     <label style="flex: 1; min-width: 100px; text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; font-weight: 600;">
-                        <input type="radio" name="speech_tone" value="dynamic" style="display: none;" onchange="updateToneHighlight();"> حماسي تفاعلي
+                        <input type="radio" name="speech_tone" value="dynamic" style="display: none;" onchange="updateToneHighlight();"> {% trans "حماسي تفاعلي" %}
                     </label>
                 </div>
             </div>
@@ -212,19 +213,19 @@
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
                     <line x1="12" x2="12" y1="19" y2="22"/>
                 </svg>
-                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">انقر أو اسحب ملف الصوت المنطوق للأفاتار</div>
-                <div style="font-size: 11.5px; color: #8C7864; margin-top: 3px;">MP3, WAV, M4A, OGG (يتم مزامنة مدة الفيديو مع الصوت تلقائياً)</div>
+                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">{% trans "انقر أو اسحب ملف الصوت المنطوق للأفاتار" %}</div>
+                <div style="font-size: 11.5px; color: #8C7864; margin-top: 3px;">{% trans "MP3, WAV, M4A, OGG (يتم مزامنة مدة الفيديو مع الصوت تلقائياً)" %}</div>
             </div>
 
             <!-- Audio Preview Box -->
             <div id="avatar-audio-preview-box" style="margin-top: 12px; display: none; background: #FAF7F0; padding: 12px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.4); align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;">
                     <div style="width: 34px; height: 34px; border-radius: 50%; background: #0E3A1F; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px;">
-                        🎵
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
                     </div>
                     <div style="overflow: hidden;">
                         <div id="avatar-audio-name" style="font-size: 13px; font-weight: 700; color: #1C120B; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">audio.mp3</div>
-                        <div id="avatar-audio-meta" style="font-size: 11px; color: #8C7864;">0 ثانية</div>
+                        <div id="avatar-audio-meta" style="font-size: 11px; color: #8C7864;">0 {% trans "ثانية" %}</div>
                     </div>
                 </div>
                 <button type="button" onclick="clearAudioTrack();" style="background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">✕</button>
@@ -236,7 +237,7 @@
     <!-- 4. Quality & Resolution Selector -->
     <div style="margin-bottom: 22px;">
         <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
-            دقة وجودة الفيديو (Resolution)
+            {% trans "دقة وجودة الفيديو (Resolution)" %}
         </label>
         <div id="avatar-resolution-pills" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
             <button type="button" class="res-pill" data-res="480p" onclick="selectResolution('480p');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
@@ -259,42 +260,42 @@
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 12px; padding: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                مدة مشهد الأفاتار (بالثواني)
+                {% trans "مدة مشهد الأفاتار (بالثواني)" %}
             </label>
             <span id="avatar-duration-display" style="font-size: 14px; font-weight: 700; color: #0E3A1F; background: rgba(14,58,31,0.08); padding: 3px 10px; border-radius: 8px; border: 1px solid rgba(14,58,31,0.2);">
-                10 ثوانٍ
+                10 {% trans "ثوانٍ" %}
             </span>
         </div>
         <input type="range" id="avatar-duration-slider" min="5" max="60" step="1" value="10" oninput="onDurationSliderInput(this.value);" style="width: 100%; accent-color: #0E3A1F; cursor: pointer; height: 6px;">
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8C7864; margin-top: 4px;">
-            <span id="slider-min-label">5 ثوانٍ</span>
-            <span>خطوة التعديل: 1 ثانية</span>
-            <span id="slider-max-label">60 ثانية</span>
+            <span id="slider-min-label">5 {% trans "ثوانٍ" %}</span>
+            <span>{% trans "خطوة التعديل: 1 ثانية" %}</span>
+            <span id="slider-max-label">60 {% trans "ثانية" %}</span>
         </div>
     </div>
 
     <!-- 6. Dynamic Realtime Credit Cost Badge -->
     <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,160,89,0.12), rgba(14,58,31,0.06)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">التكلفة التقديرية للعملية:</div>
+            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">{% trans "التكلفة التقديرية للعملية:" %}</div>
             <div id="avatar-cost-breakdown" style="font-size: 11.5px; color: #6E5A44; margin-top: 2px;">
-                2.00 رصيد/ثانية × 10 ثوانٍ
+                2.00 {% trans "رصيد/ثانية" %} × 10 {% trans "ثوانٍ" %}
             </div>
         </div>
         <div style="text-align: left;">
             <div id="avatar-total-cost" style="font-size: 22px; font-weight: 800; color: #0E3A1F; font-family: monospace;">
                 20.00
             </div>
-            <div style="font-size: 11px; color: #8C7864;">رصيد مطلوب</div>
+            <div style="font-size: 11px; color: #8C7864;">{% trans "رصيد مطلوب" %}</div>
         </div>
     </div>
 
     <!-- 7. Submit Button -->
     <button type="submit" id="avatar-submit-btn" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #092614); color: #FFF; font-weight: 700; font-size: 15px; padding: 15px; border: 1px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 18px rgba(14,58,31,0.25); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="5 3 19 12 5 21 5 3"/>
+            <polygon points="6 3 20 12 6 21 6 3"/>
         </svg>
-        <span>بدء توليد فيديو الأفاتار الرقمي</span>
+        <span>{% trans "بدء توليد فيديو الأفاتار الرقمي" %}</span>
     </button>
 
 </form>
@@ -457,11 +458,13 @@ function selectResolution(res) {
 }
 
 function onDurationSliderInput(val) {
-    document.getElementById('avatar-duration-display').textContent = `${val} ثوانٍ`;
+    const isEn = document.documentElement.lang === 'en';
+    document.getElementById('avatar-duration-display').textContent = isEn ? `${val}s` : `${val} ثوانٍ`;
     recalculateCost();
 }
 
 function onAvatarModelChanged() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('avatar-model');
     const opt = sel.options[sel.selectedIndex];
     if (!opt) return;
@@ -473,12 +476,12 @@ function onAvatarModelChanged() {
     const slider = document.getElementById('avatar-duration-slider');
     slider.min = minDur;
     slider.max = maxDur;
-    document.getElementById('slider-min-label').textContent = `${minDur} ثوانٍ`;
-    document.getElementById('slider-max-label').textContent = `${maxDur} ثانية`;
+    document.getElementById('slider-min-label').textContent = isEn ? `${minDur}s` : `${minDur} ثوانٍ`;
+    document.getElementById('slider-max-label').textContent = isEn ? `${maxDur}s` : `${maxDur} ثانية`;
 
     if (parseInt(slider.value) > maxDur) slider.value = maxDur;
     if (parseInt(slider.value) < minDur) slider.value = minDur;
-    document.getElementById('avatar-duration-display').textContent = `${slider.value} ثوانٍ`;
+    document.getElementById('avatar-duration-display').textContent = isEn ? `${slider.value}s` : `${slider.value} ثوانٍ`;
 
     // Filter supported resolutions
     const supp = (opt.dataset.supportedRes || '480p,720p,1080p,4k').toLowerCase();
@@ -503,6 +506,7 @@ function onAvatarModelChanged() {
 }
 
 function recalculateCost() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('avatar-model');
     const opt = sel.options[sel.selectedIndex];
     if (!opt) return;
@@ -518,18 +522,24 @@ function recalculateCost() {
     else if (res === '4k') rate = parseFloat(opt.dataset.cost4k) || 6.0;
 
     let total = 0;
+    const creditWord = isEn ? 'credits' : 'رصيد';
     if (pricingType === 'flat') {
         total = rate;
-        document.getElementById('avatar-cost-breakdown').textContent = `تكلفة مقطوعة: ${rate.toFixed(2)} رصيد`;
+        document.getElementById('avatar-cost-breakdown').textContent = isEn
+            ? `Flat rate: ${rate.toFixed(2)} ${creditWord}`
+            : `تكلفة مقطوعة: ${rate.toFixed(2)} رصيد`;
     } else {
         total = rate * dur;
-        document.getElementById('avatar-cost-breakdown').textContent = `${rate.toFixed(2)} رصيد/ثانية × ${dur} ثوانٍ (${res.toUpperCase()})`;
+        document.getElementById('avatar-cost-breakdown').textContent = isEn
+            ? `${rate.toFixed(2)} ${creditWord}/sec × ${dur}s (${res.toUpperCase()})`
+            : `${rate.toFixed(2)} رصيد/ثانية × ${dur} ثوانٍ (${res.toUpperCase()})`;
     }
 
     document.getElementById('avatar-total-cost').textContent = total.toFixed(2);
 }
 
 function handleAvatarSubmit() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('avatar-model');
     const opt = sel.options[sel.selectedIndex];
     const modelName = opt ? opt.dataset.name : 'AI Avatar Studio Pro (Universal Digital Human)';
@@ -551,7 +561,14 @@ function handleAvatarSubmit() {
         fd.append('character_id', presetId);
     } else {
         if (!selectedCustomPhotoFile) {
-            alert('يرجى رفع صورة الوجه الشخصية المخصصة للأفاتار');
+            const msg = isEn 
+                ? 'Please upload custom portrait photo for avatar'
+                : 'يرجى رفع صورة الوجه الشخصية المخصصة للأفاتار';
+            if (window.showStudioNotification) {
+                window.showStudioNotification(msg, 'error');
+            } else {
+                alert(msg);
+            }
             return;
         }
         fd.append('avatar_type', 'custom');
@@ -562,7 +579,14 @@ function handleAvatarSubmit() {
     if (currentSpeechMode === 'text') {
         promptText = document.getElementById('avatar-script-input').value.trim();
         if (!promptText) {
-            alert('يرجى كتابة نص الحوار أو الخطاب للأفاتار');
+            const msg = isEn 
+                ? 'Please enter dialogue script for the avatar'
+                : 'يرجى كتابة نص الحوار أو الخطاب للأفاتار';
+            if (window.showStudioNotification) {
+                window.showStudioNotification(msg, 'error');
+            } else {
+                alert(msg);
+            }
             return;
         }
         const toneRadio = document.querySelector('input[name="speech_tone"]:checked');
@@ -570,7 +594,14 @@ function handleAvatarSubmit() {
         fd.append('expression_tone', toneRadio ? toneRadio.value : 'formal');
     } else {
         if (!selectedAudioFile) {
-            alert('يرجى اختيار أو سحب ملف صوتي للأفاتار');
+            const msg = isEn 
+                ? 'Please select or upload audio file for avatar'
+                : 'يرجى اختيار أو سحب ملف صوتي للأفاتار';
+            if (window.showStudioNotification) {
+                window.showStudioNotification(msg, 'error');
+            } else {
+                alert(msg);
+            }
             return;
         }
         promptText = `[Speech Audio File: ${selectedAudioFile.name}]`;

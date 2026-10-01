@@ -1,4 +1,5 @@
 {% extends 'studio/base_studio.html' %}
+{% load i18n %}
 
 {% block tool_controls %}
 <form id="motion-form" onsubmit="event.preventDefault(); handleMotionSubmit();">
@@ -7,10 +8,10 @@
     <div style="margin-bottom: 22px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                محرك التحكم بالحركة ونقل الوضعيات (Motion Engine)
+                {% trans "محرك التحكم بالحركة ونقل الوضعيات (Motion Engine)" %}
             </label>
             <span id="motion-model-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(14,58,31,0.2);">
-                25 نموذجاً متاحاً
+                {% trans "25 نموذجاً متاحاً" %}
             </span>
         </div>
         <select id="motion-model" onchange="onMotionModelChanged();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); border-radius: 10px; color: #1C120B; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;">
@@ -53,9 +54,9 @@
         <div style="background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                    فيديو الحركة المرجعي (Driving Motion)
+                    {% trans "فيديو الحركة المرجعي (Driving Motion)" %}
                 </label>
-                <span style="font-size: 11px; color: #8C7864;">حركات ورقصات</span>
+                <span style="font-size: 11px; color: #8C7864;">{% trans "حركات ورقصات" %}</span>
             </div>
 
             <div id="motion-video-dropzone" onclick="document.getElementById('motion-video-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.2s;">
@@ -63,8 +64,8 @@
                 <svg style="width: 28px; height: 28px; color: #0E3A1F; margin-bottom: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="5" r="2"/><path d="M12 7v7"/><path d="m6 11 6 3 6-3"/><path d="m9 22 3-8 3 8"/>
                 </svg>
-                <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">رفع فيديو الحركة والرقصة</div>
-                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">MP4, MOV (أقصى حجم 100MB)</div>
+                <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">{% trans "رفع فيديو الحركة والرقصة" %}</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "MP4, MOV (أقصى حجم 100MB)" %}</div>
             </div>
 
             <!-- Video Preview Box -->
@@ -78,9 +79,9 @@
         <div style="background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                    الشخصية المستهدفة (Target Character)
+                    {% trans "الشخصية المستهدفة (Target Character)" %}
                 </label>
-                <span style="font-size: 11px; color: #8C7864;">صورة أو فيديو</span>
+                <span style="font-size: 11px; color: #8C7864;">{% trans "صورة أو فيديو" %}</span>
             </div>
 
             <div id="target-media-dropzone" onclick="document.getElementById('target-media-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.2s;">
@@ -88,8 +89,8 @@
                 <svg style="width: 28px; height: 28px; color: #9E7D3B; margin-bottom: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                 </svg>
-                <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">رفع صورة أو فيديو الشخصية</div>
-                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">JPG, PNG أو MP4 كامل الجسم</div>
+                <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">{% trans "رفع صورة أو فيديو الشخصية" %}</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">{% trans "JPG, PNG أو MP4 كامل الجسم" %}</div>
             </div>
 
             <!-- Target Media Preview Box -->
@@ -109,43 +110,43 @@
         <div style="margin-bottom: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                    دقة مطابقة الحركة والوضعيات (Pose Tracking Precision)
+                    {% trans "دقة مطابقة الحركة والوضعيات (Pose Tracking Precision)" %}
                 </label>
                 <span id="motion-scale-label" style="font-size: 13px; font-weight: 700; color: #0E3A1F; background: rgba(14,58,31,0.08); padding: 2px 8px; border-radius: 6px;">
-                    90% مطابقة
+                    90% {% trans "مطابقة" %}
                 </span>
             </div>
-            <input type="range" id="motion-scale" min="50" max="100" value="90" oninput="document.getElementById('motion-scale-label').textContent = this.value + '% مطابقة';" style="width: 100%; accent-color: #0E3A1F; cursor: pointer;">
+            <input type="range" id="motion-scale" min="50" max="100" value="90" oninput="updateMotionScaleDisplay(this.value);" style="width: 100%; accent-color: #0E3A1F; cursor: pointer;">
             <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8C7864; margin-top: 2px;">
-                <span>50% (حركة انسيابية متحررة)</span>
-                <span>90% (تطابق حركي عالٍ)</span>
-                <span>100% (تطابق حرفي مطلق)</span>
+                <span>{% trans "50% (حركة انسيابية متحررة)" %}</span>
+                <span>{% trans "90% (تطابق حركي عالٍ)" %}</span>
+                <span>{% trans "100% (تطابق حرفي مطلق)" %}</span>
             </div>
         </div>
 
         <!-- Camera Movement Direction -->
         <div>
             <label style="display: block; font-size: 12.5px; color: #6E5A44; margin-bottom: 8px; font-weight: 600;">
-                توجيه حركة الكاميرا السينمائية (Camera Direction)
+                {% trans "توجيه حركة الكاميرا السينمائية (Camera Direction)" %}
             </label>
             <div id="camera-direction-pills" style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button type="button" class="cam-pill active" data-dir="static" onclick="selectCameraDir('static');" style="padding: 6px 12px; border-radius: 6px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.08); color: #0E3A1F; font-size: 12px; font-weight: 700; cursor: pointer;">
-                    🎥 ثابتة
+                    {% trans "ثابتة (Static)" %}
                 </button>
                 <button type="button" class="cam-pill" data-dir="zoom_in" onclick="selectCameraDir('zoom_in');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    🔍 تقريب (Zoom In)
+                    {% trans "تقريب (Zoom In)" %}
                 </button>
                 <button type="button" class="cam-pill" data-dir="zoom_out" onclick="selectCameraDir('zoom_out');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    🔎 تبعيد (Zoom Out)
+                    {% trans "تبعيد (Zoom Out)" %}
                 </button>
                 <button type="button" class="cam-pill" data-dir="pan_left" onclick="selectCameraDir('pan_left');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    ⬅️ حركة يسار (Pan Left)
+                    {% trans "حركة يسار (Pan Left)" %}
                 </button>
                 <button type="button" class="cam-pill" data-dir="pan_right" onclick="selectCameraDir('pan_right');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    ➡️ حركة يمين (Pan Right)
+                    {% trans "حركة يمين (Pan Right)" %}
                 </button>
                 <button type="button" class="cam-pill" data-dir="tilt_up" onclick="selectCameraDir('tilt_up');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
-                    ⬆️ صعود لأعلى (Tilt Up)
+                    {% trans "صعود لأعلى (Tilt Up)" %}
                 </button>
             </div>
             <input type="hidden" id="selected-camera-dir" value="static">
@@ -156,19 +157,19 @@
     <!-- 4. Prompt Description (وصف المشهد والإضاءة) -->
     <div style="margin-bottom: 22px;">
         <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 6px;">
-            الوصف الفني والتفاصيل التوليدية (Prompt)
+            {% trans "الوصف الفني والتفاصيل التوليدية (Prompt)" %}
         </label>
-        <textarea id="motion-prompt-input" rows="3" placeholder="أدخل تفاصيل إضافية مثل الإضاءة، زوايا التصوير، الملابس، أو بيئة المشهد (اختياري)..." style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 13.5px; line-height: 1.6; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+        <textarea id="motion-prompt-input" rows="3" placeholder="{% trans 'أدخل تفاصيل إضافية مثل الإضاءة، زوايا التصوير، الملابس، أو بيئة المشهد (اختياري)...' %}" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 13.5px; line-height: 1.6; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
         <!-- Quick Prompts -->
         <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
             <button type="button" onclick="setMotionPrompt('مشهد سينمائي واقعي بإضاءة استوديو ناعمة وتباين درامي عالي، مع الحفاظ الكامل على نسيج الملابس وملامح الوجه.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
-                إضاءة سينمائية درامية
+                {% trans "إضاءة سينمائية درامية" %}
             </button>
             <button type="button" onclick="setMotionPrompt('مسرح استعراضي حيوي مع أضواء نيون وحركة ديناميكية سريعة وانعكاسات على الأرضية اللامعة.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
-                مسرح استعراضي نيون
+                {% trans "مسرح استعراضي نيون" %}
             </button>
             <button type="button" onclick="setMotionPrompt('لقطة خارجية نهارية في شارع عصري بإضاءة شمس طبيعية ورياح خفيفة تحرك الشعر والملابس بواقعية.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
-                لقطة نهارية طبيعية
+                {% trans "لقطة نهارية طبيعية" %}
             </button>
         </div>
     </div>
@@ -176,7 +177,7 @@
     <!-- 5. Quality & Resolution Selector -->
     <div style="margin-bottom: 22px;">
         <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
-            دقة وجودة الفيديو (Resolution)
+            {% trans "دقة وجودة الفيديو (Resolution)" %}
         </label>
         <div id="motion-resolution-pills" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
             <button type="button" class="res-pill" data-res="480p" onclick="selectResolution('480p');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
@@ -199,33 +200,33 @@
     <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 12px; padding: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
-                مدة المشهد الحركي (بالثواني)
+                {% trans "مدة المشهد الحركي (بالثواني)" %}
             </label>
             <span id="motion-duration-display" style="font-size: 14px; font-weight: 700; color: #0E3A1F; background: rgba(14,58,31,0.08); padding: 3px 10px; border-radius: 8px; border: 1px solid rgba(14,58,31,0.2);">
-                5 ثوانٍ
+                5 {% trans "ثوانٍ" %}
             </span>
         </div>
         <input type="range" id="motion-duration-slider" min="5" max="60" step="1" value="5" oninput="onDurationSliderInput(this.value);" style="width: 100%; accent-color: #0E3A1F; cursor: pointer; height: 6px;">
         <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8C7864; margin-top: 4px;">
-            <span id="slider-min-label">5 ثوانٍ</span>
-            <span>خطوة التعديل: 1 ثانية</span>
-            <span id="slider-max-label">60 ثانية</span>
+            <span id="slider-min-label">5 {% trans "ثوانٍ" %}</span>
+            <span>{% trans "خطوة التعديل: 1 ثانية" %}</span>
+            <span id="slider-max-label">60 {% trans "ثانية" %}</span>
         </div>
     </div>
 
     <!-- 7. Dynamic Realtime Credit Cost Badge -->
     <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,160,89,0.12), rgba(14,58,31,0.06)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">التكلفة التقديرية للعملية:</div>
+            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">{% trans "التكلفة التقديرية للعملية:" %}</div>
             <div id="motion-cost-breakdown" style="font-size: 11.5px; color: #6E5A44; margin-top: 2px;">
-                2.00 رصيد/ثانية × 5 ثوانٍ
+                2.00 {% trans "رصيد/ثانية" %} × 5 {% trans "ثوانٍ" %}
             </div>
         </div>
         <div style="text-align: left;">
             <div id="motion-total-cost" style="font-size: 22px; font-weight: 800; color: #0E3A1F; font-family: monospace;">
                 10.00
             </div>
-            <div style="font-size: 11px; color: #8C7864;">رصيد مطلوب</div>
+            <div style="font-size: 11px; color: #8C7864;">{% trans "رصيد مطلوب" %}</div>
         </div>
     </div>
 
@@ -234,7 +235,7 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="5" r="2"/><path d="M12 7v7"/><path d="m6 11 6 3 6-3"/><path d="m9 22 3-8 3 8"/>
         </svg>
-        <span>بدء تطبيق ونقل الحركة الذكية</span>
+        <span>{% trans "بدء تطبيق ونقل الحركة الذكية" %}</span>
     </button>
 
 </form>
@@ -347,12 +348,19 @@ function selectResolution(res) {
     recalculateCost();
 }
 
+function updateMotionScaleDisplay(val) {
+    const isEn = document.documentElement.lang === 'en';
+    document.getElementById('motion-scale-label').textContent = `${val}% ${isEn ? 'Matching' : 'مطابقة'}`;
+}
+
 function onDurationSliderInput(val) {
-    document.getElementById('motion-duration-display').textContent = `${val} ثوانٍ`;
+    const isEn = document.documentElement.lang === 'en';
+    document.getElementById('motion-duration-display').textContent = isEn ? `${val}s` : `${val} ثوانٍ`;
     recalculateCost();
 }
 
 function onMotionModelChanged() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('motion-model');
     const opt = sel.options[sel.selectedIndex];
     if (!opt) return;
@@ -364,12 +372,12 @@ function onMotionModelChanged() {
     const slider = document.getElementById('motion-duration-slider');
     slider.min = minDur;
     slider.max = maxDur;
-    document.getElementById('slider-min-label').textContent = `${minDur} ثوانٍ`;
-    document.getElementById('slider-max-label').textContent = `${maxDur} ثانية`;
+    document.getElementById('slider-min-label').textContent = isEn ? `${minDur}s` : `${minDur} ثوانٍ`;
+    document.getElementById('slider-max-label').textContent = isEn ? `${maxDur}s` : `${maxDur} ثانية`;
 
     if (parseInt(slider.value) > maxDur) slider.value = maxDur;
     if (parseInt(slider.value) < minDur) slider.value = minDur;
-    document.getElementById('motion-duration-display').textContent = `${slider.value} ثوانٍ`;
+    document.getElementById('motion-duration-display').textContent = isEn ? `${slider.value}s` : `${slider.value} ثوانٍ`;
 
     // Filter supported resolutions
     const supp = (opt.dataset.supportedRes || '480p,720p,1080p,4k').toLowerCase();
@@ -394,6 +402,7 @@ function onMotionModelChanged() {
 }
 
 function recalculateCost() {
+    const isEn = document.documentElement.lang === 'en';
     const sel = document.getElementById('motion-model');
     const opt = sel.options[sel.selectedIndex];
     if (!opt) return;
@@ -409,24 +418,44 @@ function recalculateCost() {
     else if (res === '4k') rate = parseFloat(opt.dataset.cost4k) || 6.0;
 
     let total = 0;
+    const creditWord = isEn ? 'credits' : 'رصيد';
     if (pricingType === 'flat') {
         total = rate;
-        document.getElementById('motion-cost-breakdown').textContent = `تكلفة مقطوعة: ${rate.toFixed(2)} رصيد`;
+        document.getElementById('motion-cost-breakdown').textContent = isEn 
+            ? `Flat rate: ${rate.toFixed(2)} ${creditWord}`
+            : `تكلفة مقطوعة: ${rate.toFixed(2)} رصيد`;
     } else {
         total = rate * dur;
-        document.getElementById('motion-cost-breakdown').textContent = `${rate.toFixed(2)} رصيد/ثانية × ${dur} ثوانٍ (${res.toUpperCase()})`;
+        document.getElementById('motion-cost-breakdown').textContent = isEn
+            ? `${rate.toFixed(2)} ${creditWord}/sec × ${dur}s (${res.toUpperCase()})`
+            : `${rate.toFixed(2)} رصيد/ثانية × ${dur} ثوانٍ (${res.toUpperCase()})`;
     }
 
     document.getElementById('motion-total-cost').textContent = total.toFixed(2);
 }
 
 function handleMotionSubmit() {
+    const isEn = document.documentElement.lang === 'en';
     if (!selectedMotionVideoFile) {
-        alert('يرجى رفع فيديو الحركة المرجعي (Driving Motion Video) لاستخراج الحركة والوضعيات منه');
+        const msg = isEn 
+            ? 'Please upload driving motion video first' 
+            : 'يرجى رفع فيديو الحركة المرجعي (Driving Motion Video) لاستخراج الحركة والوضعيات منه';
+        if (window.showStudioNotification) {
+            window.showStudioNotification(msg, 'error');
+        } else {
+            alert(msg);
+        }
         return;
     }
     if (!selectedTargetMediaFile) {
-        alert('يرجى رفع صورة أو فيديو الشخصية المستهدفة (Target Character Media)');
+        const msg = isEn 
+            ? 'Please upload target character image or video first' 
+            : 'يرجى رفع صورة أو فيديو الشخصية المستهدفة (Target Character Media)';
+        if (window.showStudioNotification) {
+            window.showStudioNotification(msg, 'error');
+        } else {
+            alert(msg);
+        }
         return;
     }
 

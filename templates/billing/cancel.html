@@ -1,28 +1,38 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}تم إلغاء عملية الدفع | NexMedia{% endblock %}
+{% block title %}
+{% get_current_language as LANGUAGE_CODE %}
+{% if LANGUAGE_CODE == 'en' %}Payment Cancelled | NexMedia{% else %}تم إلغاء عملية الدفع | NexMedia{% endif %}
+{% endblock %}
 
 {% block content %}
+{% get_current_language as LANGUAGE_CODE %}
 <div style="min-height: 85vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
-    <div style="max-width: 520px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(255, 87, 87, 0.4); border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0; text-align: center;">
+    <div style="max-width: 540px; width: 100%; background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(255, 87, 87, 0.4); border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px); color: #FAF7F0; text-align: center;">
         
-        <div style="display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: rgba(255, 87, 87, 0.15); border: 2px solid #FF5757; font-size: 32px; color: #FF5757; margin-bottom: 20px;">
-            ✕
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 76px; height: 76px; border-radius: 50%; background: rgba(255, 87, 87, 0.15); border: 2px solid #FF5757; margin-bottom: 20px;">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#FF5757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
         </div>
 
-        <h2 style="font-family: 'Amiri', 'Cinzel', serif; color: #FF5757; font-size: 26px; margin-bottom: 10px;">
-            تم إلغاء العملية ولم يتم خصم أي مبالغ
+        <h2 style="font-family: {% if LANGUAGE_CODE == 'en' %}'Cinzel', 'Outfit', sans-serif{% else %}'Amiri', 'Cinzel', serif{% endif %}; color: #FF5757; font-size: 24px; margin-bottom: 10px;">
+            {% if LANGUAGE_CODE == 'en' %}Payment Cancelled — No Charges Incurred{% else %}تم إلغاء العملية ولم يتم خصم أي مبالغ{% endif %}
         </h2>
-        <p style="color: #A0B2A6; font-size: 14px; margin-bottom: 30px;">
-            Payment was cancelled or expired. لم تكتمل عملية الدفع، يمكنك المحاولة مجدداً في أي وقت.
+        <p style="color: #A0B2A6; font-size: 14px; margin-bottom: 30px; line-height: 1.6;">
+            {% if LANGUAGE_CODE == 'en' %}
+                The checkout session was cancelled or timed out. You have not been charged and you can try again anytime.
+            {% else %}
+                لم تكتمل عملية الدفع أو تم إلغاؤها بناءً على طلبك. لم يتم خصم أي رسوم ويمكنك إعادة المحاولة في أي وقت.
+            {% endif %}
         </p>
 
-        <div style="display: flex; gap: 15px; justify-content: center;">
-            <a href="/#pricing" style="text-decoration: none; background: #C5A059; color: #0E2218; font-weight: bold; padding: 12px 24px; border-radius: 8px; font-size: 15px;">
-                عرض الباقات والأسعار
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="/#pricing-calculator" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #C5A059; color: #0E2218; font-weight: bold; padding: 12px 24px; border-radius: 8px; font-size: 14px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                <span>{% if LANGUAGE_CODE == 'en' %}View Plans & Pricing{% else %}عرض الباقات والأسعار{% endif %}</span>
             </a>
-            <a href="/" style="text-decoration: none; border: 1px solid rgba(255,255,255,0.2); color: #FAF7F0; padding: 12px 24px; border-radius: 8px; font-size: 15px;">
-                الرئيسية
+            <a href="/" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); color: #FAF7F0; padding: 12px 24px; border-radius: 8px; font-size: 14px;">
+                <span>{% if LANGUAGE_CODE == 'en' %}Homepage{% else %}الرئيسية{% endif %}</span>
             </a>
         </div>
     </div>

@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 
 {% block header %}{% endblock header %}
 {% block mobile_drawer %}{% endblock mobile_drawer %}
 {% block footer %}{% endblock footer %}
 
-{% block title %}{{ current_tool.name_ar }} | NexMedia Creative Studio{% endblock %}
+{% block title %}{% if CURRENT_LANGUAGE == 'en' %}{{ current_tool.name_en }} | NexMedia Creative Studio{% else %}{{ current_tool.name_ar }} | نكس ميديا استوديو{% endif %}{% endblock %}
 
 {% block content %}
 <div class="studio-layout-wrapper">
@@ -14,7 +16,7 @@
     <aside class="studio-sidebar" id="studio-sidebar">
         <!-- Studio Brand Header -->
         <div class="studio-brand-header">
-            <a href="/" class="studio-brand-anchor" title="العودة إلى الصفحة الرئيسية">
+            <a href="/" class="studio-brand-anchor" title="{% if CURRENT_LANGUAGE == 'en' %}Back to Home{% else %}العودة إلى الصفحة الرئيسية{% endif %}">
                 <div class="studio-logo-emblem">
                     <svg viewBox="0 0 100 100" class="monogram-n-emblem" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 36px; height: 36px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
                         <rect width="100" height="100" rx="22" fill="#0E3A1F"/>
@@ -25,17 +27,24 @@
                 </div>
                 <div class="studio-brand-text">
                     <span class="studio-brand-title">nexmedia<span class="ai-badge">ai</span></span>
-                    <span class="studio-brand-subtitle">استوديو الإنتاج الإبداعي</span>
+                    <span class="studio-brand-subtitle">{% if CURRENT_LANGUAGE == 'en' %}Creative Studio{% else %}استوديو الإنتاج الإبداعي{% endif %}</span>
                 </div>
             </a>
-            <a href="/" class="btn-home-shortcut" title="العودة للرئيسية">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            </a>
+            <div class="sidebar-header-controls">
+                <div class="studio-lang-switch" title="Switch Language / تبديل اللغة">
+                    <a href="/set-language/?language=ar&next={{ request.path }}" class="studio-lang-opt {% if CURRENT_LANGUAGE != 'en' %}active{% endif %}">عربي</a>
+                    <span class="studio-lang-sep">|</span>
+                    <a href="/set-language/?language=en&next={{ request.path }}" class="studio-lang-opt {% if CURRENT_LANGUAGE == 'en' %}active{% endif %}">EN</a>
+                </div>
+                <a href="/" class="btn-home-shortcut" title="{% if CURRENT_LANGUAGE == 'en' %}Back to Home{% else %}العودة للرئيسية{% endif %}">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </a>
+            </div>
         </div>
 
         <!-- Section Label -->
         <div class="sidebar-section-divider">
-            <span>أدوات الإنتاج (9)</span>
+            <span>{% if CURRENT_LANGUAGE == 'en' %}AI Tools (9){% else %}أدوات الإنتاج (9){% endif %}</span>
         </div>
 
         <nav class="studio-tools-nav">
@@ -43,10 +52,15 @@
             <a href="{% url 'studio_tool' tool.slug %}" class="studio-tool-link {% if tool.slug == current_tool.slug %}active-tool{% endif %}">
                 <span class="tool-icon">{{ tool.icon|safe }}</span>
                 <div class="tool-info">
+                    {% if CURRENT_LANGUAGE == 'en' %}
+                    <span class="tool-title-ar">{{ tool.name_en }}</span>
+                    <span class="tool-title-en">{{ tool.name_ar }}</span>
+                    {% else %}
                     <span class="tool-title-ar">{{ tool.name_ar }}</span>
                     <span class="tool-title-en">{{ tool.name_en }}</span>
+                    {% endif %}
                 </div>
-                <span class="tool-badge">{{ tool.badge }}</span>
+                <span class="tool-badge">{% if CURRENT_LANGUAGE == 'en' %}{{ tool.badge_en|default:tool.badge }}{% else %}{{ tool.badge_ar|default:tool.badge }}{% endif %}</span>
             </a>
             {% endfor %}
         </nav>
@@ -54,21 +68,21 @@
         <!-- Live Dual-Wallet Widget -->
         <div class="sidebar-wallet-card">
             <div class="wallet-header">
-                <span class="wallet-title">رصيد الاستوديو الحي</span>
-                <a href="/profile/" class="wallet-settings-link" title="إدارة المحفظة">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span class="wallet-title">{% if CURRENT_LANGUAGE == 'en' %}Live Studio Balance{% else %}رصيد الاستوديو الحي{% endif %}</span>
+                <a href="/profile/" class="wallet-settings-link" title="{% if CURRENT_LANGUAGE == 'en' %}Wallet Settings{% else %}إدارة المحفظة{% endif %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                 </a>
             </div>
             
             <div class="wallet-balances">
                 <div class="wallet-pill standard">
-                    <span class="wallet-label">قياسي (Std):</span>
+                    <span class="wallet-label">{% if CURRENT_LANGUAGE == 'en' %}Std (Credits):{% else %}قياسي (Std):{% endif %}</span>
                     <strong class="wallet-val" id="std-credits-display">
                         {{ active_user.standard_credits|floatformat:1 }}
                     </strong>
                 </div>
                 <div class="wallet-pill premium">
-                    <span class="wallet-label">مميز (Prem):</span>
+                    <span class="wallet-label">{% if CURRENT_LANGUAGE == 'en' %}Prem (Credits):{% else %}مميز (Prem):{% endif %}</span>
                     <strong class="wallet-val" id="prem-credits-display">
                         {{ active_user.premium_credits|floatformat:1 }}
                     </strong>
@@ -76,32 +90,32 @@
             </div>
 
             <a href="/#pricing-calculator" class="btn-recharge-credits">
-                + ترقية وشحن الرصيد
+                {% if CURRENT_LANGUAGE == 'en' %}+ Upgrade & Add Credits{% else %}+ ترقية وشحن الرصيد{% endif %}
             </a>
         </div>
 
         <!-- Sidebar User Footer -->
         <div class="sidebar-user-footer">
-            <a href="{% url 'profile' %}" class="sidebar-user-card" title="الملف الشخصي والمحفظة">
+            <a href="{% url 'profile' %}" class="sidebar-user-card" title="{% if CURRENT_LANGUAGE == 'en' %}Profile & Wallet{% else %}الملف الشخصي والمحفظة{% endif %}">
                 <div class="user-avatar-crown">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
                 <div class="user-details">
                     <span class="user-display-name">{{ request.user.username|default:"الضيف" }}</span>
-                    <span class="user-status-pill">{% if request.user.is_authenticated %}عضو نشط{% else %}غير مسجل{% endif %}</span>
+                    <span class="user-status-pill">{% if request.user.is_authenticated %}{% if CURRENT_LANGUAGE == 'en' %}Active User{% else %}عضو نشط{% endif %}{% else %}{% if CURRENT_LANGUAGE == 'en' %}Guest{% else %}غير مسجل{% endif %}{% endif %}</span>
                 </div>
             </a>
             <div class="sidebar-action-buttons">
-                <a href="{% url 'profile' %}" class="btn-sidebar-icon" title="الإعدادات والمحفظة">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <a href="{% url 'profile' %}" class="btn-sidebar-icon" title="{% if CURRENT_LANGUAGE == 'en' %}Settings{% else %}الإعدادات والمحفظة{% endif %}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                 </a>
                 {% if request.user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="btn-sidebar-icon logout" title="تسجيل الخروج">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <a href="{% url 'logout' %}" class="btn-sidebar-icon logout" title="{% if CURRENT_LANGUAGE == 'en' %}Log Out{% else %}تسجيل الخروج{% endif %}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </a>
                 {% else %}
-                <a href="{% url 'login' %}" class="btn-sidebar-icon login" title="تسجيل الدخول">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                <a href="{% url 'login' %}" class="btn-sidebar-icon login" title="{% if CURRENT_LANGUAGE == 'en' %}Sign In{% else %}تسجيل الدخول{% endif %}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                 </a>
                 {% endif %}
             </div>
@@ -117,11 +131,11 @@
                 <div class="tool-hero-icon">{{ current_tool.icon|safe }}</div>
                 <div>
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
-                        <h1 class="tool-main-heading">{{ current_tool.name_ar }}</h1>
-                        <span class="tool-tag-pill">{{ current_tool.name_en }}</span>
-                        <span class="tool-active-status">● جاهز للإنتاج</span>
+                        <h1 class="tool-main-heading">{% if CURRENT_LANGUAGE == 'en' %}{{ current_tool.name_en }}{% else %}{{ current_tool.name_ar }}{% endif %}</h1>
+                        <span class="tool-tag-pill">{% if CURRENT_LANGUAGE == 'en' %}{{ current_tool.name_ar }}{% else %}{{ current_tool.name_en }}{% endif %}</span>
+                        <span class="tool-active-status">● {% if CURRENT_LANGUAGE == 'en' %}Ready for Production{% else %}جاهز للإنتاج{% endif %}</span>
                     </div>
-                    <p class="tool-desc-text">{{ current_tool.description }}</p>
+                    <p class="tool-desc-text">{% if CURRENT_LANGUAGE == 'en' %}{{ current_tool.description_en|default:current_tool.description }}{% else %}{{ current_tool.description_ar|default:current_tool.description }}{% endif %}</p>
                 </div>
             </div>
         </div>
@@ -138,15 +152,15 @@
             <section class="tool-output-panel">
                 <div class="output-viewport-card">
                     <div class="viewport-header">
-                        <span class="viewport-title">معاينة النتيجة (Live Viewport)</span>
-                        <span class="viewport-specs" id="viewport-specs-badge">دقة 4K</span>
+                        <span class="viewport-title">{% if CURRENT_LANGUAGE == 'en' %}Live Viewport{% else %}معاينة النتيجة (Live Viewport){% endif %}</span>
+                        <span class="viewport-specs" id="viewport-specs-badge">{% if CURRENT_LANGUAGE == 'en' %}Ultra HD 4K{% else %}دقة 4K{% endif %}</span>
                     </div>
 
                     <div class="viewport-media-stage" id="viewport-media-stage">
                         <div class="viewport-idle-state" id="viewport-idle">
                             <div class="idle-icon">{{ current_tool.icon|safe }}</div>
-                            <div class="idle-title">جاهز لبدء الإنتاج</div>
-                            <div class="idle-desc">قم بضبط الإعدادات في اللوحة المجاورة ثم اضغط على زر بدء التوليد.</div>
+                            <div class="idle-title">{% if CURRENT_LANGUAGE == 'en' %}Ready to Produce{% else %}جاهز لبدء الإنتاج{% endif %}</div>
+                            <div class="idle-desc">{% if CURRENT_LANGUAGE == 'en' %}Configure parameters in the panel, then click Generate to produce high-fidelity output.{% else %}قم بضبط الإعدادات في اللوحة المجاورة ثم اضغط على زر بدء التوليد.{% endif %}</div>
                         </div>
 
                         <!-- Video Player (Hidden by default) -->
@@ -157,34 +171,34 @@
                         
                         <!-- Audio Player (Hidden by default) -->
                         <div id="viewport-audio-container" style="display: none; width: 85%; padding: 25px; text-align: center; background: rgba(0,0,0,0.5); border: 1px solid #C5A059; border-radius: 12px;">
-                            <div style="color: #C5A059; font-size: 16px; margin-bottom: 12px; font-weight: bold;">النتيجة الصوتية النهائية</div>
+                            <div style="color: #C5A059; font-size: 16px; margin-bottom: 12px; font-weight: bold;">{% if CURRENT_LANGUAGE == 'en' %}Final Audio Master{% else %}النتيجة الصوتية النهائية{% endif %}</div>
                             <audio id="viewport-audio" controls style="width: 100%;"></audio>
                         </div>
 
                         <!-- Progress Bar Overlay -->
                         <div class="generation-progress-overlay" id="progress-overlay" style="display: none;">
                             <div class="andalus-spinner"></div>
-                            <div class="progress-title" id="progress-title">جاري التوليد والرندرة الإبداعية...</div>
+                            <div class="progress-title" id="progress-title">{% if CURRENT_LANGUAGE == 'en' %}Generating Creative Media...{% else %}جاري التوليد والرندرة الإبداعية...{% endif %}</div>
                             <div class="progress-bar-container">
                                 <div class="progress-bar-fill" id="progress-fill" style="width: 20%;"></div>
                             </div>
-                            <div class="progress-status-log" id="progress-log">جاري تجهيز المشهد وبدء الرندرة...</div>
+                            <div class="progress-status-log" id="progress-log">{% if CURRENT_LANGUAGE == 'en' %}Preparing pipeline & rendering assets...{% else %}جاري تجهيز المشهد وبدء الرندرة...{% endif %}</div>
                         </div>
                     </div>
 
                     <div class="viewport-actions" id="viewport-actions" style="display: none;">
                         <a id="btn-download-result" href="#" download class="btn-royal-download" target="_blank">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-left:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>تحميل النتيجة الأصلية (Download 4K)
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-left:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>{% if CURRENT_LANGUAGE == 'en' %}Download Result (4K){% else %}تحميل النتيجة الأصلية (Download 4K){% endif %}
                         </a>
-                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('btn-download-result').href); alert('تم نسخ رابط الملف!');" class="btn-share-media">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-left:6px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>نسخ الرابط
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('btn-download-result').href); alert('{% if CURRENT_LANGUAGE == 'en' %}Link copied to clipboard!{% else %}تم نسخ رابط الملف!{% endif %}');" class="btn-share-media">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-left:6px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>{% if CURRENT_LANGUAGE == 'en' %}Copy Link{% else %}نسخ الرابط{% endif %}
                         </button>
                     </div>
                 </div>
 
                 <!-- Recent Tool History -->
                 <div class="tool-history-section">
-                    <h3 class="history-heading">سجل إنتاج هذه الأداة</h3>
+                    <h3 class="history-heading">{% if CURRENT_LANGUAGE == 'en' %}Recent Generations{% else %}سجل إنتاج هذه الأداة{% endif %}</h3>
                     <div class="history-grid">
                         {% for item in recent_history %}
                         <div class="history-item-card" onclick="previewHistoryItem('{{ item.result_url }}', '{{ item.tool_type }}')">
@@ -201,7 +215,7 @@
                             </div>
                         </div>
                         {% empty %}
-                        <div class="history-empty">لا توجد عمليات سابقة لهذه الأداة بعد.</div>
+                        <div class="history-empty">{% if CURRENT_LANGUAGE == 'en' %}No previous creations for this tool yet.{% else %}لا توجد عمليات سابقة لهذه الأداة بعد.{% endif %}</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -225,6 +239,69 @@
     color: #1C120B;
     direction: rtl;
     font-family: 'Amiri', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* LTR Language Support */
+html[dir="ltr"] .studio-layout-wrapper {
+    direction: ltr;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+html[dir="ltr"] .studio-sidebar {
+    border-left: none;
+    border-right: 1px solid rgba(197, 160, 89, 0.35);
+    box-shadow: 4px 0 20px rgba(44, 30, 16, 0.05);
+}
+html[dir="ltr"] .sidebar-header-controls {
+    flex-direction: row;
+}
+html[dir="ltr"] .studio-brand-title .ai-badge {
+    margin-left: 6px;
+    margin-right: 0;
+}
+html[dir="ltr"] .tool-info {
+    text-align: left;
+}
+html[dir="ltr"] .tool-meta-wrapper {
+    text-align: left;
+}
+
+/* Sidebar Header Controls & Lang Switcher */
+.sidebar-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.studio-lang-switch {
+    display: flex;
+    align-items: center;
+    background: rgba(14, 58, 31, 0.08);
+    border: 1px solid rgba(197, 160, 89, 0.4);
+    border-radius: 16px;
+    padding: 2px 6px;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.studio-lang-opt {
+    color: #4A3E31;
+    text-decoration: none;
+    padding: 2px 6px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    line-height: 1.2;
+}
+.studio-lang-opt.active {
+    background: #0E3A1F;
+    color: #FAF7F0;
+    box-shadow: 0 1px 4px rgba(14, 58, 31, 0.25);
+}
+.studio-lang-opt:hover:not(.active) {
+    color: #0E3A1F;
+    background: rgba(197, 160, 89, 0.25);
+}
+.studio-lang-sep {
+    color: rgba(197, 160, 89, 0.5);
+    font-size: 10px;
 }
 
 /* Sidebar */
