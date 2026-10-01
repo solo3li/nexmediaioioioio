@@ -3,50 +3,462 @@
 {% block tool_controls %}
 <form id="motion-form" onsubmit="event.preventDefault(); handleMotionSubmit();">
     
-    <!-- Motion Source Video -->
-    <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            فيديو الحركة المرجعي (Driving Motion Video)
-        </label>
-        <input id="mot-source-url" type="url" required placeholder="https://.../motion_dance.mp4" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
-    </div>
-
-    <!-- Target Character Image -->
-    <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            صورة الشخصية المستهدفة (Target Character Image)
-        </label>
-        <input id="mot-target-url" type="url" required placeholder="https://.../character_full_body.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
-    </div>
-
-    <!-- Motion Match Scale -->
-    <div style="margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+    <!-- 1. Model Selection (Clean Name ONLY) -->
+    <div style="margin-bottom: 22px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #FAF7F0;">دقة مطابقة الحركة (Pose Tracking)</label>
-            <span id="pose-label" style="color: #C5A059; font-weight: bold; font-size: 14px;">95%</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                محرك التحكم بالحركة ونقل الوضعيات (Motion Engine)
+            </label>
+            <span id="motion-model-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(14,58,31,0.2);">
+                25 نموذجاً متاحاً
+            </span>
         </div>
-        <input type="range" id="mot-scale" min="50" max="100" value="95" oninput="document.getElementById('pose-label').innerText = this.value + '%'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+        <select id="motion-model" onchange="onMotionModelChanged();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); border-radius: 10px; color: #1C120B; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;">
+            {% for m in models %}
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-cost-480="{{ m.cost_480p }}"
+                    data-cost-720="{{ m.cost_720p }}"
+                    data-cost-1080="{{ m.cost_1080p }}"
+                    data-cost-4k="{{ m.cost_4k }}"
+                    data-pricing-type="{{ m.pricing_type }}"
+                    data-supported-res="{{ m.supported_resolutions }}"
+                    data-min-duration="{{ m.min_duration }}"
+                    data-max-duration="{{ m.max_duration }}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
+            {% empty %}
+            <option value="crun-mimic-motion-pro"
+                    data-name="AI Mimic Motion Pro (Universal Body & Pose)"
+                    data-cost-480="1.20"
+                    data-cost-720="2.00"
+                    data-cost-1080="3.50"
+                    data-cost-4k="6.00"
+                    data-pricing-type="per_second"
+                    data-supported-res="480p,720p,1080p,4k"
+                    data-min-duration="5"
+                    data-max-duration="60"
+                    selected>
+                AI Mimic Motion Pro (Universal Body & Pose)
+            </option>
+            {% endfor %}
+        </select>
     </div>
 
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        بدء تطبيق الحركة
+    <!-- 2. Dual Media Uploaders: Reference Motion Video & Target Character -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px;">
+        
+        <!-- Media 1: Reference Motion Video -->
+        <div style="background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                    فيديو الحركة المرجعي (Driving Motion)
+                </label>
+                <span style="font-size: 11px; color: #8C7864;">حركات ورقصات</span>
+            </div>
+
+            <div id="motion-video-dropzone" onclick="document.getElementById('motion-video-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="motion-video-input" accept="video/mp4,video/webm,video/quicktime" style="display: none;" onchange="handleMotionVideoSelection(this.files[0]);">
+                <svg style="width: 28px; height: 28px; color: #0E3A1F; margin-bottom: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="5" r="2"/><path d="M12 7v7"/><path d="m6 11 6 3 6-3"/><path d="m9 22 3-8 3 8"/>
+                </svg>
+                <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">رفع فيديو الحركة والرقصة</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">MP4, MOV (أقصى حجم 100MB)</div>
+            </div>
+
+            <!-- Video Preview Box -->
+            <div id="motion-video-preview-box" style="margin-top: 10px; display: none; position: relative; border-radius: 8px; overflow: hidden; border: 1.5px solid rgba(197,160,89,0.4);">
+                <video id="motion-video-el" controls style="width: 100%; max-height: 160px; background: #000; display: block;"></video>
+                <button type="button" onclick="clearMotionVideo();" style="position: absolute; top: 6px; left: 6px; background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+        </div>
+
+        <!-- Media 2: Target Character Media (Image or Video) -->
+        <div style="background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 16px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                    الشخصية المستهدفة (Target Character)
+                </label>
+                <span style="font-size: 11px; color: #8C7864;">صورة أو فيديو</span>
+            </div>
+
+            <div id="target-media-dropzone" onclick="document.getElementById('target-media-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="target-media-input" accept="image/jpeg,image/png,image/webp,video/mp4" style="display: none;" onchange="handleTargetMediaSelection(this.files[0]);">
+                <svg style="width: 28px; height: 28px; color: #9E7D3B; margin-bottom: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                </svg>
+                <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">رفع صورة أو فيديو الشخصية</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">JPG, PNG أو MP4 كامل الجسم</div>
+            </div>
+
+            <!-- Target Media Preview Box -->
+            <div id="target-media-preview-box" style="margin-top: 10px; display: none; position: relative; border-radius: 8px; overflow: hidden; border: 1.5px solid rgba(197,160,89,0.4);">
+                <img id="target-img-el" style="width: 100%; max-height: 160px; object-fit: contain; background: #FAF7F0; display: none;">
+                <video id="target-vid-el" controls style="width: 100%; max-height: 160px; background: #000; display: none;"></video>
+                <button type="button" onclick="clearTargetMedia();" style="position: absolute; top: 6px; left: 6px; background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 3. Motion Precision & Camera Controls -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+        
+        <!-- Pose Matching Scale -->
+        <div style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                    دقة مطابقة الحركة والوضعيات (Pose Tracking Precision)
+                </label>
+                <span id="motion-scale-label" style="font-size: 13px; font-weight: 700; color: #0E3A1F; background: rgba(14,58,31,0.08); padding: 2px 8px; border-radius: 6px;">
+                    90% مطابقة
+                </span>
+            </div>
+            <input type="range" id="motion-scale" min="50" max="100" value="90" oninput="document.getElementById('motion-scale-label').textContent = this.value + '% مطابقة';" style="width: 100%; accent-color: #0E3A1F; cursor: pointer;">
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8C7864; margin-top: 2px;">
+                <span>50% (حركة انسيابية متحررة)</span>
+                <span>90% (تطابق حركي عالٍ)</span>
+                <span>100% (تطابق حرفي مطلق)</span>
+            </div>
+        </div>
+
+        <!-- Camera Movement Direction -->
+        <div>
+            <label style="display: block; font-size: 12.5px; color: #6E5A44; margin-bottom: 8px; font-weight: 600;">
+                توجيه حركة الكاميرا السينمائية (Camera Direction)
+            </label>
+            <div id="camera-direction-pills" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="cam-pill active" data-dir="static" onclick="selectCameraDir('static');" style="padding: 6px 12px; border-radius: 6px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.08); color: #0E3A1F; font-size: 12px; font-weight: 700; cursor: pointer;">
+                    🎥 ثابتة
+                </button>
+                <button type="button" class="cam-pill" data-dir="zoom_in" onclick="selectCameraDir('zoom_in');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    🔍 تقريب (Zoom In)
+                </button>
+                <button type="button" class="cam-pill" data-dir="zoom_out" onclick="selectCameraDir('zoom_out');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    🔎 تبعيد (Zoom Out)
+                </button>
+                <button type="button" class="cam-pill" data-dir="pan_left" onclick="selectCameraDir('pan_left');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    ⬅️ حركة يسار (Pan Left)
+                </button>
+                <button type="button" class="cam-pill" data-dir="pan_right" onclick="selectCameraDir('pan_right');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    ➡️ حركة يمين (Pan Right)
+                </button>
+                <button type="button" class="cam-pill" data-dir="tilt_up" onclick="selectCameraDir('tilt_up');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    ⬆️ صعود لأعلى (Tilt Up)
+                </button>
+            </div>
+            <input type="hidden" id="selected-camera-dir" value="static">
+        </div>
+
+    </div>
+
+    <!-- 4. Prompt Description (وصف المشهد والإضاءة) -->
+    <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 6px;">
+            الوصف الفني والتفاصيل التوليدية (Prompt)
+        </label>
+        <textarea id="motion-prompt-input" rows="3" placeholder="أدخل تفاصيل إضافية مثل الإضاءة، زوايا التصوير، الملابس، أو بيئة المشهد (اختياري)..." style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 13.5px; line-height: 1.6; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+        <!-- Quick Prompts -->
+        <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+            <button type="button" onclick="setMotionPrompt('مشهد سينمائي واقعي بإضاءة استوديو ناعمة وتباين درامي عالي، مع الحفاظ الكامل على نسيج الملابس وملامح الوجه.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                إضاءة سينمائية درامية
+            </button>
+            <button type="button" onclick="setMotionPrompt('مسرح استعراضي حيوي مع أضواء نيون وحركة ديناميكية سريعة وانعكاسات على الأرضية اللامعة.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                مسرح استعراضي نيون
+            </button>
+            <button type="button" onclick="setMotionPrompt('لقطة خارجية نهارية في شارع عصري بإضاءة شمس طبيعية ورياح خفيفة تحرك الشعر والملابس بواقعية.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                لقطة نهارية طبيعية
+            </button>
+        </div>
+    </div>
+
+    <!-- 5. Quality & Resolution Selector -->
+    <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+            دقة وجودة الفيديو (Resolution)
+        </label>
+        <div id="motion-resolution-pills" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            <button type="button" class="res-pill" data-res="480p" onclick="selectResolution('480p');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                480p SD
+            </button>
+            <button type="button" class="res-pill active" data-res="720p" onclick="selectResolution('720p');" style="padding: 10px 4px; border-radius: 8px; border: 2px solid #0E3A1F; background: rgba(14,58,31,0.08); color: #0E3A1F; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                720p HD
+            </button>
+            <button type="button" class="res-pill" data-res="1080p" onclick="selectResolution('1080p');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                1080p FHD
+            </button>
+            <button type="button" class="res-pill" data-res="4k" onclick="selectResolution('4k');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                4K Cinema
+            </button>
+        </div>
+        <input type="hidden" id="selected-resolution" value="720p">
+    </div>
+
+    <!-- 6. Interactive Second-by-Second Duration Slider (Step = 1s) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 12px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                مدة المشهد الحركي (بالثواني)
+            </label>
+            <span id="motion-duration-display" style="font-size: 14px; font-weight: 700; color: #0E3A1F; background: rgba(14,58,31,0.08); padding: 3px 10px; border-radius: 8px; border: 1px solid rgba(14,58,31,0.2);">
+                5 ثوانٍ
+            </span>
+        </div>
+        <input type="range" id="motion-duration-slider" min="5" max="60" step="1" value="5" oninput="onDurationSliderInput(this.value);" style="width: 100%; accent-color: #0E3A1F; cursor: pointer; height: 6px;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8C7864; margin-top: 4px;">
+            <span id="slider-min-label">5 ثوانٍ</span>
+            <span>خطوة التعديل: 1 ثانية</span>
+            <span id="slider-max-label">60 ثانية</span>
+        </div>
+    </div>
+
+    <!-- 7. Dynamic Realtime Credit Cost Badge -->
+    <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,160,89,0.12), rgba(14,58,31,0.06)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">التكلفة التقديرية للعملية:</div>
+            <div id="motion-cost-breakdown" style="font-size: 11.5px; color: #6E5A44; margin-top: 2px;">
+                2.00 رصيد/ثانية × 5 ثوانٍ
+            </div>
+        </div>
+        <div style="text-align: left;">
+            <div id="motion-total-cost" style="font-size: 22px; font-weight: 800; color: #0E3A1F; font-family: monospace;">
+                10.00
+            </div>
+            <div style="font-size: 11px; color: #8C7864;">رصيد مطلوب</div>
+        </div>
+    </div>
+
+    <!-- 8. Submit Button -->
+    <button type="submit" id="motion-submit-btn" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #092614); color: #FFF; font-weight: 700; font-size: 15px; padding: 15px; border: 1px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 18px rgba(14,58,31,0.25); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="5" r="2"/><path d="M12 7v7"/><path d="m6 11 6 3 6-3"/><path d="m9 22 3-8 3 8"/>
+        </svg>
+        <span>بدء تطبيق ونقل الحركة الذكية</span>
     </button>
 
 </form>
 
 <script>
+let selectedMotionVideoFile = null;
+let selectedTargetMediaFile = null;
+
+function handleMotionVideoSelection(file) {
+    if (!file) return;
+    selectedMotionVideoFile = file;
+    const previewBox = document.getElementById('motion-video-preview-box');
+    const vidEl = document.getElementById('motion-video-el');
+    const url = URL.createObjectURL(file);
+    vidEl.src = url;
+    previewBox.style.display = 'block';
+
+    // Auto-detect duration and sync slider
+    vidEl.onloadedmetadata = function() {
+        const sec = Math.round(vidEl.duration);
+        if (sec > 0) {
+            const slider = document.getElementById('motion-duration-slider');
+            const min = parseInt(slider.min) || 5;
+            const max = parseInt(slider.max) || 60;
+            const targetVal = Math.min(Math.max(sec, min), max);
+            slider.value = targetVal;
+            onDurationSliderInput(targetVal);
+        }
+    };
+}
+
+function clearMotionVideo() {
+    selectedMotionVideoFile = null;
+    document.getElementById('motion-video-input').value = '';
+    const vidEl = document.getElementById('motion-video-el');
+    vidEl.pause();
+    vidEl.src = '';
+    document.getElementById('motion-video-preview-box').style.display = 'none';
+}
+
+function handleTargetMediaSelection(file) {
+    if (!file) return;
+    selectedTargetMediaFile = file;
+    const previewBox = document.getElementById('target-media-preview-box');
+    const imgEl = document.getElementById('target-img-el');
+    const vidEl = document.getElementById('target-vid-el');
+
+    if (file.type.startsWith('video/')) {
+        imgEl.style.display = 'none';
+        vidEl.src = URL.createObjectURL(file);
+        vidEl.style.display = 'block';
+    } else {
+        vidEl.style.display = 'none';
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imgEl.src = e.target.result;
+            imgEl.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+    previewBox.style.display = 'block';
+}
+
+function clearTargetMedia() {
+    selectedTargetMediaFile = null;
+    document.getElementById('target-media-input').value = '';
+    const vidEl = document.getElementById('target-vid-el');
+    vidEl.pause();
+    vidEl.src = '';
+    document.getElementById('target-img-el').src = '';
+    document.getElementById('target-media-preview-box').style.display = 'none';
+}
+
+function selectCameraDir(dir) {
+    document.getElementById('selected-camera-dir').value = dir;
+    document.querySelectorAll('#camera-direction-pills .cam-pill').forEach(btn => {
+        if (btn.dataset.dir === dir) {
+            btn.style.border = '1.5px solid #0E3A1F';
+            btn.style.background = 'rgba(14,58,31,0.08)';
+            btn.style.color = '#0E3A1F';
+            btn.style.fontWeight = '700';
+        } else {
+            btn.style.border = '1px solid rgba(197,160,89,0.35)';
+            btn.style.background = '#FAF7F0';
+            btn.style.color = '#362A1F';
+            btn.style.fontWeight = '600';
+        }
+    });
+}
+
+function setMotionPrompt(text) {
+    document.getElementById('motion-prompt-input').value = text;
+}
+
+function selectResolution(res) {
+    document.getElementById('selected-resolution').value = res;
+    document.querySelectorAll('#motion-resolution-pills .res-pill').forEach(btn => {
+        if (btn.dataset.res === res) {
+            btn.style.border = '2px solid #0E3A1F';
+            btn.style.background = 'rgba(14,58,31,0.08)';
+            btn.style.color = '#0E3A1F';
+            btn.style.fontWeight = '700';
+        } else {
+            btn.style.border = '1.5px solid rgba(197,160,89,0.35)';
+            btn.style.background = '#FAF7F0';
+            btn.style.color = '#362A1F';
+            btn.style.fontWeight = '600';
+        }
+    });
+    recalculateCost();
+}
+
+function onDurationSliderInput(val) {
+    document.getElementById('motion-duration-display').textContent = `${val} ثوانٍ`;
+    recalculateCost();
+}
+
+function onMotionModelChanged() {
+    const sel = document.getElementById('motion-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    // Update min/max duration
+    const minDur = parseInt(opt.dataset.minDuration) || 5;
+    const maxDur = parseInt(opt.dataset.maxDuration) || 60;
+
+    const slider = document.getElementById('motion-duration-slider');
+    slider.min = minDur;
+    slider.max = maxDur;
+    document.getElementById('slider-min-label').textContent = `${minDur} ثوانٍ`;
+    document.getElementById('slider-max-label').textContent = `${maxDur} ثانية`;
+
+    if (parseInt(slider.value) > maxDur) slider.value = maxDur;
+    if (parseInt(slider.value) < minDur) slider.value = minDur;
+    document.getElementById('motion-duration-display').textContent = `${slider.value} ثوانٍ`;
+
+    // Filter supported resolutions
+    const supp = (opt.dataset.supportedRes || '480p,720p,1080p,4k').toLowerCase();
+    const currentRes = document.getElementById('selected-resolution').value;
+    let fallbackRes = null;
+
+    document.querySelectorAll('#motion-resolution-pills .res-pill').forEach(btn => {
+        const r = btn.dataset.res.toLowerCase();
+        if (supp.includes(r)) {
+            btn.style.display = 'block';
+            if (!fallbackRes) fallbackRes = r;
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+
+    if (!supp.includes(currentRes) && fallbackRes) {
+        selectResolution(fallbackRes);
+    } else {
+        recalculateCost();
+    }
+}
+
+function recalculateCost() {
+    const sel = document.getElementById('motion-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    const res = document.getElementById('selected-resolution').value;
+    const dur = parseInt(document.getElementById('motion-duration-slider').value) || 5;
+    const pricingType = opt.dataset.pricingType || 'per_second';
+
+    let rate = 2.0;
+    if (res === '480p') rate = parseFloat(opt.dataset.cost480) || 1.2;
+    else if (res === '720p') rate = parseFloat(opt.dataset.cost720) || 2.0;
+    else if (res === '1080p') rate = parseFloat(opt.dataset.cost1080) || 3.5;
+    else if (res === '4k') rate = parseFloat(opt.dataset.cost4k) || 6.0;
+
+    let total = 0;
+    if (pricingType === 'flat') {
+        total = rate;
+        document.getElementById('motion-cost-breakdown').textContent = `تكلفة مقطوعة: ${rate.toFixed(2)} رصيد`;
+    } else {
+        total = rate * dur;
+        document.getElementById('motion-cost-breakdown').textContent = `${rate.toFixed(2)} رصيد/ثانية × ${dur} ثوانٍ (${res.toUpperCase()})`;
+    }
+
+    document.getElementById('motion-total-cost').textContent = total.toFixed(2);
+}
+
 function handleMotionSubmit() {
-    const sourceVideo = document.getElementById('mot-source-url').value;
-    const targetImage = document.getElementById('mot-target-url').value;
-    const scale = document.getElementById('mot-scale').value;
+    if (!selectedMotionVideoFile) {
+        alert('يرجى رفع فيديو الحركة المرجعي (Driving Motion Video) لاستخراج الحركة والوضعيات منه');
+        return;
+    }
+    if (!selectedTargetMediaFile) {
+        alert('يرجى رفع صورة أو فيديو الشخصية المستهدفة (Target Character Media)');
+        return;
+    }
+
+    const sel = document.getElementById('motion-model');
+    const opt = sel.options[sel.selectedIndex];
+    const modelName = opt ? opt.dataset.name : 'AI Mimic Motion Pro (Universal Body & Pose)';
+    const modelId = sel.value;
+    const res = document.getElementById('selected-resolution').value;
+    const dur = document.getElementById('motion-duration-slider').value;
+    const scale = document.getElementById('motion-scale').value;
+    const camDir = document.getElementById('selected-camera-dir').value;
+    let promptText = document.getElementById('motion-prompt-input').value.trim();
+    if (!promptText) {
+        promptText = `Motion Transfer: ${selectedMotionVideoFile.name} onto target subject [Tracking: ${scale}%, Cam: ${camDir}]`;
+    }
 
     const fd = new FormData();
-    fd.append('prompt', 'Motion Transfer: ' + sourceVideo);
-    fd.append('source_video_url', sourceVideo);
-    fd.append('target_image_url', targetImage);
+    fd.append('model', modelName);
+    fd.append('model_id', modelId);
+    fd.append('resolution', res);
+    fd.append('duration', dur);
     fd.append('motion_scale', scale);
+    fd.append('camera_direction', camDir);
+    fd.append('prompt', promptText);
+    fd.append('motion_video', selectedMotionVideoFile);
+    fd.append('target_media', selectedTargetMediaFile);
 
     submitGeneration(fd, 'motion_control');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    onMotionModelChanged();
+});
 </script>
 {% endblock %}

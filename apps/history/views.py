@@ -60,6 +60,7 @@ def generate_api(request):
     from apps.tools.reference_to_video.models import ReferenceToVideoModelConfig
     from apps.tools.lipsync.models import LipSyncModelConfig
     from apps.tools.avatar_video.models import AvatarVideoModelConfig
+    from apps.tools.motion_control.models import MotionControlModelConfig
     standard_cost = Decimal('4.0000')
     premium_cost = Decimal('0.0000')
     model_name = model_identifier or 'Standard Model'
@@ -272,6 +273,33 @@ def generate_api(request):
             cfg = AvatarVideoModelConfig.objects.filter(name=model_identifier, is_active=True).first()
         if not cfg:
             cfg = AvatarVideoModelConfig.objects.filter(is_default=True, is_active=True).first() or AvatarVideoModelConfig.objects.first()
+
+        if cfg:
+            model_name = cfg.name
+            res = str(data.get('resolution', '720p')).lower()
+            try:
+                duration = int(data.get('duration', cfg.min_duration))
+            except (ValueError, TypeError):
+                duration = cfg.min_duration
+
+            duration = max(cfg.min_duration, min(duration, cfg.max_duration))
+            options['duration'] = duration
+            options['requested_duration'] = duration
+
+            calc_cost = cfg.calculate_total_cost(res, duration)
+
+            if cfg.allowed_wallet == 'premium':
+                premium_cost = calc_cost
+                standard_cost = Decimal('0.0000')
+            else:
+                standard_cost = calc_cost
+
+    elif tool_type == 'motion_control':
+        cfg = MotionControlModelConfig.objects.filter(model_id=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = MotionControlModelConfig.objects.filter(name=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = MotionControlModelConfig.objects.filter(is_default=True, is_active=True).first() or MotionControlModelConfig.objects.first()
 
         if cfg:
             model_name = cfg.name
