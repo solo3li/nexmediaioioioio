@@ -125,10 +125,13 @@ def studio_redirect(request):
 
 def studio_tool_view(request, tool_slug):
     """Renders the dedicated page for a specific AI tool within the Royal Studio workspace"""
-    if tool_slug not in TOOLS_METADATA:
+    slug_key = tool_slug.replace('_', '-')
+    if slug_key not in TOOLS_METADATA and tool_slug in TOOLS_METADATA:
+        slug_key = tool_slug
+    if slug_key not in TOOLS_METADATA:
         raise Http404(f"Tool '{tool_slug}' not found.")
 
-    tool_meta = TOOLS_METADATA[tool_slug]
+    tool_meta = TOOLS_METADATA[slug_key]
     user = request.user
     if not user.is_authenticated:
         user = User.objects.filter(is_superuser=True).first()

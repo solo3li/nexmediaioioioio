@@ -3,72 +3,590 @@
 {% block tool_controls %}
 <form id="avatar-form" onsubmit="event.preventDefault(); handleAvatarSubmit();">
     
-    <!-- Avatar Character Selector -->
-    <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            اختيار الشخصية الرقمية (Avatar Persona)
+    <!-- 1. Model Selection (Clean Name ONLY) -->
+    <div style="margin-bottom: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                محرك الأفاتار الرقمي (Digital Avatar Engine)
+            </label>
+            <span id="avatar-model-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(14,58,31,0.2);">
+                28 نموذجاً متاحاً
+            </span>
+        </div>
+        <select id="avatar-model" onchange="onAvatarModelChanged();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); border-radius: 10px; color: #1C120B; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;">
+            {% for m in models %}
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-cost-480="{{ m.cost_480p }}"
+                    data-cost-720="{{ m.cost_720p }}"
+                    data-cost-1080="{{ m.cost_1080p }}"
+                    data-cost-4k="{{ m.cost_4k }}"
+                    data-pricing-type="{{ m.pricing_type }}"
+                    data-supported-res="{{ m.supported_resolutions }}"
+                    data-min-duration="{{ m.min_duration }}"
+                    data-max-duration="{{ m.max_duration }}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
+            {% empty %}
+            <option value="crun-avatar-pro"
+                    data-name="AI Avatar Studio Pro (Universal Digital Human)"
+                    data-cost-480="1.00"
+                    data-cost-720="2.00"
+                    data-cost-1080="3.50"
+                    data-cost-4k="6.00"
+                    data-pricing-type="per_second"
+                    data-supported-res="480p,720p,1080p,4k"
+                    data-min-duration="5"
+                    data-max-duration="120"
+                    selected>
+                AI Avatar Studio Pro (Universal Digital Human)
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- 2. Dual Persona Mode (شخصيات جاهزة أو صورة مخصصة) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                تحديد الشخصية الرقمية (Avatar Persona)
+            </label>
+            <!-- Persona Mode Switcher -->
+            <div style="display: flex; background: #FAF7F0; border: 1px solid rgba(197,160,89,0.35); border-radius: 8px; padding: 2px;">
+                <button type="button" id="tab-btn-presets" onclick="switchPersonaTab('presets');" style="padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; border: none; background: #0E3A1F; color: #FFF; cursor: pointer; transition: all 0.2s;">
+                    شخصيات جاهزة
+                </button>
+                <button type="button" id="tab-btn-custom" onclick="switchPersonaTab('custom');" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #6E5A44; cursor: pointer; transition: all 0.2s;">
+                    صورة مخصصة
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab 1: Preset Library Grid -->
+        <div id="pane-presets" style="display: block;">
+            <input type="hidden" id="selected-preset-id" value="hed-presenter-official">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+                
+                <!-- Preset Card 1 -->
+                <div class="preset-card active" data-preset="hed-presenter-official" onclick="selectPreset('hed-presenter-official', this);" style="border: 2px solid #0E3A1F; background: rgba(14,58,31,0.06); border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FAF7F0; border: 1.5px solid #C5A059; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0E3A1F" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #0E3A1F;">مقدم رسمي وقور</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">بيئة إخبارية رسمية</div>
+                </div>
+
+                <!-- Preset Card 2 -->
+                <div class="preset-card" data-preset="hed-presenter-smart" onclick="selectPreset('hed-presenter-smart', this);" style="border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                    </div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">مقدمة برامج ذكية</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">استوديو تقني حديث</div>
+                </div>
+
+                <!-- Preset Card 3 -->
+                <div class="preset-card" data-preset="hed-creator-modern" onclick="selectPreset('hed-creator-modern', this);" style="border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    </div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">صانع محتوى عصري</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">فلوجات وسوشيال ميديا</div>
+                </div>
+
+                <!-- Preset Card 4 -->
+                <div class="preset-card" data-preset="hed-corporate-leader" onclick="selectPreset('hed-corporate-leader', this);" style="border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><line x1="15" y1="8" x2="17" y2="8"/><line x1="15" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
+                    </div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">سيدة أعمال قيادية</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">مؤتمرات وأعمال</div>
+                </div>
+
+                <!-- Preset Card 5 -->
+                <div class="preset-card" data-preset="hed-documentary-voice" onclick="selectPreset('hed-documentary-voice', this);" style="border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v8H4v-8"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">مذيع وثائقي</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">سرد تاريخي ورصين</div>
+                </div>
+
+                <!-- Preset Card 6 -->
+                <div class="preset-card" data-preset="hed-academic-trainer" onclick="selectPreset('hed-academic-trainer', this);" style="border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; border-radius: 10px; padding: 12px 10px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div style="width: 44px; height: 44px; margin: 0 auto 8px; border-radius: 50%; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.4); display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9E7D3B" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    </div>
+                    <div style="font-size: 12.5px; font-weight: 700; color: #1C120B;">مدرب أكاديمي</div>
+                    <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">دروس وشروحات</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tab 2: Custom Photo Upload -->
+        <div id="pane-custom" style="display: none;">
+            <div id="avatar-photo-dropzone" onclick="document.getElementById('avatar-photo-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 22px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="avatar-photo-input" accept="image/jpeg,image/png,image/webp" style="display: none;" onchange="handleCustomPhotoSelection(this.files[0]);">
+                <svg style="width: 32px; height: 32px; color: #0E3A1F; margin-bottom: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2"/>
+                    <circle cx="9" cy="9" r="2"/>
+                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                </svg>
+                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">انقر أو اسحب صورة شخصية واضحة للوجه</div>
+                <div style="font-size: 11.5px; color: #8C7864; margin-top: 4px;">JPG, PNG, WEBM (يوصى بلقطة بورتريه مستقيمة بإضاءة واضحة)</div>
+            </div>
+
+            <!-- Custom Photo Preview -->
+            <div id="avatar-photo-preview-box" style="margin-top: 12px; display: none; position: relative; border-radius: 10px; overflow: hidden; border: 1.5px solid rgba(197,160,89,0.45); max-width: 200px; margin-left: auto; margin-right: auto;">
+                <img id="avatar-photo-img" style="width: 100%; height: 180px; object-fit: cover; display: block;">
+                <button type="button" onclick="clearCustomPhoto();" style="position: absolute; top: 6px; left: 6px; background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 3. Dual Speech Source (كتابة نص الحوار أو رفع مقطع صوتي) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                مصدر الحديث والصوت (Presenter Speech Source)
+            </label>
+            <!-- Speech Source Switcher -->
+            <div style="display: flex; background: #FAF7F0; border: 1px solid rgba(197,160,89,0.35); border-radius: 8px; padding: 2px;">
+                <button type="button" id="tab-btn-text" onclick="switchSpeechTab('text');" style="padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; border: none; background: #0E3A1F; color: #FFF; cursor: pointer; transition: all 0.2s;">
+                    كتابة نص
+                </button>
+                <button type="button" id="tab-btn-audio" onclick="switchSpeechTab('audio');" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #6E5A44; cursor: pointer; transition: all 0.2s;">
+                    رفع ملف صوتي
+                </button>
+            </div>
+        </div>
+
+        <!-- Mode A: Text Script -->
+        <div id="pane-speech-text" style="display: block;">
+            <div style="position: relative;">
+                <textarea id="avatar-script-input" rows="4" placeholder="اكتب النص الذي سيلقيه الأفاتار أمام الكاميرا، مثلاً: أهلاً بكم في استوديو الإنتاج الرقمي، حيث ندمج الذكاء الاصطناعي مع أعلى معايير الواقعية السينمائية..." style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 13.5px; line-height: 1.6; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+            </div>
+
+            <!-- Quick Script Snippets -->
+            <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                <button type="button" class="script-chip" onclick="setScript('أهلاً ومرحباً بكم في منصة الإنتاج الإبداعي المتقدمة، حيث يتحول الخيال إلى واقع مرئي فائق الدقة بتنسيق سينمائي مبهر.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                    افتتاحية رسمية
+                </button>
+                <button type="button" class="script-chip" onclick="setScript('يسرنا اليوم الإعلان عن إطلاق جيلنا الجديد من الحلول الرقمية الذكية المصممة لتمكين المبدعين وصناع المحتوى حول العالم.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                    إعلان تجاري
+                </button>
+                <button type="button" class="script-chip" onclick="setScript('في هذا المقطع التدريبي سنستعرض خطوة بخطوة كيف يمكنك توظيف تقنيات الأفاتار الرقمي لإنتاج محتوى تعليمي تفاعلي جذاب.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                    شرح تدريبي
+                </button>
+            </div>
+
+            <!-- Emotional Tone & Expression -->
+            <div style="margin-top: 14px;">
+                <label style="display: block; font-size: 12px; color: #6E5A44; margin-bottom: 6px; font-weight: 600;">نبرة وتعبيرات الإلقاء</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <label style="flex: 1; min-width: 100px; text-align: center; background: rgba(14,58,31,0.08); border: 1.5px solid #0E3A1F; padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #0E3A1F; font-weight: 700;">
+                        <input type="radio" name="speech_tone" value="formal" checked style="display: none;" onchange="updateToneHighlight();"> رسمي وقور
+                    </label>
+                    <label style="flex: 1; min-width: 100px; text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; font-weight: 600;">
+                        <input type="radio" name="speech_tone" value="neutral" style="display: none;" onchange="updateToneHighlight();"> إخباري محايد
+                    </label>
+                    <label style="flex: 1; min-width: 100px; text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; font-weight: 600;">
+                        <input type="radio" name="speech_tone" value="warm" style="display: none;" onchange="updateToneHighlight();"> دافئ ومشجع
+                    </label>
+                    <label style="flex: 1; min-width: 100px; text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 8px 6px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; font-weight: 600;">
+                        <input type="radio" name="speech_tone" value="dynamic" style="display: none;" onchange="updateToneHighlight();"> حماسي تفاعلي
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode B: Audio Track Upload -->
+        <div id="pane-speech-audio" style="display: none;">
+            <div id="avatar-audio-dropzone" onclick="document.getElementById('avatar-audio-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="avatar-audio-input" accept="audio/*" style="display: none;" onchange="handleAudioTrackSelection(this.files[0]);">
+                <svg style="width: 28px; height: 28px; color: #0E3A1F; margin-bottom: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" x2="12" y1="19" y2="22"/>
+                </svg>
+                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">انقر أو اسحب ملف الصوت المنطوق للأفاتار</div>
+                <div style="font-size: 11.5px; color: #8C7864; margin-top: 3px;">MP3, WAV, M4A, OGG (يتم مزامنة مدة الفيديو مع الصوت تلقائياً)</div>
+            </div>
+
+            <!-- Audio Preview Box -->
+            <div id="avatar-audio-preview-box" style="margin-top: 12px; display: none; background: #FAF7F0; padding: 12px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.4); align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1; overflow: hidden;">
+                    <div style="width: 34px; height: 34px; border-radius: 50%; background: #0E3A1F; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px;">
+                        🎵
+                    </div>
+                    <div style="overflow: hidden;">
+                        <div id="avatar-audio-name" style="font-size: 13px; font-weight: 700; color: #1C120B; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">audio.mp3</div>
+                        <div id="avatar-audio-meta" style="font-size: 11px; color: #8C7864;">0 ثانية</div>
+                    </div>
+                </div>
+                <button type="button" onclick="clearAudioTrack();" style="background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">✕</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 4. Quality & Resolution Selector -->
+    <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+            دقة وجودة الفيديو (Resolution)
         </label>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
-            <label style="background: rgba(14,58,31,0.08); border: 1.5px solid #0E3A1F; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; color: #0E3A1F; font-size: 12.5px; font-weight: bold; display: flex; flex-direction: column; align-items: center;">
-                <input type="radio" name="avatar_char" value="hed-presenter-1" checked style="display: none;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 6px;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                مقدم رسمي وقور
+        <div id="avatar-resolution-pills" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            <button type="button" class="res-pill" data-res="480p" onclick="selectResolution('480p');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                480p SD
+            </button>
+            <button type="button" class="res-pill active" data-res="720p" onclick="selectResolution('720p');" style="padding: 10px 4px; border-radius: 8px; border: 2px solid #0E3A1F; background: rgba(14,58,31,0.08); color: #0E3A1F; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                720p HD
+            </button>
+            <button type="button" class="res-pill" data-res="1080p" onclick="selectResolution('1080p');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                1080p FHD
+            </button>
+            <button type="button" class="res-pill" data-res="4k" onclick="selectResolution('4k');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                4K Cinema
+            </button>
+        </div>
+        <input type="hidden" id="selected-resolution" value="720p">
+    </div>
+
+    <!-- 5. Interactive Second-by-Second Duration Slider (Step = 1s) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 12px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                مدة مشهد الأفاتار (بالثواني)
             </label>
-            <label style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; display: flex; flex-direction: column; align-items: center;">
-                <input type="radio" name="avatar_char" value="hed-presenter-2" style="display: none;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 6px;"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
-                مقدمة برامج ذكية
-            </label>
-            <label style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; display: flex; flex-direction: column; align-items: center;">
-                <input type="radio" name="avatar_char" value="hed-creative-1" style="display: none;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 6px;"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                صانع محتوى عصري
-            </label>
+            <span id="avatar-duration-display" style="font-size: 14px; font-weight: 700; color: #0E3A1F; background: rgba(14,58,31,0.08); padding: 3px 10px; border-radius: 8px; border: 1px solid rgba(14,58,31,0.2);">
+                10 ثوانٍ
+            </span>
+        </div>
+        <input type="range" id="avatar-duration-slider" min="5" max="60" step="1" value="10" oninput="onDurationSliderInput(this.value);" style="width: 100%; accent-color: #0E3A1F; cursor: pointer; height: 6px;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8C7864; margin-top: 4px;">
+            <span id="slider-min-label">5 ثوانٍ</span>
+            <span>خطوة التعديل: 1 ثانية</span>
+            <span id="slider-max-label">60 ثانية</span>
         </div>
     </div>
 
-    <!-- Script Text -->
-    <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            نص الحوار أو الخطاب (Presenter Script)
-        </label>
-        <textarea id="avatar-script" required rows="4" placeholder="أدخل النص الذي ستلقيه الشخصية الافتراضية أمام الكاميرا بتعبيرات وحركات رأس طبيعية..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
-    </div>
-
-    <!-- Expression Tone -->
-    <div style="margin-bottom: 25px;">
-        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">نبرة التعبيرات الجسدية والانفعالية</label>
-        <div style="display: flex; gap: 8px;">
-            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
-                <input type="radio" name="tone" value="formal" checked style="display: none;"> رسمي هادئ
-            </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="tone" value="warm" style="display: none;"> دافئ ومشجع
-            </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="tone" value="dynamic" style="display: none;"> حماسي تفاعلي
-            </label>
+    <!-- 6. Dynamic Realtime Credit Cost Badge -->
+    <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,160,89,0.12), rgba(14,58,31,0.06)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">التكلفة التقديرية للعملية:</div>
+            <div id="avatar-cost-breakdown" style="font-size: 11.5px; color: #6E5A44; margin-top: 2px;">
+                2.00 رصيد/ثانية × 10 ثوانٍ
+            </div>
+        </div>
+        <div style="text-align: left;">
+            <div id="avatar-total-cost" style="font-size: 22px; font-weight: 800; color: #0E3A1F; font-family: monospace;">
+                20.00
+            </div>
+            <div style="font-size: 11px; color: #8C7864;">رصيد مطلوب</div>
         </div>
     </div>
 
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        توليد فيديو الأفاتار
+    <!-- 7. Submit Button -->
+    <button type="submit" id="avatar-submit-btn" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #092614); color: #FFF; font-weight: 700; font-size: 15px; padding: 15px; border: 1px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 18px rgba(14,58,31,0.25); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <span>بدء توليد فيديو الأفاتار الرقمي</span>
     </button>
 
 </form>
 
 <script>
+let currentPersonaMode = 'presets'; // 'presets' | 'custom'
+let currentSpeechMode = 'text';      // 'text' | 'audio'
+let selectedCustomPhotoFile = null;
+let selectedAudioFile = null;
+
+function switchPersonaTab(mode) {
+    currentPersonaMode = mode;
+    const btnPresets = document.getElementById('tab-btn-presets');
+    const btnCustom = document.getElementById('tab-btn-custom');
+    const panePresets = document.getElementById('pane-presets');
+    const paneCustom = document.getElementById('pane-custom');
+
+    if (mode === 'presets') {
+        btnPresets.style.background = '#0E3A1F';
+        btnPresets.style.color = '#FFF';
+        btnCustom.style.background = 'transparent';
+        btnCustom.style.color = '#6E5A44';
+        panePresets.style.display = 'block';
+        paneCustom.style.display = 'none';
+    } else {
+        btnCustom.style.background = '#0E3A1F';
+        btnCustom.style.color = '#FFF';
+        btnPresets.style.background = 'transparent';
+        btnPresets.style.color = '#6E5A44';
+        panePresets.style.display = 'none';
+        paneCustom.style.display = 'block';
+    }
+}
+
+function selectPreset(presetId, el) {
+    document.getElementById('selected-preset-id').value = presetId;
+    document.querySelectorAll('.preset-card').forEach(card => {
+        card.style.border = '1.5px solid rgba(197,160,89,0.35)';
+        card.style.background = '#FAF7F0';
+        const title = card.querySelector('div:nth-child(2)');
+        if (title) title.style.color = '#1C120B';
+    });
+    el.style.border = '2px solid #0E3A1F';
+    el.style.background = 'rgba(14,58,31,0.06)';
+    const activeTitle = el.querySelector('div:nth-child(2)');
+    if (activeTitle) activeTitle.style.color = '#0E3A1F';
+}
+
+function handleCustomPhotoSelection(file) {
+    if (!file) return;
+    selectedCustomPhotoFile = file;
+    const previewBox = document.getElementById('avatar-photo-preview-box');
+    const imgEl = document.getElementById('avatar-photo-img');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        imgEl.src = e.target.result;
+        previewBox.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearCustomPhoto() {
+    selectedCustomPhotoFile = null;
+    document.getElementById('avatar-photo-input').value = '';
+    document.getElementById('avatar-photo-preview-box').style.display = 'none';
+}
+
+function switchSpeechTab(mode) {
+    currentSpeechMode = mode;
+    const btnText = document.getElementById('tab-btn-text');
+    const btnAudio = document.getElementById('tab-btn-audio');
+    const paneText = document.getElementById('pane-speech-text');
+    const paneAudio = document.getElementById('pane-speech-audio');
+
+    if (mode === 'text') {
+        btnText.style.background = '#0E3A1F';
+        btnText.style.color = '#FFF';
+        btnAudio.style.background = 'transparent';
+        btnAudio.style.color = '#6E5A44';
+        paneText.style.display = 'block';
+        paneAudio.style.display = 'none';
+    } else {
+        btnAudio.style.background = '#0E3A1F';
+        btnAudio.style.color = '#FFF';
+        btnText.style.background = 'transparent';
+        btnText.style.color = '#6E5A44';
+        paneText.style.display = 'none';
+        paneAudio.style.display = 'block';
+    }
+}
+
+function setScript(text) {
+    document.getElementById('avatar-script-input').value = text;
+}
+
+function updateToneHighlight() {
+    const radios = document.querySelectorAll('input[name="speech_tone"]');
+    radios.forEach(r => {
+        const lbl = r.parentElement;
+        if (r.checked) {
+            lbl.style.background = 'rgba(14,58,31,0.08)';
+            lbl.style.borderColor = '#0E3A1F';
+            lbl.style.color = '#0E3A1F';
+            lbl.style.fontWeight = '700';
+        } else {
+            lbl.style.background = '#FAF7F0';
+            lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+            lbl.style.color = '#362A1F';
+            lbl.style.fontWeight = '600';
+        }
+    });
+}
+
+function handleAudioTrackSelection(file) {
+    if (!file) return;
+    selectedAudioFile = file;
+    document.getElementById('avatar-audio-name').textContent = file.name;
+    document.getElementById('avatar-audio-preview-box').style.display = 'flex';
+
+    // Auto-detect audio duration and sync slider
+    const audio = document.createElement('audio');
+    audio.preload = 'metadata';
+    audio.src = URL.createObjectURL(file);
+    audio.onloadedmetadata = function() {
+        URL.revokeObjectURL(audio.src);
+        const durationSec = Math.round(audio.duration);
+        document.getElementById('avatar-audio-meta').textContent = `${durationSec} ثانية`;
+
+        const slider = document.getElementById('avatar-duration-slider');
+        const max = parseInt(slider.max) || 60;
+        const min = parseInt(slider.min) || 5;
+        const targetVal = Math.min(Math.max(durationSec, min), max);
+        slider.value = targetVal;
+        onDurationSliderInput(targetVal);
+    };
+}
+
+function clearAudioTrack() {
+    selectedAudioFile = null;
+    document.getElementById('avatar-audio-input').value = '';
+    document.getElementById('avatar-audio-preview-box').style.display = 'none';
+}
+
+function selectResolution(res) {
+    document.getElementById('selected-resolution').value = res;
+    document.querySelectorAll('#avatar-resolution-pills .res-pill').forEach(btn => {
+        if (btn.dataset.res === res) {
+            btn.style.border = '2px solid #0E3A1F';
+            btn.style.background = 'rgba(14,58,31,0.08)';
+            btn.style.color = '#0E3A1F';
+            btn.style.fontWeight = '700';
+        } else {
+            btn.style.border = '1.5px solid rgba(197,160,89,0.35)';
+            btn.style.background = '#FAF7F0';
+            btn.style.color = '#362A1F';
+            btn.style.fontWeight = '600';
+        }
+    });
+    recalculateCost();
+}
+
+function onDurationSliderInput(val) {
+    document.getElementById('avatar-duration-display').textContent = `${val} ثوانٍ`;
+    recalculateCost();
+}
+
+function onAvatarModelChanged() {
+    const sel = document.getElementById('avatar-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    // Update min/max duration
+    const minDur = parseInt(opt.dataset.minDuration) || 5;
+    const maxDur = parseInt(opt.dataset.maxDuration) || 60;
+
+    const slider = document.getElementById('avatar-duration-slider');
+    slider.min = minDur;
+    slider.max = maxDur;
+    document.getElementById('slider-min-label').textContent = `${minDur} ثوانٍ`;
+    document.getElementById('slider-max-label').textContent = `${maxDur} ثانية`;
+
+    if (parseInt(slider.value) > maxDur) slider.value = maxDur;
+    if (parseInt(slider.value) < minDur) slider.value = minDur;
+    document.getElementById('avatar-duration-display').textContent = `${slider.value} ثوانٍ`;
+
+    // Filter supported resolutions
+    const supp = (opt.dataset.supportedRes || '480p,720p,1080p,4k').toLowerCase();
+    const currentRes = document.getElementById('selected-resolution').value;
+    let fallbackRes = null;
+
+    document.querySelectorAll('#avatar-resolution-pills .res-pill').forEach(btn => {
+        const r = btn.dataset.res.toLowerCase();
+        if (supp.includes(r)) {
+            btn.style.display = 'block';
+            if (!fallbackRes) fallbackRes = r;
+        } else {
+            btn.style.display = 'none';
+        }
+    });
+
+    if (!supp.includes(currentRes) && fallbackRes) {
+        selectResolution(fallbackRes);
+    } else {
+        recalculateCost();
+    }
+}
+
+function recalculateCost() {
+    const sel = document.getElementById('avatar-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    const res = document.getElementById('selected-resolution').value;
+    const dur = parseInt(document.getElementById('avatar-duration-slider').value) || 10;
+    const pricingType = opt.dataset.pricingType || 'per_second';
+
+    let rate = 2.0;
+    if (res === '480p') rate = parseFloat(opt.dataset.cost480) || 1.0;
+    else if (res === '720p') rate = parseFloat(opt.dataset.cost720) || 2.0;
+    else if (res === '1080p') rate = parseFloat(opt.dataset.cost1080) || 3.5;
+    else if (res === '4k') rate = parseFloat(opt.dataset.cost4k) || 6.0;
+
+    let total = 0;
+    if (pricingType === 'flat') {
+        total = rate;
+        document.getElementById('avatar-cost-breakdown').textContent = `تكلفة مقطوعة: ${rate.toFixed(2)} رصيد`;
+    } else {
+        total = rate * dur;
+        document.getElementById('avatar-cost-breakdown').textContent = `${rate.toFixed(2)} رصيد/ثانية × ${dur} ثوانٍ (${res.toUpperCase()})`;
+    }
+
+    document.getElementById('avatar-total-cost').textContent = total.toFixed(2);
+}
+
 function handleAvatarSubmit() {
-    const script = document.getElementById('avatar-script').value;
-    const character = document.querySelector('input[name="avatar_char"]:checked').value;
-    const tone = document.querySelector('input[name="tone"]:checked').value;
+    const sel = document.getElementById('avatar-model');
+    const opt = sel.options[sel.selectedIndex];
+    const modelName = opt ? opt.dataset.name : 'AI Avatar Studio Pro (Universal Digital Human)';
+    const modelId = sel.value;
+    const res = document.getElementById('selected-resolution').value;
+    const dur = document.getElementById('avatar-duration-slider').value;
 
+    let promptText = '';
     const fd = new FormData();
-    fd.append('prompt', script);
-    fd.append('character_id', character);
-    fd.append('expression_tone', tone);
+    fd.append('model', modelName);
+    fd.append('model_id', modelId);
+    fd.append('resolution', res);
+    fd.append('duration', dur);
 
+    // Persona
+    if (currentPersonaMode === 'presets') {
+        const presetId = document.getElementById('selected-preset-id').value;
+        fd.append('avatar_type', 'preset');
+        fd.append('character_id', presetId);
+    } else {
+        if (!selectedCustomPhotoFile) {
+            alert('يرجى رفع صورة الوجه الشخصية المخصصة للأفاتار');
+            return;
+        }
+        fd.append('avatar_type', 'custom');
+        fd.append('image', selectedCustomPhotoFile);
+    }
+
+    // Speech
+    if (currentSpeechMode === 'text') {
+        promptText = document.getElementById('avatar-script-input').value.trim();
+        if (!promptText) {
+            alert('يرجى كتابة نص الحوار أو الخطاب للأفاتار');
+            return;
+        }
+        const toneRadio = document.querySelector('input[name="speech_tone"]:checked');
+        fd.append('speech_source', 'text');
+        fd.append('expression_tone', toneRadio ? toneRadio.value : 'formal');
+    } else {
+        if (!selectedAudioFile) {
+            alert('يرجى اختيار أو سحب ملف صوتي للأفاتار');
+            return;
+        }
+        promptText = `[Speech Audio File: ${selectedAudioFile.name}]`;
+        fd.append('speech_source', 'audio');
+        fd.append('audio', selectedAudioFile);
+    }
+
+    fd.append('prompt', promptText);
+
+    // Call studio submit engine
     submitGeneration(fd, 'avatar_video');
 }
+
+// Initial setup on page load
+document.addEventListener('DOMContentLoaded', function() {
+    onAvatarModelChanged();
+});
 </script>
 {% endblock %}
