@@ -3,86 +3,411 @@
 {% block tool_controls %}
 <form id="t2i-form" onsubmit="event.preventDefault(); handleT2ISubmit();">
     
-    <!-- Model Selection -->
+    <!-- Model Selection (Name ONLY, no tech leaks) -->
     <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            نموذج الصور (Image Model)
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
+            نموذج توليد الصور (Image Model)
         </label>
-        <select id="t2i-model" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
+        <select id="t2i-model" onchange="onT2IModelChanged();" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; font-weight: 600;">
             {% for m in models %}
-            <option value="{{ m.model_id }}">{{ m.name }} ({{ m.provider }}) - {{ m.cost_per_image }} كريديت/صورة</option>
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-cost-1k="{{ m.cost_1k }}"
+                    data-cost-2k="{{ m.cost_2k }}"
+                    data-cost-4k="{{ m.cost_4k }}"
+                    data-supported-res="{{ m.supported_resolutions }}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
             {% empty %}
-            <option value="grok-imagine">Grok Imagine Ultra (4.00 كريديت)</option>
-            <option value="imagen-3-pro">Google Imagen 3 Pro (6.00 كريديت)</option>
+            <option value="nano-banana-2"
+                    data-name="Nano Banana 2"
+                    data-cost-1k="2.00"
+                    data-cost-2k="4.00"
+                    data-cost-4k="8.00"
+                    data-supported-res="1k,2k,4k"
+                    selected>
+                Nano Banana 2
+            </option>
             {% endfor %}
         </select>
     </div>
 
+    <!-- Prompt Area -->
+    <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">وصف الصورة (Prompt)</label>
+            <span style="font-size: 11px; color: #6A5847;">صف عناصر المشهد، الإضاءة، والزوايا بدقة</span>
+        </div>
+        <textarea id="t2i-prompt" required rows="4" placeholder="مثال: لقطة بورتريه احترافية فائقة الواقعية لرائد أعمال في مكتب حديث ذو واجهة زجاجية تطل على أفق المدينة ليلاً، إضاءة سينمائية دافئة (Rim Light)، عمق ميدان ضحل، وتفاصيل دقيقة للملابس والملامح..." style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+    </div>
+
+    <!-- Quick Prompt Ideas -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+        <span onclick="document.getElementById('t2i-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            تصميم إعلاني تجاري لزجاجة عطر فاخرة على صخرة سوداء وسط مياه هادئة بإضاءة ذهبية
+        </span>
+        <span onclick="document.getElementById('t2i-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            منظر طبيعي ساحر لجبال الألب في الخريف وقت الشروق مع ضباب في الوديان وبحيرة مرآوية
+        </span>
+    </div>
+
+    <!-- Negative Prompt -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 12.5px; color: #4A3B2C; margin-bottom: 6px; font-weight: 600;">
+            الاستبعاد السلبي (Negative Prompt)
+        </label>
+        <input id="t2i-neg-prompt" type="text" placeholder="blurry, distorted, low quality, artifacts, watermark, deformed limbs" style="width: 100%; padding: 10px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
+    </div>
+
     <!-- Artistic Style Presets -->
     <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
             النمط الفني (Style Preset)
         </label>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;">
-            <label style="background: rgba(14,58,31,0.08); border: 1.5px solid #0E3A1F; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #0E3A1F; font-size: 12.5px; font-weight: bold;">
-                <input type="radio" name="art_style" value="ultra_realistic" checked style="display: none;">
-                واقعي عالي الدقة
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px;" id="t2i-style-container">
+            <label class="t2i-style-pill" style="background: rgba(14,58,31,0.09); border: 1.5px solid #0E3A1F; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #0E3A1F; font-size: 12.5px; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="art_style" value="photorealistic" checked onchange="updateStylePills();" style="display: none;">
+                فوتوغرافي واقعي
             </label>
-            <label style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px;">
-                <input type="radio" name="art_style" value="cinematic_photo" style="display: none;">
-                فوتوغرافي سينمائي
+            <label class="t2i-style-pill" style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; transition: all 0.2s;">
+                <input type="radio" name="art_style" value="cinematic" onchange="updateStylePills();" style="display: none;">
+                سينمائي درامي
             </label>
-            <label style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px;">
-                <input type="radio" name="art_style" value="digital_masterpiece" style="display: none;">
-                لوحة إعلانية وفنية
+            <label class="t2i-style-pill" style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; transition: all 0.2s;">
+                <input type="radio" name="art_style" value="commercial_product" onchange="updateStylePills();" style="display: none;">
+                إعلان تجاري
+            </label>
+            <label class="t2i-style-pill" style="background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #362A1F; font-size: 12.5px; transition: all 0.2s;">
+                <input type="radio" name="art_style" value="concept_art" onchange="updateStylePills();" style="display: none;">
+                رسم تخيلي (Art)
             </label>
         </div>
     </div>
 
-    <!-- Prompt -->
-    <div style="margin-bottom: 16px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            وصف الصورة (Prompt)
-        </label>
-        <textarea id="t2i-prompt" required rows="4" placeholder="مثال: بورتريه فوتوغرافي واقعي بدقة 8K لرائد أعمال في مكتب حديث يطل على أفق المدينة ليلاً، إضاءة سينمائية دافئة، عمق ميدان ضحل (Bokeh)، وتفاصيل دقيقة للملامح والأقمشة..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+    <!-- Dynamic Resolution Selection (1K Standard, 2K HD, 4K Ultra) -->
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">دقة الصورة (Resolution)</label>
+            <span id="t2i-res-hint" style="font-size: 11px; color: #6A5847;">الجودات المتاحة للنموذج</span>
+        </div>
+        <div style="display: flex; gap: 8px;" id="t2i-res-container">
+            <label id="res-lbl-1k" class="t2i-option-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="resolution" value="1k" checked onchange="updateT2ILiveCost();" style="display: none;">
+                <div>1K Standard</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">1024px</div>
+            </label>
+            <label id="res-lbl-2k" class="t2i-option-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="resolution" value="2k" onchange="updateT2ILiveCost();" style="display: none;">
+                <div>2K HD</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">2048px</div>
+            </label>
+            <label id="res-lbl-4k" class="t2i-option-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="resolution" value="4k" onchange="updateT2ILiveCost();" style="display: none;">
+                <div>4K Ultra</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">4096px</div>
+            </label>
+        </div>
     </div>
 
-    <!-- Aspect Ratio -->
+    <!-- Image Count / Batch Size (1, 2, 4) -->
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">عدد الصور المولدة (Image Batch)</label>
+            <span style="font-size: 11px; color: #6A5847;">توليد نسخ متعددة للمقارنة واختيار الأفضل</span>
+        </div>
+        <div style="display: flex; gap: 8px;" id="t2i-count-container">
+            <label id="count-lbl-1" class="t2i-count-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="num_images" value="1" checked onchange="updateT2ILiveCost();" style="display: none;">
+                <div>صورة واحدة</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">1×</div>
+            </label>
+            <label id="count-lbl-2" class="t2i-count-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="num_images" value="2" onchange="updateT2ILiveCost();" style="display: none;">
+                <div>صورتان</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">2×</div>
+            </label>
+            <label id="count-lbl-4" class="t2i-count-pill" style="flex: 1; text-align: center; padding: 10px 6px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="num_images" value="4" onchange="updateT2ILiveCost();" style="display: none;">
+                <div>4 صور</div>
+                <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">4×</div>
+            </label>
+        </div>
+    </div>
+
+    <!-- Aspect Ratio Selection -->
     <div style="margin-bottom: 25px;">
-        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">الأبعاد والنسب (Aspect Ratio)</label>
-        <div style="display: flex; gap: 8px;">
-            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
-                <input type="radio" name="img_aspect" value="1:1" checked style="display: none;"> 1:1 مربع
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
+            أبعاد ومقاس الصورة (Aspect Ratio)
+        </label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 8px;" id="t2i-aspect-container">
+            <label class="t2i-aspect-pill" style="text-align: center; background: rgba(14,58,31,0.09); border: 1.5px solid #0E3A1F; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="img_aspect" value="1:1" checked onchange="updateAspectPills();" style="display: none;">
+                <div>1:1</div>
+                <div style="font-size: 10px; opacity: 0.8;">مربع</div>
             </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="img_aspect" value="16:9" style="display: none;"> 16:9 شاشة عريضة
+            <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="img_aspect" value="16:9" onchange="updateAspectPills();" style="display: none;">
+                <div>16:9</div>
+                <div style="font-size: 10px; opacity: 0.8;">عريض</div>
             </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="img_aspect" value="9:16" style="display: none;"> 9:16 ستوري
+            <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="img_aspect" value="9:16" onchange="updateAspectPills();" style="display: none;">
+                <div>9:16</div>
+                <div style="font-size: 10px; opacity: 0.8;">ستوري</div>
+            </label>
+            <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="img_aspect" value="4:3" onchange="updateAspectPills();" style="display: none;">
+                <div>4:3</div>
+                <div style="font-size: 10px; opacity: 0.8;">كلاسيكي</div>
+            </label>
+            <label class="t2i-aspect-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="img_aspect" value="3:4" onchange="updateAspectPills();" style="display: none;">
+                <div>3:4</div>
+                <div style="font-size: 10px; opacity: 0.8;">بورتريه</div>
             </label>
         </div>
     </div>
 
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        توليد الصورة
+    <!-- Live Dynamic Credit Calculation Box -->
+    <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(14,58,31,0.06), rgba(197,160,89,0.12)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: #0E3A1F;"></div>
+                <span style="font-size: 13px; font-weight: 700; color: #1C120B;" id="t2i-calc-model-name">Nano Banana 2</span>
+            </div>
+            <span id="t2i-calc-rate-badge" style="background: rgba(14,58,31,0.1); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
+                2.00 كريديت / صورة
+            </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 10px; border-top: 1px dashed rgba(197,160,89,0.35);">
+            <div>
+                <div style="font-size: 12px; color: #6A5847;" id="t2i-calc-formula-text">1 صورة × 2.00 كريديت (دقة 1K)</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">خصم مباشر وديناميكي من رصيدك</div>
+            </div>
+            <div style="text-align: left;">
+                <div style="font-size: 10px; color: #6A5847; text-transform: uppercase;">إجمالي التكلفة</div>
+                <div style="font-size: 24px; font-weight: 800; color: #0E3A1F; line-height: 1;">
+                    <span id="t2i-total-cost">2.00</span>
+                    <span style="font-size: 13px; font-weight: 600; color: #9E7D3B;">كريديت</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Action Button -->
+    <button id="t2i-submit-btn" type="submit" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #16562E); color: #FFF; font-weight: bold; font-size: 16px; padding: 16px; border: 1.5px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 6px 20px rgba(14,58,31,0.25); display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.25s;">
+        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+        </svg>
+        <span>توليد الصورة الآن</span>
+        <span id="t2i-btn-cost-tag" style="background: rgba(197,160,89,0.25); border: 1px solid #C5A059; color: #FAF7F0; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin-right: 6px;">
+            2.00 كريديت
+        </span>
     </button>
 
 </form>
 
 <script>
+function onT2IModelChanged() {
+    const sel = document.getElementById('t2i-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    const suppRes = (opt.getAttribute('data-supported-res') || '1k,2k,4k').toLowerCase();
+    
+    // Update resolution pills availability
+    ['1k', '2k', '4k'].forEach(r => {
+        const lbl = document.getElementById('res-lbl-' + r);
+        const radio = lbl ? lbl.querySelector('input') : null;
+        if (lbl && radio) {
+            if (suppRes.includes(r)) {
+                lbl.style.display = 'block';
+            } else {
+                lbl.style.display = 'none';
+                if (radio.checked) {
+                    const fallback = document.querySelector('input[name="resolution"][value="1k"]');
+                    if (fallback) fallback.checked = true;
+                }
+            }
+        }
+    });
+
+    updateT2ILiveCost();
+}
+
+function updateT2ILiveCost() {
+    const sel = document.getElementById('t2i-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    const modelName = opt.getAttribute('data-name') || opt.text;
+    const resRadio = document.querySelector('input[name="resolution"]:checked');
+    const resVal = resRadio ? resRadio.value : '1k';
+
+    const countRadio = document.querySelector('input[name="num_images"]:checked');
+    const countVal = countRadio ? parseInt(countRadio.value) : 1;
+
+    // Fetch cost for resolution
+    let rate = 2.0;
+    if (resVal === '4k') {
+        rate = parseFloat(opt.getAttribute('data-cost-4k') || '8.00');
+    } else if (resVal === '2k') {
+        rate = parseFloat(opt.getAttribute('data-cost-2k') || '4.00');
+    } else {
+        rate = parseFloat(opt.getAttribute('data-cost-1k') || '2.00');
+    }
+
+    const totalCost = (rate * countVal).toFixed(2);
+
+    // Update UI Elements
+    document.getElementById('t2i-calc-model-name').innerText = modelName;
+    document.getElementById('t2i-calc-rate-badge').innerText = rate.toFixed(2) + ' كريديت / صورة';
+    document.getElementById('t2i-calc-formula-text').innerText = countVal + ' صورة × ' + rate.toFixed(2) + ' كريديت (دقة ' + resVal.toUpperCase() + ')';
+    document.getElementById('t2i-total-cost').innerText = totalCost;
+    document.getElementById('t2i-btn-cost-tag').innerText = totalCost + ' كريديت';
+
+    // Update Pill styling
+    ['1k', '2k', '4k'].forEach(r => {
+        const lbl = document.getElementById('res-lbl-' + r);
+        if (lbl) {
+            if (r === resVal) {
+                lbl.style.borderColor = '#0E3A1F';
+                lbl.style.backgroundColor = 'rgba(14,58,31,0.09)';
+                lbl.style.color = '#0E3A1F';
+                lbl.style.fontWeight = 'bold';
+            } else {
+                lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+                lbl.style.backgroundColor = '#FAF7F0';
+                lbl.style.color = '#362A1F';
+                lbl.style.fontWeight = 'normal';
+            }
+        }
+    });
+
+    [1, 2, 4].forEach(c => {
+        const lbl = document.getElementById('count-lbl-' + c);
+        if (lbl) {
+            if (c === countVal) {
+                lbl.style.borderColor = '#0E3A1F';
+                lbl.style.backgroundColor = 'rgba(14,58,31,0.09)';
+                lbl.style.color = '#0E3A1F';
+                lbl.style.fontWeight = 'bold';
+            } else {
+                lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+                lbl.style.backgroundColor = '#FAF7F0';
+                lbl.style.color = '#362A1F';
+                lbl.style.fontWeight = 'normal';
+            }
+        }
+    });
+}
+
+function updateStylePills() {
+    const checked = document.querySelector('input[name="art_style"]:checked');
+    document.querySelectorAll('.t2i-style-pill').forEach(lbl => {
+        const inp = lbl.querySelector('input');
+        if (inp === checked) {
+            lbl.style.borderColor = '#0E3A1F';
+            lbl.style.backgroundColor = 'rgba(14,58,31,0.09)';
+            lbl.style.color = '#0E3A1F';
+            lbl.style.fontWeight = 'bold';
+        } else {
+            lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+            lbl.style.backgroundColor = '#FAF7F0';
+            lbl.style.color = '#362A1F';
+            lbl.style.fontWeight = 'normal';
+        }
+    });
+}
+
+function updateAspectPills() {
+    const checked = document.querySelector('input[name="img_aspect"]:checked');
+    document.querySelectorAll('.t2i-aspect-pill').forEach(lbl => {
+        const inp = lbl.querySelector('input');
+        if (inp === checked) {
+            lbl.style.borderColor = '#0E3A1F';
+            lbl.style.backgroundColor = 'rgba(14,58,31,0.09)';
+            lbl.style.color = '#0E3A1F';
+            lbl.style.fontWeight = 'bold';
+        } else {
+            lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+            lbl.style.backgroundColor = '#FAF7F0';
+            lbl.style.color = '#362A1F';
+            lbl.style.fontWeight = 'normal';
+        }
+    });
+}
+
 function handleT2ISubmit() {
-    const prompt = document.getElementById('t2i-prompt').value;
+    const prompt = document.getElementById('t2i-prompt').value.trim();
+    if (!prompt) {
+        if (window.showStudioNotification) {
+            window.showStudioNotification('يرجى إدخال وصف المشهد المطلوب توليده أولاً', 'error');
+        } else {
+            alert('يرجى إدخال وصف المشهد المطلوب توليده');
+        }
+        return;
+    }
+
     const model = document.getElementById('t2i-model').value;
-    const style = document.querySelector('input[name="art_style"]:checked').value;
-    const aspect = document.querySelector('input[name="img_aspect"]:checked').value;
+    const styleRadio = document.querySelector('input[name="art_style"]:checked');
+    const style = styleRadio ? styleRadio.value : 'photorealistic';
+
+    const resRadio = document.querySelector('input[name="resolution"]:checked');
+    const resolution = resRadio ? resRadio.value : '1k';
+
+    const countRadio = document.querySelector('input[name="num_images"]:checked');
+    const num_images = countRadio ? countRadio.value : '1';
+
+    const aspectRadio = document.querySelector('input[name="img_aspect"]:checked');
+    const aspect = aspectRadio ? aspectRadio.value : '1:1';
+
+    const negPrompt = document.getElementById('t2i-neg-prompt').value.trim();
 
     const fd = new FormData();
+    fd.append('tool_type', 'text_to_image');
     fd.append('prompt', prompt);
     fd.append('model', model);
     fd.append('style', style);
+    fd.append('resolution', resolution);
+    fd.append('num_images', num_images);
     fd.append('aspect_ratio', aspect);
+    if (negPrompt) {
+        fd.append('negative_prompt', negPrompt);
+    }
 
-    submitGeneration(fd, 'text_to_image');
+    // Call core studio submission helper
+    if (typeof submitGeneration === 'function') {
+        submitGeneration(fd, 'text_to_image');
+    } else {
+        fetch('/api/history/generate/', {
+            method: 'POST',
+            body: fd
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.status === 'success') {
+                if (window.showStudioNotification) {
+                    window.showStudioNotification('تم إرسال مهمة توليد الصور إلى طابور المعالجة بنجاح', 'success');
+                }
+            } else {
+                if (window.showStudioNotification) {
+                    window.showStudioNotification(res.message || 'حدث خطأ أثناء الإرسال', 'error');
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    }
 }
+
+// Initial binding
+document.addEventListener('DOMContentLoaded', function() {
+    onT2IModelChanged();
+});
 </script>
 {% endblock %}

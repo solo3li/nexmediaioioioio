@@ -56,6 +56,7 @@ def generate_api(request):
     # Dynamic pricing from tool settings
     from apps.tools.text_to_video.models import TextToVideoModelConfig
     from apps.tools.image_to_video.models import ImageToVideoModelConfig
+    from apps.tools.text_to_image.models import TextToImageModelConfig
     standard_cost = Decimal('4.0000')
     premium_cost = Decimal('0.0000')
     model_name = model_identifier or 'Standard Model'
@@ -147,6 +148,35 @@ def generate_api(request):
                 standard_cost = Decimal('0.0000')
             else:
                 standard_cost = calc_cost
+
+    elif tool_type == 'text_to_image':
+        cfg = TextToImageModelConfig.objects.filter(model_id=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = TextToImageModelConfig.objects.filter(name=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = TextToImageModelConfig.objects.filter(is_default=True, is_active=True).first() or TextToImageModelConfig.objects.first()
+
+        if cfg:
+            model_name = cfg.name
+            res = str(data.get('resolution', '1k')).lower()
+            try:
+                num_images = int(data.get('num_images', 1))
+                if num_images not in [1, 2, 4]:
+                    num_images = 1
+            except (ValueError, TypeError):
+                num_images = 1
+            options['num_images'] = num_images
+            options['resolution'] = res
+
+            rate = cfg.get_cost_for_resolution(res)
+            calc_cost = rate * Decimal(num_images)
+
+            if cfg.allowed_wallet == 'premium':
+                premium_cost = calc_cost
+                standard_cost = Decimal('0.0000')
+            else:
+                standard_cost = calc_cost
+
     else:
         # Fallback COST_MAP for other tools until updated
         COST_MAP = {
