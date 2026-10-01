@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nexmedia.ai — نكس ميديا للوسائط الذكية</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Reem+Kufi:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="islamic-cream-theme">
+    <!-- Ambient Subtle Arabesque Watermark Texture -->
+    <div class="arabesque-watermark" aria-hidden="true"></div>
+
+    <!-- Royal Navigation Header (Mirrors Reference Architecture) -->
+    <header class="royal-header" id="royal-header">
+        <div class="container header-inner">
+            <!-- Brand & Status Identity -->
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <a href="/" class="brand-logo" id="main-brand-logo">
+                    <div class="logo-emblem" aria-hidden="true">
+                        <svg class="star-rosette" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="7" y="7" width="34" height="34" rx="5" transform="rotate(45 24 24)" stroke="#C5A059" stroke-width="2" fill="rgba(197, 160, 89, 0.1)"/>
+                            <rect x="7" y="7" width="34" height="34" rx="5" stroke="#0E3A1F" stroke-width="2"/>
+                            <circle cx="24" cy="24" r="8" fill="#0E3A1F" stroke="#C5A059" stroke-width="1.8"/>
+                            <circle cx="24" cy="24" r="3.5" fill="#C5A059"/>
+                        </svg>
+                    </div>
+                    <div class="brand-names">
+                        <span class="brand-en">nexmedia<span class="ai-badge">.ai</span></span>
+                        <span class="brand-ar">نكس ميديا للوسائط الذكية</span>
+                    </div>
+                </a>
+
+                <!-- Live Cloud AI Connection Status Pill (Mirrors Reference 'Connected to Cloud OS') -->
+                <div class="brand-status-pill">
+                    <span class="pulse-indicator"></span>
+                    <span data-i18n="cloud_status">خوادم الذكاء الاصطناعي متصلة</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="nav-menu" id="primary-nav" aria-label="التنقل الرئيسي">
+                <a href="#three-portals" class="nav-item">البوابات الثلاث</a>
+                <a href="#cinema-studio" class="nav-item">استوديو السينما 4K</a>
+                <a href="#audio-suite" class="nav-item">هندسة الصوت</a>
+                <a href="#visual-arts" class="nav-item">الفنون البصرية</a>
+                <a href="#pricing-calculator" class="nav-item">حاسبة الرصيد</a>
+            </nav>
+
+            <!-- Actions & Controls -->
+            <div class="header-actions">
+                <!-- Language Switcher Pill (Mirrors Reference 'SA Arabic | GB EN') -->
+                <div class="lang-toggle-pill" id="lang-switcher">
+                    <button type="button" class="lang-btn active" data-lang="ar">العربية</button>
+                    <button type="button" class="lang-btn" data-lang="en">EN</button>
+                </div>
+
+                <!-- Admin Link -->
+                <a href="/admin/" class="btn-ghost" id="admin-login-btn">لوحة المدير</a>
+
+                <!-- Primary CTA in Deep Emerald Forest Green -->
+                <a href="#simulator" class="btn-royal-forest" id="cta-start-btn">
+                    <span data-i18n="cta_start">استكشف المنصة</span>
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="فتح القائمة">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <line x1="3" y1="18" x2="21" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-drawer" id="mobile-drawer" aria-hidden="true">
+        <div class="drawer-header">
+            <span class="drawer-title">نكس ميديا للوسائط الذكية</span>
+            <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="إغلاق القائمة">✕</button>
+        </div>
+        <nav class="drawer-menu">
+            <a href="#three-portals" class="drawer-nav-item">البوابات الثلاث</a>
+            <a href="#cinema-studio" class="drawer-nav-item">استوديو السينما 4K</a>
+            <a href="#audio-suite" class="drawer-nav-item">هندسة الصوت</a>
+            <a href="#visual-arts" class="drawer-nav-item">الفنون البصرية</a>
+            <a href="#pricing-calculator" class="drawer-nav-item">حاسبة الرصيد</a>
+            <a href="/admin/" class="drawer-nav-item">لوحة المدير</a>
+        </nav>
+    </div>
+
+    <!-- Main Canvas Area: Empty, ready for Hero Section -->
+    <main id="main-content" style="min-height: 70vh;">
+    </main>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

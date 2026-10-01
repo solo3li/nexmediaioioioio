@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}نكس ميديا | nexmediaai - بيت الحكمة للوسائط الرقمية الذكية{% endblock %}</title>
+    
+    <!-- Meta tags for SEO & Aesthetics -->
+    <meta name="description" content="منصة nexmediaai السيادية لمعالجة وتوليد الصوتيات والفيديو والصور بأحدث نماذج الذكاء الاصطناعي بروح الحضارة الإسلامية العريقة.">
+    <meta name="theme-color" content="#FAF7F0">
+    
+    <!-- Google Fonts: Luxury Serif & Royal Arabic Calligraphy -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Reem+Kufi:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Vanilla CSS Design System -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="islamic-cream-theme">
+    <!-- Subtle Ambient Islamic Arabesque Watermark Overlay -->
+    <div class="arabesque-watermark" aria-hidden="true"></div>
+
+    <!-- Announcement Top Ribbon -->
+    <div class="royal-ribbon" id="royal-ribbon">
+        <div class="container ribbon-inner">
+            <div class="ribbon-headline">
+                <svg class="svg-sparkle-inline" viewBox="0 0 24 24" width="14" height="14" fill="#C5A059"><path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5Z"/></svg>
+                <span class="ribbon-text">إشراق البصريات والصوتيات في العصر الرقمي | Welcome to the House of AI Media Wisdom</span>
+                <svg class="svg-sparkle-inline" viewBox="0 0 24 24" width="14" height="14" fill="#C5A059"><path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5Z"/></svg>
+            </div>
+            
+            <div class="ribbon-tools">
+                <!-- Synthesized Web Audio Haptic Toggle -->
+                <button type="button" class="sound-fx-toggle" id="sound-fx-toggle" aria-label="تفعيل النغمات الصوتية التفاعلية" title="تشغيل/كتم النغمات التفاعلية">
+                    <svg class="icon-sound-off" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+                    <svg class="icon-sound-on" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+                    <span class="sound-label" id="sound-toggle-label">النغمات: مكتومة</span>
+                </button>
+
+                <div class="ribbon-status">
+                    <span class="status-pulse"></span>
+                    <span class="status-label">المنظومة نشطة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="royal-header" id="main-header">
+        <div class="container header-inner">
+            <!-- Brand Logo -->
+            <a href="/" class="brand-logo" id="brand-home-link">
+                <div class="logo-emblem">
+                    <!-- Islamic 8-Point Star SVG Medallion -->
+                    <svg viewBox="0 0 100 100" class="star-rosette" aria-hidden="true">
+                        <polygon points="50,0 64,36 100,50 64,64 50,100 36,64 0,50 36,36" fill="none" stroke="currentColor" stroke-width="3"/>
+                        <polygon points="50,10 60,40 90,50 60,60 50,90 40,60 10,50 40,40" fill="none" stroke="#C5A059" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="14" fill="#0F381E" stroke="#C5A059" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="5" fill="#C5A059"/>
+                    </svg>
+                </div>
+                <div class="brand-names">
+                    <span class="brand-en">nexmedia<span class="ai-badge">ai</span></span>
+                    <span class="brand-ar">نكس ميديا</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="nav-menu" aria-label="Main Navigation">
+                <a href="#three-portals" class="nav-item">البوابات الثلاث</a>
+                <a href="#prompt-playground" class="nav-item">مختبر الأوامر</a>
+                <a href="#showcase-gallery" class="nav-item">معرض الروائع</a>
+                <a href="#simulator" class="nav-item">المحاكي الحي</a>
+                <a href="#pricing-calculator" class="nav-item">حاسبة الرصيد</a>
+            </nav>
+
+            <!-- Header Action Buttons & Language Switcher -->
+            <div class="header-actions">
+                <!-- Instant Bilingual Switcher -->
+                <div class="lang-switch-toggle" id="lang-toggle-btn" role="button" tabindex="0" title="تبديل اللغة / Switch Language">
+                    <span class="lang-badge active" data-lang="ar">عربي</span>
+                    <span class="lang-separator">/</span>
+                    <span class="lang-badge" data-lang="en">EN</span>
+                </div>
+
+                <a href="/admin/" class="btn-ghost" id="admin-login-btn">لوحة المدير</a>
+                <a href="#simulator" class="btn-royal-forest" id="cta-start-btn">
+                    <span data-i18n="cta_start">ابدأ التجربة مجاناً</span>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="فتح القائمة">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="mobile-nav-drawer" id="mobile-drawer" aria-hidden="true">
+        <div class="drawer-header">
+            <span class="drawer-title">نكس ميديا للوسائط الذكية</span>
+            <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="إغلاق القائمة">✕</button>
+        </div>
+        <nav class="drawer-menu">
+            <a href="#three-portals" class="drawer-nav-item">البوابات الثلاث</a>
+            <a href="#prompt-playground" class="drawer-nav-item">مختبر الأوامر</a>
+            <a href="#showcase-gallery" class="drawer-nav-item">معرض الروائع</a>
+            <a href="#simulator" class="drawer-nav-item">المحاكي الحي</a>
+            <a href="#pricing-calculator" class="drawer-nav-item">حاسبة الرصيد</a>
+            <a href="/admin/" class="drawer-nav-item">لوحة المدير</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Royal Footer -->
+    <footer class="royal-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="brand-names">
+                    <span class="brand-en">nexmedia.ai</span>
+                    <span class="brand-ar">نكس ميديا للوسائط الذكية</span>
+                </div>
+                <p class="footer-desc">
+                    المنصة السيادية لتوحيد وتطوير نماذج الصوتيات والفيديو والصور فائقة الدقة، مستلهمة من عراقة العصر الذهبي للعلوم الإسلامية وبصريات ابن الهيثم.
+                </p>
+                <div class="footer-creds">
+                    <span>مبني بهندسة:</span>
+                    <span class="badge-tech">Django 5 ASGI</span>
+                    <span class="badge-tech">django-q2</span>
+                    <span class="badge-tech">PostgreSQL 16</span>
+                    <span class="badge-tech">MinIO S3</span>
+                    <span class="badge-tech">SSE Stream</span>
+                </div>
+            </div>
+
+            <div class="footer-links-grid">
+                <div class="footer-col">
+                    <h4 class="col-title">أدوات الصوت</h4>
+                    <a href="#audio-suite">تفريغ الصوت (STT)</a>
+                    <a href="#audio-suite">استنساخ النبرة</a>
+                    <a href="#audio-suite">عزل الموسيقى والمؤثرات</a>
+                    <a href="#audio-suite">هندسة الترددات الصوتية</a>
+                </div>
+                <div class="footer-col">
+                    <h4 class="col-title">استوديو السينما</h4>
+                    <a href="#cinema-studio">ترقية الفيديو إلى 4K</a>
+                    <a href="#cinema-studio">توليد المشاهد السينمائية</a>
+                    <a href="#cinema-studio">مزامنة الشفاه التلقائية</a>
+                    <a href="#cinema-studio">استكمال الإطارات العالي</a>
+                </div>
+                <div class="footer-col">
+                    <h4 class="col-title">الفنون البصرية</h4>
+                    <a href="#visual-arts">توليد الصور التشكيلية</a>
+                    <a href="#visual-arts">إزالة الخلفيات المعقدة</a>
+                    <a href="#visual-arts">توسيع الكوادر (Outpainting)</a>
+                    <a href="#visual-arts">المخطوطات المذهبة</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container footer-bottom-inner">
+                <p class="copyright">© 2026 nexmediaai. جميع الحقوق محفوظة لبيت الحكمة الرقمي.</p>
+                <div class="footer-status-tag">
+                    <span class="pulse-indicator"></span>
+                    <span>خوادم المعالجة متصلة وتعمل بكفاءة 100%</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cinematic Showcase Modal Dialog -->
+    <div class="cinematic-modal-overlay" id="showcase-modal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="cinematic-modal-card">
+            <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="إغلاق النافذة">✕</button>
+            <div class="modal-header-meta">
+                <span class="modal-badge-tag" id="modal-tag">4K NEURAL CINEMA</span>
+                <h3 class="modal-media-title" id="modal-title">معاينة العمل السينمائي</h3>
+            </div>
+            <div class="modal-media-viewport" id="modal-viewport">
+                <!-- Injected dynamically via JS -->
+            </div>
+            <div class="modal-tech-specs" id="modal-specs">
+                <div class="spec-chip"><span>النموذج:</span> <strong>ESRGAN-4K Pro</strong></div>
+                <div class="spec-chip"><span>زمن المعالجة:</span> <strong>1.4 ثانية</strong></div>
+                <div class="spec-chip"><span>الدقة:</span> <strong>3840x2160 UHD</strong></div>
+                <div class="spec-chip"><span>التخزين:</span> <strong>MinIO Encrypted S3</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vanilla JS Logic -->
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

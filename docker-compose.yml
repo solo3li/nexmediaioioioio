@@ -1,0 +1,103 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: nexmedia_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nexmedia_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nexmedia_db}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    networks:
+      - nexmedia-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: nexmedia_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    networks:
+      - nexmedia-net
+
+  minio:
+    image: cgr.dev/chainguard/minio:latest
+    container_name: nexmedia_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001" --address ":9000"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - nexmedia-net
+
+  web:
+    build: .
+    container_name: nexmedia_web
+    restart: unless-stopped
+    command: sh -c "python manage.py migrate && uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - nexmedia-net
+
+  qcluster:
+    build: .
+    container_name: nexmedia_qcluster
+    restart: unless-stopped
+    command: python manage.py qcluster
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nexmedia-net
+
+volumes:
+  postgres_data:
+    name: nexmedia_postgres_data
+  redis_data:
+    name: nexmedia_redis_data
+  minio_data:
+    name: nexmedia_minio_data
+
+networks:
+  nexmedia-net:
+    name: nexmedia-network
+    driver: bridge
