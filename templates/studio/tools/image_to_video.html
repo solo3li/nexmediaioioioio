@@ -3,79 +3,445 @@
 {% block tool_controls %}
 <form id="i2v-form" onsubmit="event.preventDefault(); handleI2VSubmit();">
     
-    <!-- Image Source -->
+    <!-- Model Selection (Name ONLY, no tech leaks) -->
     <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            الصورة المصدرية للتحريك (Source Image)
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
+            نموذج تحريك الصور (I2V Model)
         </label>
-        <div style="border: 2px dashed rgba(197, 160, 89, 0.4); border-radius: 10px; padding: 25px; text-align: center; background: rgba(197, 160, 89, 0.06); margin-bottom: 10px;">
-            <div style="margin-bottom: 8px; color: #C5A059; display: flex; justify-content: center;">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-            </div>
-            <div style="font-size: 14px; color: #1C120B; font-weight: 600; margin-bottom: 4px;">اسحب الصورة هنا أو أدخل رابط الصورة المباشر</div>
-            <div style="font-size: 11px; color: #6A5847;">PNG, JPG, WebP حتى 20 ميغابايت</div>
-        </div>
-        <input id="i2v-image-url" type="url" placeholder="https://example.com/portrait.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+        <select id="i2v-model" onchange="onModelChanged();" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; font-weight: 600;">
+            {% for m in models %}
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-cost-480="{{ m.cost_480p }}"
+                    data-cost-720="{{ m.cost_720p }}"
+                    data-cost-1080="{{ m.cost_1080p }}"
+                    data-cost-4k="{{ m.cost_4k }}"
+                    data-pricing-type="{{ m.pricing_type }}"
+                    data-supported-res="{{ m.supported_resolutions }}"
+                    data-duration-type="{{ m.duration_type }}"
+                    data-allowed-durations="{{ m.allowed_durations }}"
+                    data-default-duration="{{ m.default_duration }}"
+                    data-accepts-end-frame="{% if m.accepts_end_frame %}1{% else %}0{% endif %}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
+            {% empty %}
+            <option value="kling/v3.0-i2v"
+                    data-name="Kling 3.0 Cinematic Pro"
+                    data-cost-480="3.00"
+                    data-cost-720="6.00"
+                    data-cost-1080="9.00"
+                    data-cost-4k="16.00"
+                    data-pricing-type="per_second"
+                    data-supported-res="480p,720p,1080p,4k"
+                    data-duration-type="discrete"
+                    data-allowed-durations="5,10"
+                    data-default-duration="5"
+                    data-accepts-end-frame="1"
+                    selected>
+                Kling 3.0 Cinematic Pro
+            </option>
+            {% endfor %}
+        </select>
     </div>
 
-    <!-- Motion Description -->
+    <!-- Start Frame (الصورة الأولى للبداية - إلزامي) -->
     <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            وصف الحركة المراد تطبيقها (Motion Prompt)
-        </label>
-        <textarea id="i2v-prompt" required rows="3" placeholder="مثال: تحريك أمواج البحر بنعومة مع دوران الكاميرا ببطء لليمين وتساقط بتلات الورد في الهواء..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; line-height: 1.5;"></textarea>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">صورة البداية (Start Frame)</label>
+            <span style="font-size: 11px; color: #0E3A1F; font-weight: 600; background: rgba(14,58,31,0.08); padding: 2px 8px; border-radius: 4px;">إلزامية</span>
+        </div>
+        <div style="border: 2px dashed rgba(197, 160, 89, 0.45); border-radius: 10px; padding: 18px; text-align: center; background: #FAF7F0; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('i2v-file-start').click();">
+            <input type="file" id="i2v-file-start" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'i2v-image-url', 'preview-start-img', 'preview-start-box');">
+            <div id="preview-start-box" style="display: none; margin-bottom: 8px;">
+                <img id="preview-start-img" src="" alt="Start Preview" style="max-height: 120px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+            </div>
+            <div style="color: #0E3A1F; margin-bottom: 4px;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            </div>
+            <div style="font-size: 12.5px; color: #1C120B; font-weight: 600;">اضغط لاختيار صورة من جهازك أو اسحبها هنا</div>
+            <div style="font-size: 11px; color: #6A5847;">PNG, JPG, WebP حتى 20 ميغابايت</div>
+        </div>
+        <input id="i2v-image-url" type="url" placeholder="أو أدخل رابط الصورة المباشر: https://example.com/start.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 10px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- End Frame (صورة النهاية - ديناميكي ونموذجي للنماذج التي تدعم صورتين) -->
+    <div id="i2v-end-frame-container" style="margin-bottom: 20px; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">صورة النهاية (End Frame)</label>
+                <span style="font-size: 10.5px; color: #8C6820; background: rgba(197,160,89,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 600;">ميزة التحول بين لقطتين</span>
+            </div>
+            <span style="font-size: 11px; color: #6A5847;">اختياري</span>
+        </div>
+        <div style="border: 2px dashed rgba(197, 160, 89, 0.45); border-radius: 10px; padding: 18px; text-align: center; background: #FAF7F0; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('i2v-file-end').click();">
+            <input type="file" id="i2v-file-end" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'i2v-end-image-url', 'preview-end-img', 'preview-end-box');">
+            <div id="preview-end-box" style="display: none; margin-bottom: 8px;">
+                <img id="preview-end-img" src="" alt="End Preview" style="max-height: 120px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+            </div>
+            <div style="color: #C5A059; margin-bottom: 4px;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+            </div>
+            <div style="font-size: 12.5px; color: #1C120B; font-weight: 600;">رفع صورة نهاية اللقطة (لإنشاء انتقال سينمائي نحوها)</div>
+            <div style="font-size: 11px; color: #6A5847;">يقوم النموذج بتوليد حركة انسيابية تربط صورة البداية بصورة النهاية</div>
+        </div>
+        <input id="i2v-end-image-url" type="url" placeholder="أو أدخل رابط صورة النهاية: https://example.com/end.jpg" style="width: 100%; padding: 10px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Motion Description (Prompt) -->
+    <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">وصف الحركة والتوجيه (Motion Prompt)</label>
+            <span style="font-size: 11px; color: #6A5847;">صف اتجاه الحركة وحركة الكاميرا وعناصر المشهد</span>
+        </div>
+        <textarea id="i2v-prompt" required rows="3" placeholder="مثال: تحريك شعر الشخصية بنعومة مع نسمات الهواء الهادئة، دوران تدريجي بطيء للكاميرا نحو اليسار مع ثبات ملامح الوجه الواقعية..." style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
+    </div>
+
+    <!-- Quick Ideas Pills -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+        <span onclick="document.getElementById('i2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            تحريك الشخصية بابتسامة طبيعية وحركة رمش بطيئة مع ثبات الملامح
+        </span>
+        <span onclick="document.getElementById('i2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            حركة كاميرا سينمائية تقترب ببطء (Slow Zoom In) مع هبوب الرياح
+        </span>
+    </div>
+
+    <!-- Dynamic Resolution Selection (480p, 720p, 1080p, 4K) -->
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">دقة الفيديو (Resolution)</label>
+            <span style="font-size: 11px; color: #6A5847;">الجودات المتاحة لهذا النموذج</span>
+        </div>
+        <div style="display: flex; gap: 8px;" id="i2v-res-container">
+            <label id="res-lbl-480p" class="i2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="480p" onchange="updateLiveCostCalculation();" style="display: none;"> 480p
+            </label>
+            <label id="res-lbl-720p" class="i2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="720p" onchange="updateLiveCostCalculation();" style="display: none;"> 720p
+            </label>
+            <label id="res-lbl-1080p" class="i2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="res" value="1080p" checked onchange="updateLiveCostCalculation();" style="display: none;"> 1080p
+            </label>
+            <label id="res-lbl-4k" class="i2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="4k" onchange="updateLiveCostCalculation();" style="display: none;"> 4K
+            </label>
+        </div>
+    </div>
+
+    <!-- Dynamic Duration Slider Bar (ثانية بثانية) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197, 160, 89, 0.35); padding: 18px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(44, 30, 16, 0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13.5px; color: #1C120B; font-weight: 700; margin: 0;">المدة الزمنية (Duration)</label>
+            <div style="display: flex; align-items: baseline; gap: 5px; background: #FAF7F0; border: 1.5px solid rgba(197, 160, 89, 0.45); padding: 5px 14px; border-radius: 8px;">
+                <span id="duration-display-val" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">5</span>
+                <span style="font-size: 12px; color: #6A5847; font-weight: 600;">ثوانٍ</span>
+            </div>
+        </div>
+
+        <div style="padding: 6px 2px; margin-bottom: 8px;">
+            <input type="range" 
+                   id="i2v-duration-slider" 
+                   min="2" 
+                   max="15" 
+                   value="5" 
+                   step="1" 
+                   oninput="onDurationSliderInput(this.value);"
+                   style="width: 100%; height: 7px; border-radius: 6px; background: #E8E0D0; accent-color: #0E3A1F; cursor: pointer; outline: none;">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 11.5px; color: #6A5847; font-weight: 600;">
+            <span id="slider-min-label">4 ثوانٍ</span>
+            <span style="color: #8C6820; font-size: 11px;">تغيير المدة ثانية بثانية</span>
+            <span id="slider-max-label">15 ثانية</span>
+        </div>
     </div>
 
     <!-- Motion Intensity Slider -->
-    <div style="margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197, 160, 89, 0.35); padding: 14px 18px; border-radius: 12px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #FAF7F0;">شدة الحركة (Motion Intensity)</label>
-            <span id="motion-val-label" style="color: #C5A059; font-weight: bold; font-size: 14px;">5 / 10</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">شدة الحركة (Motion Intensity)</label>
+            <span id="motion-val-label" style="font-size: 14px; font-weight: 800; color: #0E3A1F;">5 / 10</span>
         </div>
-        <input type="range" id="i2v-motion-range" min="1" max="10" value="5" oninput="document.getElementById('motion-val-label').innerText = this.value + ' / 10'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
-        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #8EBA9A; margin-top: 4px;">
+        <input type="range" id="i2v-motion-range" min="1" max="10" value="5" oninput="document.getElementById('motion-val-label').innerText = this.value + ' / 10'" style="width: 100%; height: 6px; border-radius: 4px; background: #E8E0D0; accent-color: #0E3A1F; cursor: pointer;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #6A5847; margin-top: 4px;">
             <span>حركة سينمائية هادئة</span>
             <span>حركة سريعة وديناميكية</span>
         </div>
     </div>
 
-    <!-- Camera Trajectory -->
-    <div style="margin-bottom: 25px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px;">مسار حركة الكاميرا (Camera Control)</label>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-            <label style="text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
-                <input type="radio" name="cam" value="static" checked style="display: none;"> ثبات الكاميرا
+    <!-- Camera Trajectory Selection -->
+    <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">مسار حركة الكاميرا (Camera Control)</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;" id="i2v-camera-container">
+            <label class="i2v-cam-pill" style="text-align: center; background: rgba(14,58,31,0.09); border: 1.5px solid #0E3A1F; padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="cam" value="static" checked onchange="updateCamPillStyles();" style="display: none;"> ثبات الكاميرا
             </label>
-            <label style="text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="cam" value="zoom_in" style="display: none;"> تقريب تدريجي
+            <label class="i2v-cam-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="cam" value="zoom_in" onchange="updateCamPillStyles();" style="display: none;"> تقريب تدريجي
             </label>
-            <label style="text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="cam" value="pan_right" style="display: none;"> دوران جانبي
+            <label class="i2v-cam-pill" style="text-align: center; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); padding: 9px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="cam" value="pan_right" onchange="updateCamPillStyles();" style="display: none;"> دوران جانبي
             </label>
         </div>
     </div>
 
+    <!-- Live Dynamic Credit Cost Calculator (Directly from Admin Settings) -->
+    <div id="i2v-cost-calculator" style="margin-bottom: 22px; padding: 14px 18px; background: rgba(14, 58, 31, 0.08); border: 1.5px solid rgba(197, 160, 89, 0.4); border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <span style="font-size: 13px; color: #1C120B; font-weight: 700;">التكلفة التقديرية للإنتاج:</span>
+            <span id="cost-calc-breakdown" style="display: block; font-size: 11px; color: #6A5847; margin-top: 2px;">
+                قراءة حية للتسعير من إعدادات الأداة
+            </span>
+        </div>
+        <div style="text-align: left; display: flex; align-items: baseline; gap: 4px;">
+            <span id="cost-calc-value" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">45.00</span>
+            <span style="font-size: 12px; color: #8C6820; font-weight: 700;">كريديت</span>
+        </div>
+    </div>
+
     <!-- Submit Button -->
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        تحريك الصورة إلى فيديو
+    <button type="submit" style="width: 100%; background: #0E3A1F; color: #FAF7F0; border: 1.5px solid #C5A059; font-weight: 700; font-size: 15px; padding: 15px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 16px rgba(14, 58, 31, 0.22); transition: all 0.2s ease;">
+        بدء تحريك الصورة إلى فيديو
     </button>
 
 </form>
 
 <script>
+let currentModelMinDuration = 4;
+let currentModelMaxDuration = 15;
+let currentSelectedDuration = 5;
+
+function getSelectedModelOption() {
+    const sel = document.getElementById('i2v-model');
+    return sel.options[sel.selectedIndex];
+}
+
+function handleFileSelected(inputEl, urlInputId, imgPreviewId, previewBoxId) {
+    if (inputEl.files && inputEl.files[0]) {
+        const file = inputEl.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById(imgPreviewId).src = e.target.result;
+            document.getElementById(previewBoxId).style.display = 'block';
+            document.getElementById(urlInputId).value = file.name;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function onModelChanged() {
+    const opt = getSelectedModelOption();
+    if (!opt) return;
+
+    const supportedRes = (opt.getAttribute('data-supported-res') || '720p,1080p').toLowerCase();
+    const durationType = opt.getAttribute('data-duration-type') || 'discrete';
+    const allowedDurationsStr = opt.getAttribute('data-allowed-durations') || '5,10';
+    const defaultDuration = parseInt(opt.getAttribute('data-default-duration') || '5');
+    const acceptsEndFrame = opt.getAttribute('data-accepts-end-frame') === '1';
+
+    // 1. Show or Hide End Frame Container dynamically
+    const endFrameContainer = document.getElementById('i2v-end-frame-container');
+    if (acceptsEndFrame) {
+        endFrameContainer.style.display = 'block';
+    } else {
+        endFrameContainer.style.display = 'none';
+        document.getElementById('i2v-end-image-url').value = '';
+    }
+
+    // 2. Update Resolution Pills Availability
+    const resMap = {
+        '480p': document.getElementById('res-lbl-480p'),
+        '720p': document.getElementById('res-lbl-720p'),
+        '1080p': document.getElementById('res-lbl-1080p'),
+        '4k': document.getElementById('res-lbl-4k'),
+    };
+
+    let firstAvailableRes = null;
+    let currentlyCheckedRes = document.querySelector('input[name="res"]:checked');
+    let currentResVal = currentlyCheckedRes ? currentlyCheckedRes.value : '1080p';
+
+    for (const [rKey, rEl] of Object.entries(resMap)) {
+        if (!rEl) continue;
+        if (supportedRes.includes(rKey)) {
+            rEl.style.display = 'block';
+            rEl.style.opacity = '1';
+            rEl.style.pointerEvents = 'auto';
+            if (!firstAvailableRes) firstAvailableRes = rKey;
+        } else {
+            rEl.style.display = 'none';
+            rEl.style.opacity = '0.3';
+            rEl.style.pointerEvents = 'none';
+        }
+    }
+
+    if (!supportedRes.includes(currentResVal)) {
+        if (supportedRes.includes('1080p')) {
+            document.querySelector('input[name="res"][value="1080p"]').checked = true;
+        } else if (supportedRes.includes('720p')) {
+            document.querySelector('input[name="res"][value="720p"]').checked = true;
+        } else if (firstAvailableRes) {
+            document.querySelector(`input[name="res"][value="${firstAvailableRes}"]`).checked = true;
+        }
+    }
+
+    // 3. Setup Clean Second-by-Second Slider (Step = 1s)
+    let minSec = 4;
+    let maxSec = 15;
+
+    if (durationType === 'discrete') {
+        const dList = allowedDurationsStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+        if (dList.length > 0) {
+            minSec = Math.min(...dList);
+            maxSec = Math.max(...dList);
+        }
+    } else {
+        const parts = allowedDurationsStr.split('-').map(s => parseInt(s.trim()));
+        minSec = parts[0] || 4;
+        maxSec = parts[1] || 15;
+    }
+
+    currentModelMinDuration = minSec;
+    currentModelMaxDuration = maxSec;
+
+    const slider = document.getElementById('i2v-duration-slider');
+    const minLabel = document.getElementById('slider-min-label');
+    const maxLabel = document.getElementById('slider-max-label');
+
+    slider.min = minSec;
+    slider.max = maxSec;
+    slider.step = 1;
+
+    let targetDuration = defaultDuration;
+    if (targetDuration < minSec || targetDuration > maxSec) {
+        targetDuration = minSec;
+    }
+
+    slider.value = targetDuration;
+    currentSelectedDuration = targetDuration;
+
+    minLabel.innerText = `${minSec} ثوانٍ`;
+    maxLabel.innerText = `${maxSec} ثانية`;
+    document.getElementById('duration-display-val').innerText = currentSelectedDuration;
+
+    updateResPillStyles();
+    updateLiveCostCalculation();
+}
+
+function onDurationSliderInput(val) {
+    currentSelectedDuration = parseInt(val);
+    document.getElementById('duration-display-val').innerText = currentSelectedDuration;
+    updateLiveCostCalculation();
+}
+
+function updateResPillStyles() {
+    const checkedRes = document.querySelector('input[name="res"]:checked');
+    if (!checkedRes) return;
+    const val = checkedRes.value;
+
+    ['480p', '720p', '1080p', '4k'].forEach(r => {
+        const lbl = document.getElementById(`res-lbl-${r}`);
+        if (!lbl) return;
+        if (r === val) {
+            lbl.style.borderColor = '#0E3A1F';
+            lbl.style.background = 'rgba(14,58,31,0.09)';
+            lbl.style.color = '#0E3A1F';
+            lbl.style.fontWeight = 'bold';
+        } else {
+            lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+            lbl.style.background = '#FAF7F0';
+            lbl.style.color = '#362A1F';
+            lbl.style.fontWeight = 'normal';
+        }
+    });
+}
+
+function updateCamPillStyles() {
+    document.querySelectorAll('#i2v-camera-container label').forEach(lbl => {
+        const inp = lbl.querySelector('input');
+        if (inp.checked) {
+            lbl.style.borderColor = '#0E3A1F';
+            lbl.style.background = 'rgba(14,58,31,0.09)';
+            lbl.style.color = '#0E3A1F';
+            lbl.style.fontWeight = 'bold';
+        } else {
+            lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+            lbl.style.background = '#FAF7F0';
+            lbl.style.color = '#362A1F';
+            lbl.style.fontWeight = 'normal';
+        }
+    });
+}
+
+function updateLiveCostCalculation() {
+    updateResPillStyles();
+    const opt = getSelectedModelOption();
+    if (!opt) return;
+
+    const pricingType = opt.getAttribute('data-pricing-type') || 'per_second';
+    const cost480 = parseFloat(opt.getAttribute('data-cost-480') || '3.0');
+    const cost720 = parseFloat(opt.getAttribute('data-cost-720') || '6.0');
+    const cost1080 = parseFloat(opt.getAttribute('data-cost-1080') || '9.0');
+    const cost4k = parseFloat(opt.getAttribute('data-cost-4k') || '16.0');
+
+    const resInput = document.querySelector('input[name="res"]:checked');
+    const res = resInput ? resInput.value : '1080p';
+    const duration = currentSelectedDuration;
+
+    let rate = cost1080;
+    if (res === '480p') rate = cost480;
+    else if (res === '720p') rate = cost720;
+    else if (res === '4k') rate = cost4k;
+
+    let totalCost = 0;
+    let breakdownText = '';
+
+    if (pricingType === 'per_second') {
+        totalCost = rate * duration;
+        breakdownText = `حساب بالثانية (${rate.toFixed(2)} كريديت/ث × ${duration} ثوانٍ لدقة ${res.toUpperCase()})`;
+    } else {
+        totalCost = rate;
+        breakdownText = `حساب ثابت بالعملية لدقة ${res.toUpperCase()}`;
+    }
+
+    document.getElementById('cost-calc-value').innerText = totalCost.toFixed(2);
+    document.getElementById('cost-calc-breakdown').innerText = breakdownText;
+}
+
 function handleI2VSubmit() {
     const prompt = document.getElementById('i2v-prompt').value;
-    const imageUrl = document.getElementById('i2v-image-url').value;
+    const model = document.getElementById('i2v-model').value;
+    const startImg = document.getElementById('i2v-image-url').value;
+    const endImg = document.getElementById('i2v-end-image-url').value;
+    const resInput = document.querySelector('input[name="res"]:checked');
+    const camInput = document.querySelector('input[name="cam"]:checked');
     const intensity = document.getElementById('i2v-motion-range').value;
-    const camera = document.querySelector('input[name="cam"]:checked').value;
+
+    const res = resInput ? resInput.value : '1080p';
+    const duration = currentSelectedDuration;
+    const cam = camInput ? camInput.value : 'static';
 
     const fd = new FormData();
     fd.append('prompt', prompt);
-    fd.append('source_image_url', imageUrl);
+    fd.append('model', model);
+    fd.append('source_image_url', startImg);
+    if (endImg) {
+        fd.append('end_image_url', endImg);
+    }
+    fd.append('resolution', res);
+    fd.append('duration', duration);
+    fd.append('camera_control', cam);
     fd.append('motion_intensity', intensity);
-    fd.append('camera_control', camera);
 
     submitGeneration(fd, 'image_to_video');
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    onModelChanged();
+});
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    onModelChanged();
 }
 </script>
 {% endblock %}
