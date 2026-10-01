@@ -58,6 +58,7 @@ def generate_api(request):
     from apps.tools.image_to_video.models import ImageToVideoModelConfig
     from apps.tools.text_to_image.models import TextToImageModelConfig
     from apps.tools.reference_to_video.models import ReferenceToVideoModelConfig
+    from apps.tools.lipsync.models import LipSyncModelConfig
     standard_cost = Decimal('4.0000')
     premium_cost = Decimal('0.0000')
     model_name = model_identifier or 'Standard Model'
@@ -184,6 +185,49 @@ def generate_api(request):
             cfg = ReferenceToVideoModelConfig.objects.filter(name=model_identifier, is_active=True).first()
         if not cfg:
             cfg = ReferenceToVideoModelConfig.objects.filter(is_default=True, is_active=True).first() or ReferenceToVideoModelConfig.objects.first()
+
+        if cfg:
+            model_name = cfg.name
+            res = str(data.get('resolution', '1080p')).lower()
+            try:
+                duration = int(data.get('duration', cfg.default_duration))
+            except (ValueError, TypeError):
+                duration = cfg.default_duration
+
+            api_duration = duration
+            if cfg.duration_type == 'discrete':
+                valid_durations = cfg.get_durations_list()
+                if valid_durations and duration not in valid_durations:
+                    api_duration = min(valid_durations, key=lambda x: abs(x - duration))
+            options['api_duration'] = api_duration
+            options['requested_duration'] = duration
+
+            if '480' in res:
+                rate = cfg.cost_480p
+            elif '720' in res:
+                rate = cfg.cost_720p
+            elif '4k' in res:
+                rate = cfg.cost_4k
+            else:
+                rate = cfg.cost_1080p
+
+            if cfg.pricing_type == 'per_second':
+                calc_cost = rate * Decimal(duration)
+            else:
+                calc_cost = rate
+
+            if cfg.allowed_wallet == 'premium':
+                premium_cost = calc_cost
+                standard_cost = Decimal('0.0000')
+            else:
+                standard_cost = calc_cost
+
+    elif tool_type == 'lipsync':
+        cfg = LipSyncModelConfig.objects.filter(model_id=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = LipSyncModelConfig.objects.filter(name=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = LipSyncModelConfig.objects.filter(is_default=True, is_active=True).first() or LipSyncModelConfig.objects.first()
 
         if cfg:
             model_name = cfg.name
