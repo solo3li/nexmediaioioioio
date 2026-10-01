@@ -3,73 +3,494 @@
 {% block tool_controls %}
 <form id="tts-form" onsubmit="event.preventDefault(); handleTtsSubmit();">
     
-    <!-- Voice Selector -->
-    <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            نبرة الصوت (Voice)
-        </label>
-        <select id="tts-voice" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
-            {% for v in tts_voices %}
-            <option value="{{ v.voice_id }}">{{ v.display_name_ar }} ({{ v.display_name }}) - {{ v.gender }} [{{ v.language_code }}]</option>
+    <!-- 1. Engine & Model Selection (Clean Name ONLY) -->
+    <div style="margin-bottom: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                محرك التوليد الصوتي العصبي (Neural Voice Engine)
+            </label>
+            <span id="tts-model-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(14,58,31,0.2);">
+                3 نماذج فائقة الدقة
+            </span>
+        </div>
+        <select id="tts-model" onchange="onTtsModelChanged();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); border-radius: 10px; color: #1C120B; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;">
+            {% for m in models %}
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-quality-tier="{{ m.quality_tier }}"
+                    data-chars-per-block="{{ m.chars_per_block }}"
+                    data-cost-standard="{{ m.cost_per_block_standard }}"
+                    data-cost-high="{{ m.cost_per_block_high }}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
             {% empty %}
-            <option value="ar-vocal-male-1">صوت فصيح وقور (إخباري ووثائقي - ذكر)</option>
-            <option value="ar-vocal-female-1">صوت إعلامي احترافي (بودكاست وإعلانات - أنثى)</option>
+            <option value="gemini-2.5-pro-tts"
+                    data-name="Neural Studio 2.5 Pro HD (High Quality)"
+                    data-quality-tier="high"
+                    data-chars-per-block="500"
+                    data-cost-standard="0.5000"
+                    data-cost-high="1.0000"
+                    selected>
+                Neural Studio 2.5 Pro HD (High Quality)
+            </option>
             {% endfor %}
         </select>
     </div>
 
-    <!-- Text to Synthesize -->
-    <div style="margin-bottom: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #C5A059; font-weight: bold;">النص المراد تحويله إلى صوت</label>
-            <span id="char-counter" style="font-size: 11px; color: #8EBA9A;">0 / 3000 حرف</span>
+    <!-- 2. Quality Tier Selection (جودة عادية / جودة عالية سينمائية) -->
+    <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+            مستوى جودة المعالجة الصوتية (Audio Processing Quality)
+        </label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <button type="button" id="quality-standard-btn" class="quality-btn" onclick="selectQualityTier('standard');" style="padding: 12px; border-radius: 10px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #362A1F;">جودة عادية قياسية (Normal)</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 3px;">سرعة معالجة عالية وتكلفة منخفضة</div>
+            </button>
+            <button type="button" id="quality-high-btn" class="quality-btn active" onclick="selectQualityTier('high');" style="padding: 12px; border-radius: 10px; border: 2px solid #0E3A1F; background: rgba(14,58,31,0.08); text-align: center; cursor: pointer; transition: all 0.2s;">
+                <div style="font-size: 13.5px; font-weight: 700; color: #0E3A1F;">جودة استوديو فائقة (Studio HD)</div>
+                <div style="font-size: 11px; color: #0E3A1F; margin-top: 3px; font-weight: 600;">أقصى واقعية بشرية وتفاصيل نغمية</div>
+            </button>
         </div>
-        <textarea id="tts-text" required rows="5" oninput="document.getElementById('char-counter').innerText = this.value.length + ' / 3000 حرف'" placeholder="أدخل النص العربي الفصيح هنا، مع التشكيل أو بدونه، لتوليد نبرة صوتية طبيعية تحاكي النطق البشري الأصيل..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.6;"></textarea>
+        <input type="hidden" id="selected-quality-tier" value="high">
     </div>
 
-    <!-- Sliders: Speed & Pitch -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+    <!-- 3. Voice Profiles Selector (30 Customized Human Personas) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                اختيار الشخصية الصوتية (Voice Persona)
+            </label>
+            <!-- Voice Filter Tags -->
+            <div style="display: flex; gap: 4px; overflow-x: auto;">
+                <button type="button" class="voice-filter-btn active" onclick="filterVoices('all', this);" style="padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; border: none; background: #0E3A1F; color: #FFF; cursor: pointer;">الكل (30)</button>
+                <button type="button" class="voice-filter-btn" onclick="filterVoices('Male', this);" style="padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #6E5A44; cursor: pointer;">ذكور</button>
+                <button type="button" class="voice-filter-btn" onclick="filterVoices('Female', this);" style="padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #6E5A44; cursor: pointer;">إناث</button>
+            </div>
+        </div>
+
+        <select id="tts-voice-select" onchange="onVoiceSelected();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 13.5px; font-weight: 600; outline: none; margin-bottom: 10px;">
+            {% for v in tts_voices %}
+            <option value="{{ v.voice_id }}" data-gender="{{ v.gender }}" data-desc="{{ v.accent_note }}" {% if forloop.first %}selected{% endif %}>
+                {{ v.display_name_ar }} - {{ v.get_gender_display }}
+            </option>
+            {% empty %}
+            <option value="Puck" data-gender="Male" data-desc="صوت شبابي مفعم بالحيوية ممتاز للإعلانات ومحتوى السوشيال ميديا" selected>
+                عمر المنصور (شبابي وحيوي) - ذكر
+            </option>
+            <option value="Kore" data-gender="Female" data-desc="نبرة أنثوية دافئة ومتزنة تلائم الروايات والمحتوى الإنساني">
+                سارة العلي (هادئ ودافئ) - أنثى
+            </option>
+            {% endfor %}
+        </select>
+
+        <!-- Selected Voice Accent Description Note -->
+        <div id="voice-desc-badge" style="background: rgba(14,58,31,0.06); border: 1px solid rgba(14,58,31,0.15); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #0E3A1F; display: flex; align-items: center; gap: 8px;">
+            <span>✨</span>
+            <span id="voice-desc-text">صوت شبابي مفعم بالحيوية ممتاز للإعلانات ومحتوى السوشيال ميديا</span>
+        </div>
+    </div>
+
+    <!-- 4. Languages & Regional Dialects -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px;">
         
-        <!-- Speed -->
-        <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
-                <span>سرعة الإلقاء (Speed)</span>
-                <span id="speed-label" style="color: #C5A059; font-weight: bold;">1.0x</span>
-            </div>
-            <input type="range" id="tts-speed" min="0.5" max="1.5" step="0.05" value="1.0" oninput="document.getElementById('speed-label').innerText = this.value + 'x'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+        <!-- Language Selection -->
+        <div>
+            <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+                اللغة (Language)
+            </label>
+            <select id="tts-language" onchange="onLanguageChanged();" style="width: 100%; padding: 11px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 13px; font-weight: 600; outline: none;">
+                <option value="ar" selected>العربية (Arabic)</option>
+                <option value="en">الإنجليزية (English)</option>
+                <option value="fr">الفرنسية (Français)</option>
+                <option value="es">الإسبانية (Español)</option>
+                <option value="de">الألمانية (Deutsch)</option>
+                <option value="tr">التركية (Türkçe)</option>
+                <option value="it">الإيطالية (Italiano)</option>
+                <option value="pt">البرتغالية (Português)</option>
+                <option value="ru">الروسية (Русский)</option>
+                <option value="ja">اليابانية (日本語)</option>
+                <option value="ko">الكورية (한국어)</option>
+                <option value="zh">الصينية (中文)</option>
+                <option value="hi">الهندية (हिन्दी)</option>
+                <option value="ur">الأردية (اردو)</option>
+            </select>
         </div>
 
-        <!-- Stability -->
-        <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
-                <span>ثبات النبرة (Stability)</span>
-                <span id="stability-label" style="color: #C5A059; font-weight: bold;">75%</span>
-            </div>
-            <input type="range" id="tts-stability" min="20" max="100" step="5" value="75" oninput="document.getElementById('stability-label').innerText = this.value + '%'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+        <!-- Dialect / Accent Selection -->
+        <div>
+            <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+                اللهجة المحلية (Regional Dialect)
+            </label>
+            <select id="tts-dialect" style="width: 100%; padding: 11px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 13px; font-weight: 600; outline: none;">
+                <!-- Populated dynamically via JS based on selected language -->
+                <option value="ar-msa" selected>الفصحى المعربة (Modern Standard)</option>
+                <option value="ar-eg">اللهجة المصرية (Egyptian)</option>
+                <option value="ar-sa">اللهجة السعودية والخليجية (Saudi & Gulf)</option>
+                <option value="ar-lev">اللهجة الشامية (Levantine)</option>
+                <option value="ar-ae">اللهجة الإماراتية (Emirati)</option>
+                <option value="ar-kw">اللهجة الكويتية (Kuwaiti)</option>
+                <option value="ar-iq">اللهجة العراقية (Iraqi)</option>
+                <option value="ar-ma">اللهجة المغربية (Moroccan)</option>
+                <option value="ar-tn">اللهجة التونسية (Tunisian)</option>
+                <option value="ar-dz">اللهجة الجزائرية (Algerian)</option>
+                <option value="ar-sd">اللهجة السودانية (Sudanese)</option>
+            </select>
         </div>
 
     </div>
 
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        توليد الصوت
+    <!-- 5. Emotions & Delivery Style -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+        
+        <!-- Emotion Pills -->
+        <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+                المشاعر والأسلوب التعبيري (Emotion & Style)
+            </label>
+            <div id="tts-emotion-pills" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="emo-pill active" data-emo="formal" onclick="selectEmotion('formal');" style="padding: 6px 12px; border-radius: 6px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.08); color: #0E3A1F; font-size: 12px; font-weight: 700; cursor: pointer;">
+                    👔 رسمي وقور
+                </button>
+                <button type="button" class="emo-pill" data-emo="warm" onclick="selectEmotion('warm');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    ☕ دافئ ولطيف
+                </button>
+                <button type="button" class="emo-pill" data-emo="dynamic" onclick="selectEmotion('dynamic');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    ⚡ حماسي وإعلاني
+                </button>
+                <button type="button" class="emo-pill" data-emo="calm" onclick="selectEmotion('calm');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    🌿 هادئ وتأملي
+                </button>
+                <button type="button" class="emo-pill" data-emo="dramatic" onclick="selectEmotion('dramatic');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    🎭 درامي ومؤثر
+                </button>
+                <button type="button" class="emo-pill" data-emo="story" onclick="selectEmotion('story');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    📖 سرد قصصي
+                </button>
+                <button type="button" class="emo-pill" data-emo="news" onclick="selectEmotion('news');" style="padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    📡 إخباري محايد
+                </button>
+            </div>
+            <input type="hidden" id="selected-emotion" value="formal">
+        </div>
+
+        <!-- Voice Modulation: Speed & Pitch Sliders -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; font-weight: 600; color: #1C120B;">
+                    <span>سرعة النطق (Speed)</span>
+                    <span id="speed-val" style="color: #0E3A1F; font-weight: 700;">1.00x</span>
+                </div>
+                <input type="range" id="tts-speed" min="0.7" max="1.5" step="0.05" value="1.0" oninput="document.getElementById('speed-val').textContent = this.value + 'x';" style="width: 100%; accent-color: #0E3A1F; cursor: pointer;">
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; font-weight: 600; color: #1C120B;">
+                    <span>طبقة الصوت (Pitch)</span>
+                    <span id="pitch-val" style="color: #0E3A1F; font-weight: 700;">طبيعية</span>
+                </div>
+                <input type="range" id="tts-pitch" min="-2" max="2" step="1" value="0" oninput="updatePitchLabel(this.value);" style="width: 100%; accent-color: #0E3A1F; cursor: pointer;">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 6. Text to Synthesize (النص المراد تحويله) -->
+    <div style="margin-bottom: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                النص المراد تحويله إلى صوت (Text to Speak)
+            </label>
+            <div id="char-block-counter" style="font-size: 12px; color: #0E3A1F; font-weight: 700; background: rgba(14,58,31,0.08); padding: 2px 10px; border-radius: 8px;">
+                0 حرف • 1 بلوك
+            </div>
+        </div>
+        <textarea id="tts-text-input" rows="5" oninput="onTextInputChanged();" placeholder="اكتب النص الذي ترغب بتحويله إلى صوت هنا، يمكنك إضافة التشكيل لتحسين مخارج الحروف بدقة..." style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 10px; color: #1C120B; font-size: 14px; line-height: 1.6; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+        
+        <!-- Quick Prompt Snippets -->
+        <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+            <button type="button" onclick="setTtsSnippet('أهلاً بكم في منصتنا الإبداعية، حيث نبتكر معاً مستقبلاً مرئياً وصوتياً مبهراً بأعلى معايير الدقة والواقعية.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                رسالة ترحيبية
+            </button>
+            <button type="button" onclick="setTtsSnippet('اكتشف قوة الإنتاج الحديث مع أحدث الحلول الرقمية الذكية المصممة خصيصاً للمؤسسات ورواد الأعمال الرائدين.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                إعلان تجاري
+            </button>
+            <button type="button" onclick="setTtsSnippet('في عمق التاريخ، كانت الكلمات جسوراً تربط بين الحضارات وتنقل المعرفة عبر القرون بأصداء لا تنطفئ.');" style="background: #FAF7F0; border: 1px solid rgba(197,160,89,0.4); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #362A1F; cursor: pointer; font-weight: 600;">
+                وثائقي وتاريخي
+            </button>
+        </div>
+    </div>
+
+    <!-- 7. Dynamic Block-based Credit Cost Badge -->
+    <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,160,89,0.12), rgba(14,58,31,0.06)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">التكلفة التقديرية بالبلوك:</div>
+            <div id="tts-cost-breakdown" style="font-size: 11.5px; color: #6E5A44; margin-top: 2px;">
+                1 بلوك (حتى 500 حرف) × 1.00 رصيد (جودة عالية)
+            </div>
+        </div>
+        <div style="text-align: left;">
+            <div id="tts-total-cost" style="font-size: 22px; font-weight: 800; color: #0E3A1F; font-family: monospace;">
+                1.00
+            </div>
+            <div style="font-size: 11px; color: #8C7864;">رصيد مطلوب</div>
+        </div>
+    </div>
+
+    <!-- 8. Submit Button -->
+    <button type="submit" id="tts-submit-btn" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #092614); color: #FFF; font-weight: 700; font-size: 15px; padding: 15px; border: 1px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 18px rgba(14,58,31,0.25); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        </svg>
+        <span>بدء توليد الصوت الطبيعي</span>
     </button>
 
 </form>
 
 <script>
+const DIALECT_MAP = {
+    'ar': [
+        { val: 'ar-msa', label: 'الفصحى المعربة (Modern Standard)' },
+        { val: 'ar-eg', label: 'اللهجة المصرية (Egyptian)' },
+        { val: 'ar-sa', label: 'اللهجة السعودية والخليجية (Saudi & Gulf)' },
+        { val: 'ar-lev', label: 'اللهجة الشامية (Levantine)' },
+        { val: 'ar-ae', label: 'اللهجة الإماراتية (Emirati)' },
+        { val: 'ar-kw', label: 'اللهجة الكويتية (Kuwaiti)' },
+        { val: 'ar-iq', label: 'اللهجة العراقية (Iraqi)' },
+        { val: 'ar-ma', label: 'اللهجة المغربية (Moroccan)' },
+        { val: 'ar-tn', label: 'اللهجة التونسية (Tunisian)' },
+        { val: 'ar-dz', label: 'اللهجة الجزائرية (Algerian)' },
+        { val: 'ar-sd', label: 'اللهجة السودانية (Sudanese)' }
+    ],
+    'en': [
+        { val: 'en-us', label: 'English (US الأمريكية)' },
+        { val: 'en-gb', label: 'English (UK البريطانية)' },
+        { val: 'en-au', label: 'English (Australian الأسترالية)' },
+        { val: 'en-ca', label: 'English (Canadian الكندية)' },
+        { val: 'en-in', label: 'English (Indian الهندية)' }
+    ],
+    'fr': [
+        { val: 'fr-fr', label: 'Français (France فرنسا)' },
+        { val: 'fr-ca', label: 'Français (Canada كندا)' }
+    ],
+    'es': [
+        { val: 'es-es', label: 'Español (España إسبانيا)' },
+        { val: 'es-mx', label: 'Español (Latinoamérica أمريكا اللاتينية)' }
+    ],
+    'de': [{ val: 'de-de', label: 'Deutsch (Standard ألمانيا)' }],
+    'tr': [{ val: 'tr-tr', label: 'Türkçe (Standard تركيا)' }],
+    'it': [{ val: 'it-it', label: 'Italiano (Italia إيطاليا)' }],
+    'pt': [
+        { val: 'pt-br', label: 'Português (Brasil البرازيل)' },
+        { val: 'pt-pt', label: 'Português (Portugal البرتغال)' }
+    ],
+    'ru': [{ val: 'ru-ru', label: 'Русский (روسيا)' }],
+    'ja': [{ val: 'ja-jp', label: '日本語 (اليابان)' }],
+    'ko': [{ val: 'ko-kr', label: '한국어 (كوريا)' }],
+    'zh': [
+        { val: 'zh-cn', label: 'Mandarin (الصينية المبسطة)' },
+        { val: 'zh-tw', label: 'Traditional (الصينية التقليدية)' }
+    ],
+    'hi': [{ val: 'hi-in', label: 'हिन्दी (الهند)' }],
+    'ur': [{ val: 'ur-pk', label: 'اردو (باكستان/الهند)' }]
+};
+
+function onLanguageChanged() {
+    const lang = document.getElementById('tts-language').value;
+    const dialectSelect = document.getElementById('tts-dialect');
+    dialectSelect.innerHTML = '';
+
+    const dialects = DIALECT_MAP[lang] || [{ val: lang, label: 'اللهجة القياسية (Standard)' }];
+    dialects.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d.val;
+        opt.textContent = d.label;
+        dialectSelect.appendChild(opt);
+    });
+}
+
+function selectQualityTier(tier) {
+    document.getElementById('selected-quality-tier').value = tier;
+    const btnStd = document.getElementById('quality-standard-btn');
+    const btnHigh = document.getElementById('quality-high-btn');
+
+    if (tier === 'high') {
+        btnHigh.style.border = '2px solid #0E3A1F';
+        btnHigh.style.background = 'rgba(14,58,31,0.08)';
+        btnHigh.querySelector('div:first-child').style.color = '#0E3A1F';
+
+        btnStd.style.border = '1.5px solid rgba(197,160,89,0.35)';
+        btnStd.style.background = '#FAF7F0';
+        btnStd.querySelector('div:first-child').style.color = '#362A1F';
+    } else {
+        btnStd.style.border = '2px solid #0E3A1F';
+        btnStd.style.background = 'rgba(14,58,31,0.08)';
+        btnStd.querySelector('div:first-child').style.color = '#0E3A1F';
+
+        btnHigh.style.border = '1.5px solid rgba(197,160,89,0.35)';
+        btnHigh.style.background = '#FAF7F0';
+        btnHigh.querySelector('div:first-child').style.color = '#362A1F';
+    }
+    recalculateTtsCost();
+}
+
+function filterVoices(gender, btn) {
+    document.querySelectorAll('.voice-filter-btn').forEach(b => {
+        b.style.background = '#FAF7F0';
+        b.style.color = '#6E5A44';
+        b.style.border = '1px solid rgba(197,160,89,0.35)';
+        b.style.fontWeight = '600';
+    });
+    btn.style.background = '#0E3A1F';
+    btn.style.color = '#FFF';
+    btn.style.border = 'none';
+    btn.style.fontWeight = '700';
+
+    const sel = document.getElementById('tts-voice-select');
+    let firstVisible = null;
+    Array.from(sel.options).forEach(opt => {
+        const g = opt.dataset.gender;
+        if (gender === 'all' || g === gender) {
+            opt.style.display = 'block';
+            if (!firstVisible) firstVisible = opt;
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+
+    if (firstVisible && sel.selectedOptions[0].style.display === 'none') {
+        sel.value = firstVisible.value;
+        onVoiceSelected();
+    }
+}
+
+function onVoiceSelected() {
+    const sel = document.getElementById('tts-voice-select');
+    const opt = sel.options[sel.selectedIndex];
+    if (opt && opt.dataset.desc) {
+        document.getElementById('voice-desc-text').textContent = opt.dataset.desc;
+    }
+}
+
+function selectEmotion(emo) {
+    document.getElementById('selected-emotion').value = emo;
+    document.querySelectorAll('#tts-emotion-pills .emo-pill').forEach(btn => {
+        if (btn.dataset.emo === emo) {
+            btn.style.border = '1.5px solid #0E3A1F';
+            btn.style.background = 'rgba(14,58,31,0.08)';
+            btn.style.color = '#0E3A1F';
+            btn.style.fontWeight = '700';
+        } else {
+            btn.style.border = '1px solid rgba(197,160,89,0.35)';
+            btn.style.background = '#FAF7F0';
+            btn.style.color = '#362A1F';
+            btn.style.fontWeight = '600';
+        }
+    });
+}
+
+function updatePitchLabel(val) {
+    const v = parseInt(val);
+    let lbl = 'طبيعية';
+    if (v === -2) lbl = 'عميقة جداً';
+    else if (v === -1) lbl = 'رخيمة ووقورة';
+    else if (v === 1) lbl = 'حيوية ومرتفعة';
+    else if (v === 2) lbl = 'رفيعة وناعمة';
+    document.getElementById('pitch-val').textContent = lbl;
+}
+
+function setTtsSnippet(text) {
+    document.getElementById('tts-text-input').value = text;
+    onTextInputChanged();
+}
+
+function onTextInputChanged() {
+    const text = document.getElementById('tts-text-input').value;
+    const len = text.length;
+    const sel = document.getElementById('tts-model');
+    const opt = sel.options[sel.selectedIndex];
+    const blockSize = opt ? parseInt(opt.dataset.charsPerBlock) || 500 : 500;
+    const blocks = Math.max(1, Math.ceil(Math.max(1, len) / blockSize));
+
+    document.getElementById('char-block-counter').textContent = `${len} حرف • ${blocks} بلوك (${blockSize} حرف/بلوك)`;
+    recalculateTtsCost();
+}
+
+function onTtsModelChanged() {
+    const sel = document.getElementById('tts-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (opt && opt.dataset.qualityTier) {
+        selectQualityTier(opt.dataset.qualityTier);
+    } else {
+        recalculateTtsCost();
+    }
+}
+
+function recalculateTtsCost() {
+    const sel = document.getElementById('tts-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    const text = document.getElementById('tts-text-input').value;
+    const len = Math.max(1, text.length);
+    const blockSize = parseInt(opt.dataset.charsPerBlock) || 500;
+    const blocks = Math.max(1, Math.ceil(len / blockSize));
+
+    const tier = document.getElementById('selected-quality-tier').value;
+    let blockRate = parseFloat(opt.dataset.costHigh) || 1.0;
+    let tierName = 'جودة استوديو فائقة';
+    if (tier === 'standard') {
+        blockRate = parseFloat(opt.dataset.costStandard) || 0.5;
+        tierName = 'جودة عادية قياسية';
+    }
+
+    const total = blocks * blockRate;
+    document.getElementById('tts-cost-breakdown').textContent = `${blocks} بلوك (${blockSize} حرف/بلوك) × ${blockRate.toFixed(2)} رصيد (${tierName})`;
+    document.getElementById('tts-total-cost').textContent = total.toFixed(2);
+}
+
 function handleTtsSubmit() {
-    const text = document.getElementById('tts-text').value;
-    const voice = document.getElementById('tts-voice').value;
+    const text = document.getElementById('tts-text-input').value.trim();
+    if (!text) {
+        alert('يرجى إدخال النص المراد تحويله إلى صوت');
+        return;
+    }
+
+    const sel = document.getElementById('tts-model');
+    const opt = sel.options[sel.selectedIndex];
+    const modelName = opt ? opt.dataset.name : 'Neural Studio 2.5 Pro HD (High Quality)';
+    const modelId = sel.value;
+    const voiceId = document.getElementById('tts-voice-select').value;
+    const quality = document.getElementById('selected-quality-tier').value;
+    const language = document.getElementById('tts-language').value;
+    const dialect = document.getElementById('tts-dialect').value;
+    const emotion = document.getElementById('selected-emotion').value;
     const speed = document.getElementById('tts-speed').value;
-    const stability = document.getElementById('tts-stability').value;
+    const pitch = document.getElementById('tts-pitch').value;
 
     const fd = new FormData();
+    fd.append('model', modelName);
+    fd.append('model_id', modelId);
     fd.append('prompt', text);
-    fd.append('voice_id', voice);
+    fd.append('voice_id', voiceId);
+    fd.append('quality', quality);
+    fd.append('quality_tier', quality);
+    fd.append('language', language);
+    fd.append('dialect', dialect);
+    fd.append('emotion', emotion);
     fd.append('speed', speed);
-    fd.append('stability', stability);
+    fd.append('pitch', pitch);
 
     submitGeneration(fd, 'tts');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    onLanguageChanged();
+    onVoiceSelected();
+    onTextInputChanged();
+});
 </script>
 {% endblock %}

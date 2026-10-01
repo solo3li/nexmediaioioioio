@@ -62,6 +62,7 @@ def generate_api(request):
     from apps.tools.avatar_video.models import AvatarVideoModelConfig
     from apps.tools.motion_control.models import MotionControlModelConfig
     from apps.tools.stt.models import SttModelConfig
+    from apps.tools.tts.models import TtsModelConfig
     standard_cost = Decimal('4.0000')
     premium_cost = Decimal('0.0000')
     model_name = model_identifier or 'Standard Model'
@@ -341,6 +342,28 @@ def generate_api(request):
             options['requested_duration'] = duration
 
             calc_cost = cfg.calculate_total_cost(duration)
+
+            if cfg.allowed_wallet == 'premium':
+                premium_cost = calc_cost
+                standard_cost = Decimal('0.0000')
+            else:
+                standard_cost = calc_cost
+
+    elif tool_type == 'tts':
+        cfg = TtsModelConfig.objects.filter(model_id=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = TtsModelConfig.objects.filter(name=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = TtsModelConfig.objects.filter(is_default=True, is_active=True).first() or TtsModelConfig.objects.first()
+
+        if cfg:
+            model_name = cfg.name
+            char_count = len(prompt or '')
+            quality_mode = str(data.get('quality', data.get('quality_tier', cfg.quality_tier))).lower()
+            options['char_count'] = char_count
+            options['quality_mode'] = quality_mode
+
+            calc_cost = cfg.calculate_total_cost(char_count, quality_mode)
 
             if cfg.allowed_wallet == 'premium':
                 premium_cost = calc_cost
