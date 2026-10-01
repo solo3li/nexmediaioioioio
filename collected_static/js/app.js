@@ -316,19 +316,11 @@ function initPipelineSimulator() {
 }
 
 /* --------------------------------------------------------------------------
-   5. Header Scroll Shadows
+   5. Header Scroll Shadows (Disabled for seamless hero integration)
 -------------------------------------------------------------------------- */
 function initHeaderScroll() {
-    const header = document.getElementById('main-header');
-    if (!header) return;
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 20) {
-            header.style.boxShadow = '0 8px 24px rgba(26, 18, 14, 0.08)';
-        } else {
-            header.style.boxShadow = 'none';
-        }
-    }, { passive: true });
+    // Seamless zero-border hero header - no shadow or background injection
+    return;
 }
 
 /* --------------------------------------------------------------------------

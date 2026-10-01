@@ -125,29 +125,30 @@ a {
 }
 
 /* --------------------------------------------------------------------------
-   4. Royal Navigation Header: Floating Glassmorphism over Hero
+   4. Royal Navigation Header: Seamless Hero Integration (Zero Borders)
 -------------------------------------------------------------------------- */
 .royal-header {
-    background-color: rgba(250, 247, 240, 0.78);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(197, 160, 89, 0.22);
-    border-radius: 20px;
-    position: sticky;
-    top: 14px;
-    z-index: 100;
-    max-width: var(--container-max);
-    margin: 14px auto 0 auto;
-    box-shadow: 0 10px 30px rgba(14, 58, 31, 0.04), 0 2px 6px rgba(197, 160, 89, 0.1);
-    transition: var(--transition-smooth);
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    position: relative !important;
+    top: 0 !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 !important;
+    padding: 24px 0 12px 0;
+    z-index: 40;
 }
 
 .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 74px;
-    padding: 0 12px;
+    height: auto;
+    padding: 0;
 }
 
 .brand-logo {
@@ -839,10 +840,6 @@ a {
 
 /* Responsive Grid Overrides for Hero */
 @media (max-width: 992px) {
-    .royal-header {
-        margin: 10px 12px 0 12px;
-        border-radius: 16px;
-    }
     .hero-split-grid {
         grid-template-columns: 1fr;
         gap: 36px;
