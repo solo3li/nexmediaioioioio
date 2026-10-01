@@ -61,6 +61,7 @@ def generate_api(request):
     from apps.tools.lipsync.models import LipSyncModelConfig
     from apps.tools.avatar_video.models import AvatarVideoModelConfig
     from apps.tools.motion_control.models import MotionControlModelConfig
+    from apps.tools.stt.models import SttModelConfig
     standard_cost = Decimal('4.0000')
     premium_cost = Decimal('0.0000')
     model_name = model_identifier or 'Standard Model'
@@ -314,6 +315,32 @@ def generate_api(request):
             options['requested_duration'] = duration
 
             calc_cost = cfg.calculate_total_cost(res, duration)
+
+            if cfg.allowed_wallet == 'premium':
+                premium_cost = calc_cost
+                standard_cost = Decimal('0.0000')
+            else:
+                standard_cost = calc_cost
+
+    elif tool_type == 'stt':
+        cfg = SttModelConfig.objects.filter(model_id=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = SttModelConfig.objects.filter(name=model_identifier, is_active=True).first()
+        if not cfg:
+            cfg = SttModelConfig.objects.filter(is_default=True, is_active=True).first() or SttModelConfig.objects.first()
+
+        if cfg:
+            model_name = cfg.name
+            try:
+                duration = int(data.get('duration', 60))
+            except (ValueError, TypeError):
+                duration = 60
+
+            duration = max(cfg.min_duration_seconds, min(duration, cfg.max_duration_seconds))
+            options['duration'] = duration
+            options['requested_duration'] = duration
+
+            calc_cost = cfg.calculate_total_cost(duration)
 
             if cfg.allowed_wallet == 'premium':
                 premium_cost = calc_cost

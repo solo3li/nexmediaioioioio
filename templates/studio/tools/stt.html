@@ -3,77 +3,415 @@
 {% block tool_controls %}
 <form id="stt-form" onsubmit="event.preventDefault(); handleSttSubmit();">
     
-    <!-- Audio Source -->
-    <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            الملف الصوتي المراد تفريغه (Audio File)
-        </label>
-        <div style="border: 2px dashed rgba(197, 160, 89, 0.4); border-radius: 10px; padding: 25px; text-align: center; background: rgba(197, 160, 89, 0.06); margin-bottom: 10px;">
-            <div style="margin-bottom: 8px; color: #C5A059; display: flex; justify-content: center;">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4"/><path d="M7 6v12"/><path d="M11 3v18"/><path d="M15 8v8"/><path d="M19 5v14"/><path d="M23 10v4"/></svg>
+    <!-- 1. Engine & Model Selection (Clean Name ONLY) -->
+    <div style="margin-bottom: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                محرك التعرف وتفريغ الصوت (Speech Recognition Engine)
+            </label>
+            <span id="stt-model-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 12px; border: 1px solid rgba(14,58,31,0.2);">
+                دقة لغوية فائقة
+            </span>
+        </div>
+        <select id="stt-model" onchange="onSttModelChanged();" style="width: 100%; padding: 12px 14px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); border-radius: 10px; color: #1C120B; font-size: 14px; font-weight: 600; outline: none; transition: border-color 0.2s;">
+            {% for m in models %}
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-cost-minute="{{ m.cost_per_minute }}"
+                    data-cost-second="{{ m.cost_per_second }}"
+                    data-pricing-type="{{ m.pricing_type }}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
+            {% empty %}
+            <option value="whisper-1"
+                    data-name="Whisper Speech-to-Text"
+                    data-cost-minute="1.0000"
+                    data-cost-second="0.0167"
+                    data-pricing-type="per_minute"
+                    selected>
+                Whisper Speech-to-Text
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- 2. Dual Audio Input: Upload File or Live Mic Recording -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 14px; padding: 18px; box-shadow: 0 2px 10px rgba(44,30,16,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">
+                المقطع الصوتي المراد تفريغه (Audio Source)
+            </label>
+            <!-- Source Mode Switcher -->
+            <div style="display: flex; background: #FAF7F0; border: 1px solid rgba(197,160,89,0.35); border-radius: 8px; padding: 2px;">
+                <button type="button" id="tab-btn-upload" onclick="switchAudioTab('upload');" style="padding: 5px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; border: none; background: #0E3A1F; color: #FFF; cursor: pointer; transition: all 0.2s;">
+                    رفع ملف صوتي
+                </button>
+                <button type="button" id="tab-btn-record" onclick="switchAudioTab('record');" style="padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #6E5A44; cursor: pointer; transition: all 0.2s;">
+                    تسجيل صوتي حي
+                </button>
             </div>
-            <div style="font-size: 14px; color: #1C120B; font-weight: 600; margin-bottom: 4px;">اسحب الملف الصوتي هنا أو أدخل رابط الملف المباشر</div>
-            <div style="font-size: 11px; color: #6A5847;">MP3, WAV, M4A, OGG حتى 50 ميغابايت</div>
         </div>
-        <input id="stt-audio-url" type="url" placeholder="https://example.com/recording.mp3" value="https://actions.google.com/sounds/v1/water/rain_heavy.ogg" style="width: 100%; padding: 11px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+
+        <!-- Mode A: File Upload -->
+        <div id="pane-audio-upload" style="display: block;">
+            <div id="stt-upload-dropzone" onclick="document.getElementById('stt-audio-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 22px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="stt-audio-input" accept="audio/*,video/mp4,video/quicktime,video/webm" style="display: none;" onchange="handleSttFileSelection(this.files[0]);">
+                <svg style="width: 32px; height: 32px; color: #0E3A1F; margin-bottom: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 10v4"/><path d="M7 6v12"/><path d="M11 3v18"/><path d="M15 8v8"/><path d="M19 5v14"/><path d="M23 10v4"/>
+                </svg>
+                <div style="font-size: 13.5px; font-weight: 700; color: #1C120B;">انقر أو اسحب ملف الصوت أو الفيديو هنا</div>
+                <div style="font-size: 11.5px; color: #8C7864; margin-top: 4px;">MP3, WAV, M4A, OGG, FLAC أو MP4 (حتى 50 ميغابايت)</div>
+            </div>
+
+            <!-- Uploaded Audio Preview -->
+            <div id="stt-upload-preview" style="margin-top: 12px; display: none; background: #FAF7F0; padding: 12px 16px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.4); align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #0E3A1F; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 15px;">
+                        🎙️
+                    </div>
+                    <div style="overflow: hidden;">
+                        <div id="stt-file-name" style="font-size: 13px; font-weight: 700; color: #1C120B; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">audio.mp3</div>
+                        <div id="stt-file-meta" style="font-size: 11px; color: #8C7864;">0 ثانية</div>
+                    </div>
+                </div>
+                <button type="button" onclick="clearSttFile();" style="background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; margin-right: 8px;">✕</button>
+            </div>
+        </div>
+
+        <!-- Mode B: Live Mic Recording -->
+        <div id="pane-audio-record" style="display: none; text-align: center; padding: 16px 10px;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                <div id="mic-status-indicator" style="width: 64px; height: 64px; border-radius: 50%; background: #FAF7F0; border: 2px solid #C5A059; display: flex; align-items: center; justify-content: center; color: #0E3A1F; transition: all 0.3s;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" x2="12" y1="19" y2="22"/>
+                    </svg>
+                </div>
+                
+                <div id="mic-timer" style="font-size: 20px; font-weight: 800; font-family: monospace; color: #1C120B;">
+                    00:00
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" id="btn-start-record" onclick="startMicRecording();" style="padding: 10px 18px; border-radius: 8px; border: none; background: #0E3A1F; color: #FFF; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <span>بدء التسجيل</span>
+                    </button>
+                    <button type="button" id="btn-stop-record" onclick="stopMicRecording();" disabled style="padding: 10px 18px; border-radius: 8px; border: none; background: #A93226; color: #FFF; font-weight: 700; font-size: 13px; cursor: not-allowed; opacity: 0.5; display: flex; align-items: center; gap: 6px;">
+                        <span>إيقاف وحفظ</span>
+                    </button>
+                </div>
+
+                <!-- Recorded Audio Player -->
+                <div id="recorded-audio-container" style="display: none; width: 100%; margin-top: 12px; background: #FAF7F0; padding: 10px; border-radius: 8px; border: 1px solid rgba(197,160,89,0.4);">
+                    <audio id="recorded-audio-playback" controls style="width: 100%; height: 36px;"></audio>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Engine & Language -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+    <!-- 3. Language & Task Settings -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px;">
+        
+        <!-- Language Selection -->
         <div>
-            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">نموذج التفريغ (Whisper)</label>
-            <select id="stt-model" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px;">
-                <option value="whisper-large-v3">Whisper Large v3 (أعلى دقة)</option>
-                <option value="whisper-medium">Whisper Medium (سريع)</option>
-            </select>
-        </div>
-        <div>
-            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">لغة التسجيل</label>
-            <select id="stt-lang" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px;">
-                <option value="ar">العربية (كافة اللهجات والفصحى)</option>
+            <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+                لغة الحديث في التسجيل
+            </label>
+            <select id="stt-lang" style="width: 100%; padding: 11px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 13px; font-weight: 600; outline: none;">
+                <option value="ar" selected>العربية (كافة اللهجات والفصحى)</option>
+                <option value="auto">كشف تلقائي عن اللغة (Auto Detect)</option>
                 <option value="en">الإنجليزية (English)</option>
-                <option value="auto">كشف تلقائي (Auto Detect)</option>
+                <option value="fr">الفرنسية (Français)</option>
+                <option value="es">الإسبانية (Español)</option>
+                <option value="de">الألمانية (Deutsch)</option>
+                <option value="tr">التركية (Türkçe)</option>
+                <option value="ru">الروسية (Русский)</option>
             </select>
         </div>
+
+        <!-- Task Mode -->
+        <div>
+            <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+                نوع المهمة الصوتية
+            </label>
+            <select id="stt-task" style="width: 100%; padding: 11px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 13px; font-weight: 600; outline: none;">
+                <option value="transcribe" selected>تفريغ النص باللغة الأصلية (Transcription)</option>
+                <option value="translate">تفريغ مع ترجمة مباشرة إلى الإنجليزية (Translate to EN)</option>
+            </select>
+        </div>
+
     </div>
 
-    <!-- Export Format -->
-    <div style="margin-bottom: 25px;">
-        <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 8px;">صيغة المخرجات المطلوبة</label>
-        <div style="display: flex; gap: 10px;">
-            <label style="flex: 1; text-align: center; background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF; font-weight: bold;">
-                <input type="radio" name="format" value="txt" checked style="display: none;"> نص كامل (TXT)
-            </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="format" value="srt" style="display: none;"> ملف ترجمة (SRT)
-            </label>
-            <label style="flex: 1; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #FFF;">
-                <input type="radio" name="format" value="json" style="display: none;"> توقيت دقيق (JSON)
-            </label>
+    <!-- 4. Export Format Selector -->
+    <div style="margin-bottom: 22px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; font-weight: 700; margin-bottom: 8px;">
+            صيغة المخرجات والتفريغ المطلوبة
+        </label>
+        <div id="stt-format-pills" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+            <button type="button" class="format-pill active" data-format="txt" onclick="selectFormat('txt');" style="padding: 10px 4px; border-radius: 8px; border: 2px solid #0E3A1F; background: rgba(14,58,31,0.08); color: #0E3A1F; font-size: 12.5px; font-weight: 700; cursor: pointer;">
+                نص كامل (TXT)
+            </button>
+            <button type="button" class="format-pill" data-format="srt" onclick="selectFormat('srt');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer;">
+                ترجمة فيديو (SRT)
+            </button>
+            <button type="button" class="format-pill" data-format="vtt" onclick="selectFormat('vtt');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer;">
+                ترجمة ويب (VTT)
+            </button>
+            <button type="button" class="format-pill" data-format="json" onclick="selectFormat('json');" style="padding: 10px 4px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; font-size: 12.5px; font-weight: 600; cursor: pointer;">
+                توقيت بالكلمة (JSON)
+            </button>
+        </div>
+        <input type="hidden" id="selected-format" value="txt">
+    </div>
+
+    <!-- 5. Realtime Dynamic Credit Cost Badge -->
+    <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(197,160,89,0.12), rgba(14,58,31,0.06)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div style="font-size: 12px; color: #8C7864; font-weight: 600;">التكلفة التقديرية للتفريغ:</div>
+            <div id="stt-cost-breakdown" style="font-size: 11.5px; color: #6E5A44; margin-top: 2px;">
+                1.00 رصيد/دقيقة (تُحسب بالثواني الفعلية)
+            </div>
+        </div>
+        <div style="text-align: left;">
+            <div id="stt-total-cost" style="font-size: 22px; font-weight: 800; color: #0E3A1F; font-family: monospace;">
+                1.00
+            </div>
+            <div style="font-size: 11px; color: #8C7864;">رصيد تقديري</div>
         </div>
     </div>
 
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        بدء تفريغ الصوت
+    <!-- 6. Submit Button -->
+    <button type="submit" id="stt-submit-btn" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #092614); color: #FFF; font-weight: 700; font-size: 15px; padding: 15px; border: 1px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 18px rgba(14,58,31,0.25); display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+        <span>بدء التفريغ الصوتي الذكي</span>
     </button>
 
 </form>
 
 <script>
+let currentAudioMode = 'upload'; // 'upload' | 'record'
+let selectedAudioFile = null;
+let detectedDurationSeconds = 60;
+
+// Mic Recorder Variables
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordInterval = null;
+let recordStartTime = 0;
+let recordedAudioBlob = null;
+
+function switchAudioTab(mode) {
+    currentAudioMode = mode;
+    const btnUpload = document.getElementById('tab-btn-upload');
+    const btnRecord = document.getElementById('tab-btn-record');
+    const paneUpload = document.getElementById('pane-audio-upload');
+    const paneRecord = document.getElementById('pane-audio-record');
+
+    if (mode === 'upload') {
+        btnUpload.style.background = '#0E3A1F';
+        btnUpload.style.color = '#FFF';
+        btnRecord.style.background = 'transparent';
+        btnRecord.style.color = '#6E5A44';
+        paneUpload.style.display = 'block';
+        paneRecord.style.display = 'none';
+        if (selectedAudioFile) recalculateSttCost();
+    } else {
+        btnRecord.style.background = '#0E3A1F';
+        btnRecord.style.color = '#FFF';
+        btnUpload.style.background = 'transparent';
+        btnUpload.style.color = '#6E5A44';
+        paneUpload.style.display = 'none';
+        paneRecord.style.display = 'block';
+    }
+}
+
+function handleSttFileSelection(file) {
+    if (!file) return;
+    selectedAudioFile = file;
+    document.getElementById('stt-file-name').textContent = file.name;
+    document.getElementById('stt-upload-preview').style.display = 'flex';
+
+    // Auto-detect duration
+    const audio = document.createElement('audio');
+    audio.preload = 'metadata';
+    audio.src = URL.createObjectURL(file);
+    audio.onloadedmetadata = function() {
+        URL.revokeObjectURL(audio.src);
+        detectedDurationSeconds = Math.round(audio.duration) || 60;
+        const mins = (detectedDurationSeconds / 60).toFixed(1);
+        document.getElementById('stt-file-meta').textContent = `${detectedDurationSeconds} ثانية (${mins} دقيقة) • ${(file.size / (1024*1024)).toFixed(2)} MB`;
+        recalculateSttCost();
+    };
+}
+
+function clearSttFile() {
+    selectedAudioFile = null;
+    document.getElementById('stt-audio-input').value = '';
+    document.getElementById('stt-upload-preview').style.display = 'none';
+    detectedDurationSeconds = 60;
+    recalculateSttCost();
+}
+
+async function startMicRecording() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = function(e) {
+            if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = function() {
+            recordedAudioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(recordedAudioBlob);
+            const player = document.getElementById('recorded-audio-playback');
+            player.src = audioUrl;
+            document.getElementById('recorded-audio-container').style.display = 'block';
+            
+            // Calculate recording duration
+            const durationSec = Math.round((Date.now() - recordStartTime) / 1000);
+            detectedDurationSeconds = Math.max(1, durationSec);
+            recalculateSttCost();
+        };
+
+        mediaRecorder.start();
+        recordStartTime = Date.now();
+
+        // UI Updates
+        document.getElementById('btn-start-record').disabled = true;
+        document.getElementById('btn-start-record').style.opacity = '0.5';
+        document.getElementById('btn-start-record').style.cursor = 'not-allowed';
+
+        const btnStop = document.getElementById('btn-stop-record');
+        btnStop.disabled = false;
+        btnStop.style.opacity = '1';
+        btnStop.style.cursor = 'pointer';
+
+        const ind = document.getElementById('mic-status-indicator');
+        ind.style.borderColor = '#A93226';
+        ind.style.color = '#A93226';
+        ind.style.boxShadow = '0 0 15px rgba(169, 50, 38, 0.4)';
+
+        recordInterval = setInterval(() => {
+            const elapsed = Math.round((Date.now() - recordStartTime) / 1000);
+            const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const s = String(elapsed % 60).padStart(2, '0');
+            document.getElementById('mic-timer').textContent = `${m}:${s}`;
+        }, 500);
+
+    } catch (err) {
+        alert('يرجى السماح بالوصول إلى المايكروفون لبدء التسجيل الصوتي.');
+    }
+}
+
+function stopMicRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    }
+    clearInterval(recordInterval);
+
+    document.getElementById('btn-start-record').disabled = false;
+    document.getElementById('btn-start-record').style.opacity = '1';
+    document.getElementById('btn-start-record').style.cursor = 'pointer';
+
+    const btnStop = document.getElementById('btn-stop-record');
+    btnStop.disabled = true;
+    btnStop.style.opacity = '0.5';
+    btnStop.style.cursor = 'not-allowed';
+
+    const ind = document.getElementById('mic-status-indicator');
+    ind.style.borderColor = '#0E3A1F';
+    ind.style.color = '#0E3A1F';
+    ind.style.boxShadow = 'none';
+}
+
+function selectFormat(fmt) {
+    document.getElementById('selected-format').value = fmt;
+    document.querySelectorAll('#stt-format-pills .format-pill').forEach(btn => {
+        if (btn.dataset.format === fmt) {
+            btn.style.border = '2px solid #0E3A1F';
+            btn.style.background = 'rgba(14,58,31,0.08)';
+            btn.style.color = '#0E3A1F';
+            btn.style.fontWeight = '700';
+        } else {
+            btn.style.border = '1.5px solid rgba(197,160,89,0.35)';
+            btn.style.background = '#FAF7F0';
+            btn.style.color = '#362A1F';
+            btn.style.fontWeight = '600';
+        }
+    });
+}
+
+function onSttModelChanged() {
+    recalculateSttCost();
+}
+
+function recalculateSttCost() {
+    const sel = document.getElementById('stt-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    const ratePerMin = parseFloat(opt.dataset.costMinute) || 1.0;
+    const durSec = detectedDurationSeconds || 60;
+    const ratePerSec = ratePerMin / 60.0;
+    const total = Math.max(0.05, durSec * ratePerSec);
+
+    document.getElementById('stt-cost-breakdown').textContent = `${ratePerMin.toFixed(2)} رصيد/دقيقة × ${durSec} ثانية (${(durSec/60).toFixed(1)} دقيقة)`;
+    document.getElementById('stt-total-cost').textContent = total.toFixed(2);
+}
+
 function handleSttSubmit() {
-    const audioUrl = document.getElementById('stt-audio-url').value;
-    const model = document.getElementById('stt-model').value;
+    let finalAudio = null;
+    let fileName = '';
+
+    if (currentAudioMode === 'upload') {
+        if (!selectedAudioFile) {
+            alert('يرجى اختيار أو سحب ملف صوتي أولاً');
+            return;
+        }
+        finalAudio = selectedAudioFile;
+        fileName = selectedAudioFile.name;
+    } else {
+        if (!recordedAudioBlob) {
+            alert('يرجى تسجيل مقطع صوتي عبر المايكروفون أولاً');
+            return;
+        }
+        finalAudio = new File([recordedAudioBlob], 'mic_recording.webm', { type: 'audio/webm' });
+        fileName = 'mic_recording.webm';
+    }
+
+    const sel = document.getElementById('stt-model');
+    const opt = sel.options[sel.selectedIndex];
+    const modelName = opt ? opt.dataset.name : 'Whisper Speech-to-Text';
+    const modelId = sel.value;
     const lang = document.getElementById('stt-lang').value;
-    const format = document.querySelector('input[name="format"]:checked').value;
+    const task = document.getElementById('stt-task').value;
+    const format = document.getElementById('selected-format').value;
 
     const fd = new FormData();
-    fd.append('prompt', 'Transcribe: ' + audioUrl);
-    fd.append('audio_url', audioUrl);
-    fd.append('model', model);
+    fd.append('model', modelName);
+    fd.append('model_id', modelId);
     fd.append('language', lang);
+    fd.append('task', task);
     fd.append('format', format);
+    fd.append('duration', detectedDurationSeconds);
+    fd.append('prompt', `Speech Transcription [${fileName}, Lang: ${lang}, Format: ${format}]`);
+    fd.append('audio', finalAudio);
 
     submitGeneration(fd, 'stt');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    recalculateSttCost();
+});
 </script>
 {% endblock %}
