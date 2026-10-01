@@ -21,7 +21,8 @@
                     data-duration-type="{{ m.duration_type }}"
                     data-allowed-durations="{{ m.allowed_durations }}"
                     data-default-duration="{{ m.default_duration }}"
-                    data-accepts-end-frame="{% if m.accepts_end_frame %}1{% else %}0{% endif %}"
+                    data-input-type="{{ m.image_input_type }}"
+                    data-max-images="{{ m.max_input_images }}"
                     {% if m.is_default %}selected{% endif %}>
                 {{ m.name }}
             </option>
@@ -37,7 +38,8 @@
                     data-duration-type="discrete"
                     data-allowed-durations="5,10"
                     data-default-duration="5"
-                    data-accepts-end-frame="1"
+                    data-input-type="multi_5"
+                    data-max-images="5"
                     selected>
                 Kling 3.0 Cinematic Pro
             </option>
@@ -45,10 +47,13 @@
         </select>
     </div>
 
-    <!-- Start Frame (الصورة الأولى للبداية - إلزامي) -->
-    <div style="margin-bottom: 20px;">
+    <!-- Mode Badge Notification -->
+    <div id="i2v-mode-badge" style="margin-bottom: 16px; padding: 8px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 600; display: flex; align-items: center; gap: 6px;"></div>
+
+    <!-- 1. Primary Source / Start Frame Image (إلزامي للجميع) -->
+    <div id="i2v-start-frame-container" style="margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">صورة البداية (Start Frame)</label>
+            <label id="start-frame-title" style="font-size: 13px; color: #1C120B; font-weight: 700;">صورة البداية / المشهد الأساسي</label>
             <span style="font-size: 11px; color: #0E3A1F; font-weight: 600; background: rgba(14,58,31,0.08); padding: 2px 8px; border-radius: 4px;">إلزامية</span>
         </div>
         <div style="border: 2px dashed rgba(197, 160, 89, 0.45); border-radius: 10px; padding: 18px; text-align: center; background: #FAF7F0; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('i2v-file-start').click();">
@@ -59,33 +64,93 @@
             <div style="color: #0E3A1F; margin-bottom: 4px;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
             </div>
-            <div style="font-size: 12.5px; color: #1C120B; font-weight: 600;">اضغط لاختيار صورة من جهازك أو اسحبها هنا</div>
+            <div style="font-size: 12.5px; color: #1C120B; font-weight: 600;">اضغط لاختيار صورة المشهد أو اسحبها هنا</div>
             <div style="font-size: 11px; color: #6A5847;">PNG, JPG, WebP حتى 20 ميغابايت</div>
         </div>
         <input id="i2v-image-url" type="url" placeholder="أو أدخل رابط الصورة المباشر: https://example.com/start.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80" style="width: 100%; padding: 10px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
     </div>
 
-    <!-- End Frame (صورة النهاية - ديناميكي ونموذجي للنماذج التي تدعم صورتين) -->
+    <!-- 2. End Frame Container (يظهر فقط في نمط start_end) -->
     <div id="i2v-end-frame-container" style="margin-bottom: 20px; display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">صورة النهاية (End Frame)</label>
-                <span style="font-size: 10.5px; color: #8C6820; background: rgba(197,160,89,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 600;">ميزة التحول بين لقطتين</span>
+                <span style="font-size: 10.5px; color: #8C6820; background: rgba(197,160,89,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 600;">انتقال تدريجي بين لقطتين</span>
             </div>
             <span style="font-size: 11px; color: #6A5847;">اختياري</span>
         </div>
-        <div style="border: 2px dashed rgba(197, 160, 89, 0.45); border-radius: 10px; padding: 18px; text-align: center; background: #FAF7F0; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('i2v-file-end').click();">
+        <div style="border: 2px dashed rgba(197, 160, 89, 0.45); border-radius: 10px; padding: 16px; text-align: center; background: #FAF7F0; margin-bottom: 8px; cursor: pointer;" onclick="document.getElementById('i2v-file-end').click();">
             <input type="file" id="i2v-file-end" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'i2v-end-image-url', 'preview-end-img', 'preview-end-box');">
             <div id="preview-end-box" style="display: none; margin-bottom: 8px;">
-                <img id="preview-end-img" src="" alt="End Preview" style="max-height: 120px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                <img id="preview-end-img" src="" alt="End Preview" style="max-height: 110px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
             </div>
             <div style="color: #C5A059; margin-bottom: 4px;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
             </div>
-            <div style="font-size: 12.5px; color: #1C120B; font-weight: 600;">رفع صورة نهاية اللقطة (لإنشاء انتقال سينمائي نحوها)</div>
-            <div style="font-size: 11px; color: #6A5847;">يقوم النموذج بتوليد حركة انسيابية تربط صورة البداية بصورة النهاية</div>
+            <div style="font-size: 12px; color: #1C120B; font-weight: 600;">رفع صورة نهاية اللقطة (للانتقال نحوها بسلاسة)</div>
         </div>
-        <input id="i2v-end-image-url" type="url" placeholder="أو أدخل رابط صورة النهاية: https://example.com/end.jpg" style="width: 100%; padding: 10px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
+        <input id="i2v-end-image-url" type="url" placeholder="أو أدخل رابط صورة النهاية: https://example.com/end.jpg" style="width: 100%; padding: 9px 12px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 12.5px; box-sizing: border-box;">
+    </div>
+
+    <!-- 3. Multi-Image Reference Slots (حتى 5 صور - يظهر في نمط multi_5) -->
+    <div id="i2v-multi-container" style="margin-bottom: 22px; display: none; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); padding: 16px; border-radius: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+                <label style="font-size: 13px; color: #1C120B; font-weight: 700; margin: 0;">الصور المرجعية الإضافية (حتى 4 صور إضافية)</label>
+                <span style="display: block; font-size: 11px; color: #6A5847; margin-top: 2px;">تثبيت ملامح الشخصيات، الأزياء، زوايا المشهد، أو كادرات التوجيه</span>
+            </div>
+            <span style="font-size: 11px; color: #0E3A1F; font-weight: 700; background: rgba(14,58,31,0.09); padding: 3px 8px; border-radius: 6px;">حتى 5 صور</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;" id="multi-slots-grid">
+            <!-- Slot 2 -->
+            <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 2</span>
+                <input type="file" id="multi-file-2" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-2', 'multi-img-2', 'multi-box-2');">
+                <div id="multi-box-2" style="display: none; margin-bottom: 4px; position: relative;">
+                    <img id="multi-img-2" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
+                    <span onclick="clearSlot(2);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
+                </div>
+                <button type="button" onclick="document.getElementById('multi-file-2').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <input type="hidden" id="multi-url-2">
+            </div>
+
+            <!-- Slot 3 -->
+            <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 3</span>
+                <input type="file" id="multi-file-3" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-3', 'multi-img-3', 'multi-box-3');">
+                <div id="multi-box-3" style="display: none; margin-bottom: 4px; position: relative;">
+                    <img id="multi-img-3" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
+                    <span onclick="clearSlot(3);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
+                </div>
+                <button type="button" onclick="document.getElementById('multi-file-3').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <input type="hidden" id="multi-url-3">
+            </div>
+
+            <!-- Slot 4 -->
+            <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 4</span>
+                <input type="file" id="multi-file-4" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-4', 'multi-img-4', 'multi-box-4');">
+                <div id="multi-box-4" style="display: none; margin-bottom: 4px; position: relative;">
+                    <img id="multi-img-4" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
+                    <span onclick="clearSlot(4);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
+                </div>
+                <button type="button" onclick="document.getElementById('multi-file-4').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <input type="hidden" id="multi-url-4">
+            </div>
+
+            <!-- Slot 5 -->
+            <div class="multi-slot-card" style="border: 1.5px dashed rgba(197,160,89,0.4); border-radius: 8px; padding: 10px; text-align: center; background: #FAF7F0; position: relative;">
+                <span style="font-size: 10px; color: #8C6820; font-weight: 700; display: block; margin-bottom: 6px;">مرجع 5</span>
+                <input type="file" id="multi-file-5" accept="image/*" style="display: none;" onchange="handleFileSelected(this, 'multi-url-5', 'multi-img-5', 'multi-box-5');">
+                <div id="multi-box-5" style="display: none; margin-bottom: 4px; position: relative;">
+                    <img id="multi-img-5" src="" style="width: 100%; height: 60px; object-fit: cover; border-radius: 4px;">
+                    <span onclick="clearSlot(5);" style="position: absolute; top: -6px; right: -6px; background: #C53030; color: #FFF; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; line-height: 18px; cursor: pointer;">✕</span>
+                </div>
+                <button type="button" onclick="document.getElementById('multi-file-5').click();" style="background: rgba(14,58,31,0.08); border: 1px solid rgba(197,160,89,0.3); color: #0E3A1F; font-size: 11px; padding: 4px 6px; border-radius: 6px; width: 100%; cursor: pointer;">+ رفع</button>
+                <input type="hidden" id="multi-url-5">
+            </div>
+        </div>
     </div>
 
     <!-- Motion Description (Prompt) -->
@@ -230,6 +295,13 @@ function handleFileSelected(inputEl, urlInputId, imgPreviewId, previewBoxId) {
     }
 }
 
+function clearSlot(slotNum) {
+    document.getElementById(`multi-img-${slotNum}`).src = '';
+    document.getElementById(`multi-box-${slotNum}`).style.display = 'none';
+    document.getElementById(`multi-url-${slotNum}`).value = '';
+    document.getElementById(`multi-file-${slotNum}`).value = '';
+}
+
 function onModelChanged() {
     const opt = getSelectedModelOption();
     if (!opt) return;
@@ -238,15 +310,38 @@ function onModelChanged() {
     const durationType = opt.getAttribute('data-duration-type') || 'discrete';
     const allowedDurationsStr = opt.getAttribute('data-allowed-durations') || '5,10';
     const defaultDuration = parseInt(opt.getAttribute('data-default-duration') || '5');
-    const acceptsEndFrame = opt.getAttribute('data-accepts-end-frame') === '1';
+    const inputType = opt.getAttribute('data-input-type') || 'single';
+    const maxImages = parseInt(opt.getAttribute('data-max-images') || '1');
 
-    // 1. Show or Hide End Frame Container dynamically
+    // 1. Dynamic Image Input Mode Switching (1 vs 2 vs 5)
+    const badgeEl = document.getElementById('i2v-mode-badge');
+    const startTitle = document.getElementById('start-frame-title');
     const endFrameContainer = document.getElementById('i2v-end-frame-container');
-    if (acceptsEndFrame) {
-        endFrameContainer.style.display = 'block';
-    } else {
+    const multiContainer = document.getElementById('i2v-multi-container');
+
+    if (inputType === 'multi_5') {
+        badgeEl.style.display = 'flex';
+        badgeEl.style.background = 'rgba(14, 58, 31, 0.08)';
+        badgeEl.style.color = '#0E3A1F';
+        badgeEl.style.border = '1px solid rgba(14, 58, 31, 0.2)';
+        badgeEl.innerHTML = '⚡ <b>نمط المراجع المتعددة:</b> يدعم هذا النموذج حتى 5 صور لتثبيت ملامح الشخصية أو تسلسل اللقطات.';
+        startTitle.innerText = 'صورة الأساس / البداية (إلزامية)';
         endFrameContainer.style.display = 'none';
-        document.getElementById('i2v-end-image-url').value = '';
+        multiContainer.style.display = 'block';
+    } else if (inputType === 'start_end') {
+        badgeEl.style.display = 'flex';
+        badgeEl.style.background = 'rgba(197, 160, 89, 0.12)';
+        badgeEl.style.color = '#8C6820';
+        badgeEl.style.border = '1px solid rgba(197, 160, 89, 0.3)';
+        badgeEl.innerHTML = '🎬 <b>نمط التحول بين لقطتين:</b> يدعم رفع صورة بداية وصورة نهاية للانتقال بينهما.';
+        startTitle.innerText = 'صورة البداية (Start Frame)';
+        endFrameContainer.style.display = 'block';
+        multiContainer.style.display = 'none';
+    } else {
+        badgeEl.style.display = 'none';
+        startTitle.innerText = 'صورة المشهد المصدرية (Source Image)';
+        endFrameContainer.style.display = 'none';
+        multiContainer.style.display = 'none';
     }
 
     // 2. Update Resolution Pills Availability
@@ -425,9 +520,25 @@ function handleI2VSubmit() {
     fd.append('prompt', prompt);
     fd.append('model', model);
     fd.append('source_image_url', startImg);
+    
+    // Check if end_frame mode and end image provided
     if (endImg) {
         fd.append('end_image_url', endImg);
     }
+
+    // Collect multi-reference images if present (Slots 2 to 5)
+    const multiRefs = [];
+    for (let i = 2; i <= 5; i++) {
+        const urlVal = document.getElementById(`multi-url-${i}`) ? document.getElementById(`multi-url-${i}`).value : '';
+        if (urlVal) {
+            multiRefs.push(urlVal);
+            fd.append(`reference_image_${i}`, urlVal);
+        }
+    }
+    if (multiRefs.length > 0) {
+        fd.append('multi_reference_images', JSON.stringify(multiRefs));
+    }
+
     fd.append('resolution', res);
     fd.append('duration', duration);
     fd.append('camera_control', cam);

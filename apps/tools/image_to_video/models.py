@@ -24,7 +24,23 @@ class ImageToVideoModelConfig(models.Model):
     model_id = models.CharField(max_length=100, unique=True, verbose_name="معرف النموذج (Model ID)")
     provider = models.CharField(max_length=50, default='Crun AI', verbose_name="المزود")
 
+    IMAGE_INPUT_TYPE_CHOICES = [
+        ('single', 'صورة واحدة (Start Frame)'),
+        ('start_end', 'صورتان (Start + End Frame)'),
+        ('multi_5', 'حتى 5 صور (Multi-Reference / Storyboard)'),
+    ]
+
     # Image inputs configuration
+    image_input_type = models.CharField(
+        max_length=20, 
+        choices=IMAGE_INPUT_TYPE_CHOICES, 
+        default='single', 
+        verbose_name="نمط إدخال الصور"
+    )
+    max_input_images = models.IntegerField(
+        default=1, 
+        verbose_name="الحد الأقصى للصور المقبولة (1 أو 2 أو 5)"
+    )
     accepts_end_frame = models.BooleanField(
         default=False, 
         verbose_name="دعم صورة النهاية (End Frame)",
@@ -112,7 +128,7 @@ class ImageToVideoModelConfig(models.Model):
         super().clean()
         if self.pk:
             orig = ImageToVideoModelConfig.objects.filter(pk=self.pk).values(
-                'name', 'model_id', 'provider', 'duration_type', 'allowed_durations', 'supported_resolutions', 'accepts_end_frame'
+                'name', 'model_id', 'provider', 'duration_type', 'allowed_durations', 'supported_resolutions', 'accepts_end_frame', 'image_input_type', 'max_input_images'
             ).first()
             if orig:
                 if (self.name != orig['name'] or 
@@ -121,13 +137,15 @@ class ImageToVideoModelConfig(models.Model):
                     self.duration_type != orig['duration_type'] or
                     self.allowed_durations != orig['allowed_durations'] or
                     self.supported_resolutions != orig['supported_resolutions'] or
-                    self.accepts_end_frame != orig['accepts_end_frame']):
+                    self.accepts_end_frame != orig['accepts_end_frame'] or
+                    self.image_input_type != orig['image_input_type'] or
+                    self.max_input_images != orig['max_input_images']):
                     raise ValidationError("اسم النموذج والمعرفات التقنية وعدد الصور ثابتة ومحمية بالنظام ولا يمكن تعديلها. يمكنك فقط تعديل أسعار الجودات، نوع المحفظة، وحالة التفعيل.")
 
     def save(self, *args, **kwargs):
         if self.pk:
             orig = ImageToVideoModelConfig.objects.filter(pk=self.pk).values(
-                'name', 'model_id', 'provider', 'duration_type', 'allowed_durations', 'supported_resolutions', 'accepts_end_frame'
+                'name', 'model_id', 'provider', 'duration_type', 'allowed_durations', 'supported_resolutions', 'accepts_end_frame', 'image_input_type', 'max_input_images'
             ).first()
             if orig:
                 self.name = orig['name']
@@ -137,6 +155,8 @@ class ImageToVideoModelConfig(models.Model):
                 self.allowed_durations = orig['allowed_durations']
                 self.supported_resolutions = orig['supported_resolutions']
                 self.accepts_end_frame = orig['accepts_end_frame']
+                self.image_input_type = orig['image_input_type']
+                self.max_input_images = orig['max_input_images']
         super().save(*args, **kwargs)
 
     def get_resolutions_list(self):

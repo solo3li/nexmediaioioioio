@@ -6,12 +6,13 @@ from .models import ImageToVideoModelConfig, ImageToVideoSetting
 class ImageToVideoModelConfigAdmin(admin.ModelAdmin):
     list_display = (
         'name', 
+        'image_input_type',
+        'max_input_images',
         'pricing_type', 
         'cost_480p', 
         'cost_720p', 
         'cost_1080p', 
         'cost_4k', 
-        'accepts_end_frame',
         'supported_resolutions', 
         'allowed_durations', 
         'is_active', 
@@ -25,7 +26,7 @@ class ImageToVideoModelConfigAdmin(admin.ModelAdmin):
         'cost_4k', 
         'is_active'
     )
-    list_filter = ('is_active', 'accepts_end_frame', 'pricing_type', 'allowed_wallet', 'duration_type')
+    list_filter = ('is_active', 'image_input_type', 'max_input_images', 'pricing_type', 'allowed_wallet', 'duration_type')
     search_fields = ('name', 'model_id')
 
     # قفل اسم النموذج ومعرفاته التقنية لتكون للقراءة فقط ومنع تغييرها من الأدمن نهائياً
@@ -33,6 +34,8 @@ class ImageToVideoModelConfigAdmin(admin.ModelAdmin):
         'name', 
         'model_id', 
         'provider', 
+        'image_input_type',
+        'max_input_images',
         'accepts_end_frame',
         'duration_type', 
         'allowed_durations', 
@@ -41,9 +44,9 @@ class ImageToVideoModelConfigAdmin(admin.ModelAdmin):
     )
 
     fieldsets = (
-        ('بيانات النموذج الأساسية (ثابتة ومحمية من النظام)', {
-            'fields': ('name', 'model_id', 'provider', 'accepts_end_frame', 'supported_resolutions', 'duration_type', 'allowed_durations', 'default_duration'),
-            'description': 'اسم النموذج والمعرفات التقنية مقفلة لحماية مسار التوليد والتكامل مع Crun AI.'
+        ('بيانات النموذج الأساسية وسعة الصور (ثابتة ومحمية من النظام)', {
+            'fields': ('name', 'model_id', 'provider', 'image_input_type', 'max_input_images', 'accepts_end_frame', 'supported_resolutions', 'duration_type', 'allowed_durations', 'default_duration'),
+            'description': 'اسم النموذج والمعرفات التقنية وعدد الصور مقفلة لحماية مسار التوليد والتكامل مع Crun AI.'
         }),
         ('إعدادات التسعير والكريديت (متاح للأدمن تعديلها بحرية)', {
             'fields': ('pricing_type', 'cost_480p', 'cost_720p', 'cost_1080p', 'cost_4k', 'allowed_wallet'),

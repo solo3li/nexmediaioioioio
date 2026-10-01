@@ -4,7 +4,7 @@ from apps.tools.image_to_video.models import ImageToVideoModelConfig
 
 
 class Command(BaseCommand):
-    help = 'Seeds all 27 official Crun AI Image-to-Video (I2V) models with verified durations, image count, and resolutions.'
+    help = 'Seeds all 27 official Crun AI Image-to-Video (I2V) models with verified durations, image count (1, 2, or up to 5), and resolutions.'
 
     def handle(self, *args, **options):
         models_data = [
@@ -12,6 +12,8 @@ class Command(BaseCommand):
                 'name': 'Kling 3.0 Cinematic Pro',
                 'model_id': 'kling/v3.0-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -31,6 +33,8 @@ class Command(BaseCommand):
                 'name': 'Kling 2.6 Pro Audio',
                 'model_id': 'kling/v2.6-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -50,6 +54,8 @@ class Command(BaseCommand):
                 'name': 'Google Veo 3.1 Studio',
                 'model_id': 'google/veo3-1-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '4,6,8',
@@ -69,6 +75,8 @@ class Command(BaseCommand):
                 'name': 'Google Veo 2 Ultra',
                 'model_id': 'google/veo-2-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,6,8',
@@ -88,6 +96,8 @@ class Command(BaseCommand):
                 'name': 'Wan 3.0 Video',
                 'model_id': 'alibaba/wan-3.0-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -107,6 +117,8 @@ class Command(BaseCommand):
                 'name': 'Wan 2.7 Video',
                 'model_id': 'alibaba/wan-2.7-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'start_end',
+                'max_input_images': 2,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -126,6 +138,8 @@ class Command(BaseCommand):
                 'name': 'Wan 2.5 Preview',
                 'model_id': 'alibaba/wan-2.5-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -145,6 +159,8 @@ class Command(BaseCommand):
                 'name': 'ByteDance Seedance 2.5',
                 'model_id': 'bytedance/seedance-2.5-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
                 'accepts_end_frame': True,
                 'duration_type': 'range',
                 'allowed_durations': '4-15',
@@ -164,6 +180,8 @@ class Command(BaseCommand):
                 'name': 'ByteDance Seedance 2.0',
                 'model_id': 'bytedance/seedance-2.0-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -183,7 +201,9 @@ class Command(BaseCommand):
                 'name': 'Runway Gen-4 Aleph',
                 'model_id': 'runway/gen-4-i2v',
                 'provider': 'Crun AI',
-                'accepts_end_frame': False,
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
+                'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
                 'default_duration': 5,
@@ -202,6 +222,8 @@ class Command(BaseCommand):
                 'name': 'Runway Gen-3 Alpha',
                 'model_id': 'runway/gen-3-alpha-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -221,6 +243,8 @@ class Command(BaseCommand):
                 'name': 'Kling 1.6 Standard',
                 'model_id': 'kling/v1.6-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'start_end',
+                'max_input_images': 2,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -240,6 +264,8 @@ class Command(BaseCommand):
                 'name': 'MiniMax H3',
                 'model_id': 'minimax/h3-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '6,10',
@@ -259,6 +285,8 @@ class Command(BaseCommand):
                 'name': 'Hailuo 2.3 Artistic Motion',
                 'model_id': 'hailuo/v2.3-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '6,10',
@@ -278,6 +306,8 @@ class Command(BaseCommand):
                 'name': 'Vidu Q3 Ultra',
                 'model_id': 'vidu/q3-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '4,8',
@@ -297,6 +327,8 @@ class Command(BaseCommand):
                 'name': 'Vidu Q2',
                 'model_id': 'vidu/q2-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '4,8',
@@ -316,6 +348,8 @@ class Command(BaseCommand):
                 'name': 'PixVerse V6',
                 'model_id': 'pixverse/v6-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'start_end',
+                'max_input_images': 2,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,8',
@@ -335,6 +369,8 @@ class Command(BaseCommand):
                 'name': 'Alibaba HappyHorse 1.1',
                 'model_id': 'alibaba/happyhorse-1.1-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'range',
                 'allowed_durations': '3-10',
@@ -354,6 +390,8 @@ class Command(BaseCommand):
                 'name': 'Agnes Video 2.5 Cinema',
                 'model_id': 'agnes/v2.5-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'multi_5',
+                'max_input_images': 5,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -373,6 +411,8 @@ class Command(BaseCommand):
                 'name': 'Agnes Video 2.0 Studio',
                 'model_id': 'agnes/v2.0-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10',
@@ -392,6 +432,8 @@ class Command(BaseCommand):
                 'name': 'OpenAI Sora 2 Motion',
                 'model_id': 'openai/sora-2-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,10,15,20',
@@ -411,6 +453,8 @@ class Command(BaseCommand):
                 'name': 'xAI Grok Imagine Video 1.5',
                 'model_id': 'grok-imagine/i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'range',
                 'allowed_durations': '1-15',
@@ -430,6 +474,8 @@ class Command(BaseCommand):
                 'name': 'Luma Ray 2 Studio',
                 'model_id': 'luma/ray-2-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'start_end',
+                'max_input_images': 2,
                 'accepts_end_frame': True,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,9',
@@ -449,6 +495,8 @@ class Command(BaseCommand):
                 'name': 'Pika 2.1 Motion',
                 'model_id': 'pika/v2.1-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '4,8',
@@ -468,6 +516,8 @@ class Command(BaseCommand):
                 'name': 'Tencent Hunyuan Video',
                 'model_id': 'tencent/hunyuan-video-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '5,9',
@@ -487,6 +537,8 @@ class Command(BaseCommand):
                 'name': 'CogVideoX 5B High-Speed',
                 'model_id': 'thudm/cogvideox-5b-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '6',
@@ -506,6 +558,8 @@ class Command(BaseCommand):
                 'name': 'Lightricks LTX Video Turbo',
                 'model_id': 'lightricks/ltx-video-i2v',
                 'provider': 'Crun AI',
+                'image_input_type': 'single',
+                'max_input_images': 1,
                 'accepts_end_frame': False,
                 'duration_type': 'discrete',
                 'allowed_durations': '5',
@@ -525,12 +579,13 @@ class Command(BaseCommand):
 
         count = 0
         for m in models_data:
-            obj, created = ImageToVideoModelConfig.objects.update_or_create(
-                model_id=m['model_id'],
-                defaults=m
-            )
+            mid = m['model_id']
+            obj, created = ImageToVideoModelConfig.objects.get_or_create(model_id=mid, defaults=m)
+            if not created:
+                ImageToVideoModelConfig.objects.filter(model_id=mid).update(**m)
+                obj.refresh_from_db()
             count += 1
             status = "Created" if created else "Updated"
-            self.stdout.write(self.style.SUCCESS(f"[{count}/27] {status}: {obj.name} (Images: {'2 (Start+End)' if obj.accepts_end_frame else '1 (Start)'})"))
+            self.stdout.write(self.style.SUCCESS(f"[{count}/27] {status}: {obj.name} -> Mode: {obj.image_input_type} (Max: {obj.max_input_images} img)"))
 
-        self.stdout.write(self.style.SUCCESS(f"\nSuccessfully seeded all {count} Image-to-Video models!"))
+        self.stdout.write(self.style.SUCCESS(f"\nSuccessfully seeded all {count} Image-to-Video models with exact image capacities!"))
