@@ -3,59 +3,581 @@
 {% block tool_controls %}
 <form id="r2v-form" onsubmit="event.preventDefault(); handleR2VSubmit();">
     
-    <!-- Dual Reference Upload Grid -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-        <div>
-            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 6px; font-weight: bold;">
-                مرجع الشخصية (Character Ref)
-            </label>
-            <input id="r2v-char-url" type="url" placeholder="https://.../face.jpg" value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+    <!-- Model Selection (Clean Name ONLY) -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 13px; color: #1C120B; margin-bottom: 8px; font-weight: 700;">
+            نموذج الفيديو المرجعي (Reference Model)
+        </label>
+        <select id="r2v-model" onchange="onR2VModelChanged();" style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; font-weight: 600;">
+            {% for m in models %}
+            <option value="{{ m.model_id }}"
+                    data-name="{{ m.name }}"
+                    data-cost-480="{{ m.cost_480p }}"
+                    data-cost-720="{{ m.cost_720p }}"
+                    data-cost-1080="{{ m.cost_1080p }}"
+                    data-cost-4k="{{ m.cost_4k }}"
+                    data-pricing-type="{{ m.pricing_type }}"
+                    data-supported-res="{{ m.supported_resolutions }}"
+                    data-duration-type="{{ m.duration_type }}"
+                    data-allowed-durations="{{ m.allowed_durations }}"
+                    data-default-duration="{{ m.default_duration }}"
+                    data-accepts-images="{{ m.accepts_image_ref|yesno:'1,0' }}"
+                    data-max-images="{{ m.max_image_refs }}"
+                    data-accepts-video="{{ m.accepts_video_ref|yesno:'1,0' }}"
+                    data-max-video="{{ m.max_video_refs }}"
+                    data-accepts-audio="{{ m.accepts_audio_ref|yesno:'1,0' }}"
+                    data-max-audio="{{ m.max_audio_refs }}"
+                    {% if m.is_default %}selected{% endif %}>
+                {{ m.name }}
+            </option>
+            {% empty %}
+            <option value="seedance-2-5"
+                    data-name="Seedance 2.5 Cinema Pro"
+                    data-cost-480="4.00"
+                    data-cost-720="8.00"
+                    data-cost-1080="12.00"
+                    data-cost-4k="20.00"
+                    data-pricing-type="per_second"
+                    data-supported-res="480p,720p,1080p,4k"
+                    data-duration-type="range"
+                    data-allowed-durations="4-15"
+                    data-default-duration="5"
+                    data-accepts-images="1"
+                    data-max-images="20"
+                    data-accepts-video="1"
+                    data-max-video="5"
+                    data-accepts-audio="1"
+                    data-max-audio="3"
+                    selected>
+                Seedance 2.5 Cinema Pro
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Multimodal Media References Section (Dynamic Adaptive Slots) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 12px; padding: 18px; box-shadow: 0 2px 8px rgba(44,30,16,0.03);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div>
+                <span style="font-size: 13.5px; font-weight: 700; color: #1C120B;">وسائط ومراجع المشهد (Reference Media)</span>
+                <div style="font-size: 11px; color: #6A5847; margin-top: 2px;">تتكيف الخانات تلقائياً بناءً على ما يقبله النموذج</div>
+            </div>
+            <span id="r2v-media-badge" style="background: rgba(14,58,31,0.09); color: #0E3A1F; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 14px;">
+                صور + فيديو + صوت
+            </span>
         </div>
-        <div>
-            <label style="display: block; font-size: 12.5px; color: #C5A059; margin-bottom: 6px; font-weight: bold;">
-                مرجع البيئة والزي (Style Ref)
-            </label>
-            <input id="r2v-style-url" type="url" placeholder="https://.../costume.jpg" value="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+
+        <!-- 1. Image References (صور الشخصية أو النمط) -->
+        <div id="r2v-images-section" style="margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-size: 12.5px; color: #1C120B; font-weight: 700;">
+                    مراجع الصور (Character / Style Images)
+                </label>
+                <span id="r2v-img-count-badge" style="font-size: 11px; color: #8C7864;">حتى 20 صورة</span>
+            </div>
+            
+            <div id="r2v-img-dropzone" onclick="document.getElementById('r2v-img-file-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="r2v-img-file-input" accept="image/*" multiple style="display: none;" onchange="handleImageSelection(this.files);">
+                <svg style="width: 28px; height: 28px; color: #9E7D3B; margin-bottom: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="M21 15l-5-5L5 21"/>
+                </svg>
+                <div style="font-size: 13px; font-weight: 600; color: #1C120B;">انقر أو اسحب صور المراجع هنا</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 3px;">JPG, PNG, WEBP (حجم أقصى 15MB لكل صورة)</div>
+            </div>
+
+            <!-- Image Previews Container -->
+            <div id="r2v-img-previews" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;"></div>
         </div>
+
+        <!-- 2. Motion Video Reference (فيديو توجيه الحركة) -->
+        <div id="r2v-video-section" style="margin-bottom: 16px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-size: 12.5px; color: #1C120B; font-weight: 700;">
+                    فيديو الحركة المرجعي (Motion Reference Video)
+                </label>
+                <span style="font-size: 11px; color: #8C7864;">لنقل الحركات وتوجيه الكاميرا</span>
+            </div>
+            
+            <div id="r2v-video-dropzone" onclick="document.getElementById('r2v-vid-file-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="r2v-vid-file-input" accept="video/mp4,video/webm,video/quicktime" style="display: none;" onchange="handleVideoSelection(this.files[0]);">
+                <svg style="width: 28px; height: 28px; color: #0E3A1F; margin-bottom: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m22 8-6 4 6 4V8Z"/>
+                    <rect width="14" height="12" x="2" y="6" rx="2"/>
+                </svg>
+                <div style="font-size: 13px; font-weight: 600; color: #1C120B;">انقر أو اسحب فيديو الحركة المرجعي</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 3px;">MP4, MOV, WEBM (حجم أقصى 50MB)</div>
+            </div>
+
+            <!-- Video Preview Box -->
+            <div id="r2v-vid-preview-box" style="margin-top: 10px; display: none; position: relative; border-radius: 8px; overflow: hidden; border: 1.5px solid rgba(197,160,89,0.4);">
+                <video id="r2v-vid-element" controls style="width: 100%; max-height: 180px; background: #000; display: block;"></video>
+                <button type="button" onclick="clearSelectedVideo();" style="position: absolute; top: 8px; left: 8px; background: rgba(142,35,35,0.85); color: #FFF; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+        </div>
+
+        <!-- 3. Audio Reference (الصوت المرجعي) -->
+        <div id="r2v-audio-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-size: 12.5px; color: #1C120B; font-weight: 700;">
+                    الصوت المرجعي (Audio Reference / Beat Sync)
+                </label>
+                <span style="font-size: 11px; color: #8C7864;">لمزامنة المشهد مع إيقاع الصوت</span>
+            </div>
+            
+            <div id="r2v-audio-dropzone" onclick="document.getElementById('r2v-aud-file-input').click();" style="border: 2px dashed rgba(197,160,89,0.5); background: #FAF7F0; border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <input type="file" id="r2v-aud-file-input" accept="audio/mp3,audio/wav,audio/m4a" style="display: none;" onchange="handleAudioSelection(this.files[0]);">
+                <svg style="width: 26px; height: 26px; color: #9E7D3B; margin-bottom: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" x2="12" y1="19" y2="22"/>
+                </svg>
+                <div style="font-size: 12.5px; font-weight: 600; color: #1C120B;">انقر أو اسحب ملف الصوت أو الموسيقى المرجعية</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">MP3, WAV, M4A (حجم أقصى 25MB)</div>
+            </div>
+
+            <!-- Audio Preview Box -->
+            <div id="r2v-aud-preview-box" style="margin-top: 10px; display: none; background: #FAF7F0; padding: 10px; border-radius: 8px; border: 1.5px solid rgba(197,160,89,0.4); align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden;">
+                    <span style="font-size: 16px;">🎵</span>
+                    <span id="r2v-aud-name" style="font-size: 12px; font-weight: 600; color: #1C120B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">audio.mp3</span>
+                </div>
+                <audio id="r2v-aud-element" controls style="height: 32px; max-width: 180px;"></audio>
+                <button type="button" onclick="clearSelectedAudio();" style="background: none; border: none; color: #A42828; cursor: pointer; font-size: 16px; margin-right: 8px;">✕</button>
+            </div>
+        </div>
+
     </div>
 
     <!-- Scene Prompt -->
-    <div style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            وصف المشهد وتفاعل المراجع (Scene Description)
-        </label>
-        <textarea id="r2v-prompt" required rows="4" placeholder="مثال: دمج ملامح وتعبيرات الشخصية من الصورة الأولى بدقة تامة مع الزي والبيئة المعمارية في المرجع الثاني، المشهد يظهر حركة واقعية وسلسة باتجاه الكاميرا مع الحفاظ التام على هوية الوجه..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; line-height: 1.5;"></textarea>
-    </div>
-
-    <!-- Identity Preservation Slider -->
-    <div style="margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+    <div style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #FAF7F0;">دقة الحفاظ على هوية الشخصية (Fidelity)</label>
-            <span id="fidelity-label" style="color: #C5A059; font-weight: bold; font-size: 14px;">90%</span>
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">وصف المشهد وتفاعل المراجع (Prompt)</label>
+            <span style="font-size: 11px; color: #6A5847;">وضح كيف تتفاعل المراجع وتحافظ على الهوية</span>
         </div>
-        <input type="range" id="r2v-fidelity" min="50" max="100" value="90" oninput="document.getElementById('fidelity-label').innerText = this.value + '%'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
+        <textarea id="r2v-prompt" required rows="4" placeholder="مثال: دمج ملامح وتعبيرات الشخصية من صور المرجع بدقة تامة مع حركة المشي المستخرجة من فيديو الحركة، مع الحفاظ الكامل على نسيج الأزياء والإضاءة الطبيعية للبيئة..." style="width: 100%; padding: 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.4); border-radius: 8px; color: #1C120B; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
     </div>
 
-    <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        توليد الفيديو مع المراجع
+    <!-- Quick Prompt Ideas -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+        <span onclick="document.getElementById('r2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            نقل حركة المشي والتحدث من الفيديو المرجعي للشخصية مع ثبات كامل للملامح
+        </span>
+        <span onclick="document.getElementById('r2v-prompt').value=this.innerText" style="background: rgba(197,160,89,0.12); border: 1px solid rgba(197,160,89,0.35); color: #362A1F; font-size: 11px; padding: 4px 10px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+            الحفاظ على هوية المنتج المرجعي في إعلان تجاري ديناميكي سريع مع انتقال سينمائي
+        </span>
+    </div>
+
+    <!-- Negative Prompt -->
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 12.5px; color: #4A3B2C; margin-bottom: 6px; font-weight: 600;">
+            الاستبعاد السلبي (Negative Prompt)
+        </label>
+        <input id="r2v-neg-prompt" type="text" placeholder="identity drift, flickering, morphing, unnatural face distortion, jitter" style="width: 100%; padding: 10px 12px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.35); border-radius: 8px; color: #1C120B; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <!-- Identity & Motion Fidelity Slider (درجة الحفاظ على الهوية) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); padding: 16px 18px; border-radius: 12px; box-shadow: 0 2px 8px rgba(44,30,16,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">درجة مطابقة هوية المراجع (Fidelity Weight)</label>
+            <div style="display: flex; align-items: baseline; gap: 4px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); padding: 3px 12px; border-radius: 8px;">
+                <span id="fidelity-display-val" style="font-size: 16px; font-weight: 800; color: #0E3A1F;">85</span>
+                <span style="font-size: 11px; color: #9E7D3B; font-weight: bold;">%</span>
+            </div>
+        </div>
+        <input type="range" id="r2v-fidelity" min="50" max="100" value="85" oninput="document.getElementById('fidelity-display-val').innerText = this.value;" style="width: 100%; accent-color: #0E3A1F; cursor: pointer;">
+        <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #8C7864; margin-top: 4px;">
+            <span>مرونة حركية أعلى (50%)</span>
+            <span>توازن متقدم (85%)</span>
+            <span>تطابق ملامح صارم (100%)</span>
+        </div>
+    </div>
+
+    <!-- Dynamic Resolution Selection (480p, 720p, 1080p, 4K) -->
+    <div style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="font-size: 13px; color: #1C120B; font-weight: 700;">دقة الفيديو (Resolution)</label>
+            <span id="r2v-res-hint" style="font-size: 11px; color: #6A5847;">الجودات المتاحة لهذا النموذج</span>
+        </div>
+        <div style="display: flex; gap: 8px;" id="r2v-res-container">
+            <label id="r2v-res-lbl-480p" class="r2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="480p" onchange="updateR2VLiveCost();" style="display: none;"> 480p
+            </label>
+            <label id="r2v-res-lbl-720p" class="r2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="720p" onchange="updateR2VLiveCost();" style="display: none;"> 720p
+            </label>
+            <label id="r2v-res-lbl-1080p" class="r2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid #0E3A1F; background: rgba(14,58,31,0.09); color: #0E3A1F; font-weight: bold; transition: all 0.2s;">
+                <input type="radio" name="res" value="1080p" checked onchange="updateR2VLiveCost();" style="display: none;"> 1080p
+            </label>
+            <label id="r2v-res-lbl-4k" class="r2v-option-pill" style="flex: 1; text-align: center; padding: 9px 4px; border-radius: 8px; cursor: pointer; font-size: 12.5px; border: 1.5px solid rgba(197,160,89,0.35); background: #FAF7F0; color: #362A1F; transition: all 0.2s;">
+                <input type="radio" name="res" value="4k" onchange="updateR2VLiveCost();" style="display: none;"> 4K
+            </label>
+        </div>
+    </div>
+
+    <!-- Duration Slider Bar (Step = 1s) -->
+    <div style="margin-bottom: 22px; background: #FFFDF9; border: 1.5px solid rgba(197,160,89,0.35); padding: 18px 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(44,30,16,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13.5px; color: #1C120B; font-weight: 700; margin: 0;">المدة الزمنية (Duration)</label>
+            <div style="display: flex; align-items: baseline; gap: 5px; background: #FAF7F0; border: 1.5px solid rgba(197,160,89,0.45); padding: 5px 14px; border-radius: 8px;">
+                <span id="r2v-duration-display-val" style="font-size: 20px; font-weight: 800; color: #0E3A1F;">5</span>
+                <span style="font-size: 12px; color: #9E7D3B; font-weight: bold;">ثوانٍ</span>
+            </div>
+        </div>
+
+        <input type="range" id="r2v-duration-slider" min="4" max="15" step="1" value="5" oninput="onR2VDurationSliderInput(this.value);" style="width: 100%; accent-color: #0E3A1F; height: 7px; cursor: pointer; border-radius: 4px; background: #EAE3D2;">
+
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #6A5847; margin-top: 8px;">
+            <span id="r2v-slider-min-lbl">4 ثوانٍ</span>
+            <span id="r2v-discrete-hint" style="color: #9E7D3B; font-weight: 600; font-size: 11px;">شريط تحكم سلس ثانية بثانية</span>
+            <span id="r2v-slider-max-lbl">15 ثانية</span>
+        </div>
+    </div>
+
+    <!-- Live Dynamic Credit Calculation Box -->
+    <div style="margin-bottom: 22px; background: linear-gradient(135deg, rgba(14,58,31,0.06), rgba(197,160,89,0.12)); border: 1.5px solid rgba(197,160,89,0.45); border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: #0E3A1F;"></div>
+                <span style="font-size: 13px; font-weight: 700; color: #1C120B;" id="r2v-calc-model-name">Seedance 2.5 Cinema Pro</span>
+            </div>
+            <span id="r2v-calc-rate-badge" style="background: rgba(14,58,31,0.1); color: #0E3A1F; font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px;">
+                12.00 كريديت / ثانية
+            </span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 10px; border-top: 1px dashed rgba(197,160,89,0.35);">
+            <div>
+                <div style="font-size: 12px; color: #6A5847;" id="r2v-calc-formula-text">5 ثوانٍ × 12.00 كريديت (دقة 1080p)</div>
+                <div style="font-size: 11px; color: #8C7864; margin-top: 2px;">خصم دقيق بالثانية من رصيدك</div>
+            </div>
+            <div style="text-align: left;">
+                <div style="font-size: 10px; color: #6A5847; text-transform: uppercase;">إجمالي التكلفة</div>
+                <div style="font-size: 24px; font-weight: 800; color: #0E3A1F; line-height: 1;">
+                    <span id="r2v-total-cost">60.00</span>
+                    <span style="font-size: 13px; font-weight: 600; color: #9E7D3B;">كريديت</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Action Button -->
+    <button id="r2v-submit-btn" type="submit" style="width: 100%; background: linear-gradient(135deg, #0E3A1F, #16562E); color: #FFF; font-weight: bold; font-size: 16px; padding: 16px; border: 1.5px solid #C5A059; border-radius: 10px; cursor: pointer; box-shadow: 0 6px 20px rgba(14,58,31,0.25); display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.25s;">
+        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m22 8-6 4 6 4V8Z"/>
+            <rect width="14" height="12" x="2" y="6" rx="2"/>
+        </svg>
+        <span>بدء إنتاج الفيديو المرجعي</span>
+        <span id="r2v-btn-cost-tag" style="background: rgba(197,160,89,0.25); border: 1px solid #C5A059; color: #FAF7F0; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin-right: 6px;">
+            60.00 كريديت
+        </span>
     </button>
 
 </form>
 
 <script>
+let selectedImagesList = [];
+let selectedVideoFile = null;
+let selectedAudioFile = null;
+
+function onR2VModelChanged() {
+    const sel = document.getElementById('r2v-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    // Multimodal capabilities
+    const acceptsImages = opt.getAttribute('data-accepts-images') === '1';
+    const maxImages = parseInt(opt.getAttribute('data-max-images') || '3');
+    const acceptsVideo = opt.getAttribute('data-accepts-video') === '1';
+    const acceptsAudio = opt.getAttribute('data-accepts-audio') === '1';
+
+    // Show/hide sections dynamically
+    document.getElementById('r2v-images-section').style.display = acceptsImages ? 'block' : 'none';
+    document.getElementById('r2v-img-count-badge').innerText = 'حتى ' + maxImages + ' صورة';
+
+    document.getElementById('r2v-video-section').style.display = acceptsVideo ? 'block' : 'none';
+    document.getElementById('r2v-audio-section').style.display = acceptsAudio ? 'block' : 'none';
+
+    // Update media badge
+    const badgeParts = [];
+    if (acceptsImages) badgeParts.push('صور (' + maxImages + ')');
+    if (acceptsVideo) badgeParts.push('فيديو');
+    if (acceptsAudio) badgeParts.push('صوت');
+    document.getElementById('r2v-media-badge').innerText = badgeParts.join(' + ') || 'مراجع';
+
+    // Resolution pill availability
+    const suppRes = (opt.getAttribute('data-supported-res') || '720p,1080p').toLowerCase();
+    ['480p', '720p', '1080p', '4k'].forEach(r => {
+        const lbl = document.getElementById('r2v-res-lbl-' + r);
+        const radio = lbl ? lbl.querySelector('input') : null;
+        if (lbl && radio) {
+            if (suppRes.includes(r)) {
+                lbl.style.display = 'block';
+            } else {
+                lbl.style.display = 'none';
+                if (radio.checked) {
+                    const fallback = document.querySelector('input[name="res"][value="1080p"]') || document.querySelector('input[name="res"][value="720p"]');
+                    if (fallback) fallback.checked = true;
+                }
+            }
+        }
+    });
+
+    // Duration slider config
+    const durType = opt.getAttribute('data-duration-type') || 'discrete';
+    const allowedDur = opt.getAttribute('data-allowed-durations') || '5,10';
+    const defDur = parseInt(opt.getAttribute('data-default-duration') || '5');
+    const slider = document.getElementById('r2v-duration-slider');
+
+    if (durType === 'discrete') {
+        const parts = allowedDur.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+        const minVal = parts.length ? Math.min(...parts) : 5;
+        const maxVal = parts.length ? Math.max(...parts) : 10;
+        slider.min = minVal;
+        slider.max = maxVal;
+        slider.value = parts.includes(defDur) ? defDur : minVal;
+        document.getElementById('r2v-slider-min-lbl').innerText = minVal + ' ثوانٍ';
+        document.getElementById('r2v-slider-max-lbl').innerText = maxVal + ' ثانية';
+        document.getElementById('r2v-discrete-hint').innerText = 'المدد المعتمدة للنموذج: ' + parts.join(', ') + ' ث';
+    } else {
+        const rangeParts = allowedDur.split('-').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+        const minVal = rangeParts[0] || 4;
+        const maxVal = rangeParts[1] || 15;
+        slider.min = minVal;
+        slider.max = maxVal;
+        slider.value = defDur >= minVal && defDur <= maxVal ? defDur : minVal;
+        document.getElementById('r2v-slider-min-lbl').innerText = minVal + ' ثوانٍ';
+        document.getElementById('r2v-slider-max-lbl').innerText = maxVal + ' ثانية';
+        document.getElementById('r2v-discrete-hint').innerText = 'نطاق مرن: ' + minVal + ' إلى ' + maxVal + ' ثانية';
+    }
+
+    onR2VDurationSliderInput(slider.value);
+}
+
+function onR2VDurationSliderInput(val) {
+    document.getElementById('r2v-duration-display-val').innerText = val;
+    updateR2VLiveCost();
+}
+
+function updateR2VLiveCost() {
+    const sel = document.getElementById('r2v-model');
+    const opt = sel.options[sel.selectedIndex];
+    if (!opt) return;
+
+    const modelName = opt.getAttribute('data-name') || opt.text;
+    const pricingType = opt.getAttribute('data-pricing-type') || 'per_second';
+    const duration = parseInt(document.getElementById('r2v-duration-slider').value) || 5;
+
+    const resRadio = document.querySelector('input[name="res"]:checked');
+    const resVal = resRadio ? resRadio.value : '1080p';
+
+    let rate = 12.0;
+    if (resVal === '480p') {
+        rate = parseFloat(opt.getAttribute('data-cost-480') || '4.00');
+    } else if (resVal === '720p') {
+        rate = parseFloat(opt.getAttribute('data-cost-720') || '8.00');
+    } else if (resVal === '4k') {
+        rate = parseFloat(opt.getAttribute('data-cost-4k') || '20.00');
+    } else {
+        rate = parseFloat(opt.getAttribute('data-cost-1080') || '12.00');
+    }
+
+    let totalCost = (pricingType === 'per_second') ? (rate * duration) : rate;
+    totalCost = totalCost.toFixed(2);
+
+    document.getElementById('r2v-calc-model-name').innerText = modelName;
+    document.getElementById('r2v-calc-rate-badge').innerText = rate.toFixed(2) + ' كريديت / ' + (pricingType === 'per_second' ? 'ثانية' : 'عملية');
+    document.getElementById('r2v-calc-formula-text').innerText = (pricingType === 'per_second' ? (duration + ' ثوانٍ × ' + rate.toFixed(2) + ' كريديت') : ('سعر ثابت: ' + rate.toFixed(2) + ' كريديت')) + ' (دقة ' + resVal + ')';
+    document.getElementById('r2v-total-cost').innerText = totalCost;
+    document.getElementById('r2v-btn-cost-tag').innerText = totalCost + ' كريديت';
+
+    // Highlight active pill
+    ['480p', '720p', '1080p', '4k'].forEach(r => {
+        const lbl = document.getElementById('r2v-res-lbl-' + r);
+        if (lbl) {
+            if (r === resVal) {
+                lbl.style.borderColor = '#0E3A1F';
+                lbl.style.backgroundColor = 'rgba(14,58,31,0.09)';
+                lbl.style.color = '#0E3A1F';
+                lbl.style.fontWeight = 'bold';
+            } else {
+                lbl.style.borderColor = 'rgba(197,160,89,0.35)';
+                lbl.style.backgroundColor = '#FAF7F0';
+                lbl.style.color = '#362A1F';
+                lbl.style.fontWeight = 'normal';
+            }
+        }
+    });
+}
+
+function handleImageSelection(files) {
+    const sel = document.getElementById('r2v-model');
+    const opt = sel.options[sel.selectedIndex];
+    const maxImages = parseInt(opt ? opt.getAttribute('data-max-images') || '3' : '3');
+
+    for (let i = 0; i < files.length; i++) {
+        if (selectedImagesList.length >= maxImages) break;
+        selectedImagesList.push(files[i]);
+    }
+    renderImagePreviews();
+}
+
+function renderImagePreviews() {
+    const container = document.getElementById('r2v-img-previews');
+    container.innerHTML = '';
+
+    selectedImagesList.forEach((file, idx) => {
+        const div = document.createElement('div');
+        div.style.position = 'relative';
+        div.style.width = '70px';
+        div.style.height = '70px';
+        div.style.borderRadius = '8px';
+        div.style.overflow = 'hidden';
+        div.style.border = '1.5px solid rgba(197,160,89,0.5)';
+
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.innerText = '✕';
+        btn.style.position = 'absolute';
+        btn.style.top = '3px';
+        btn.style.left = '3px';
+        btn.style.background = 'rgba(142,35,35,0.85)';
+        btn.style.color = '#FFF';
+        btn.style.border = 'none';
+        btn.style.borderRadius = '50%';
+        btn.style.width = '18px';
+        btn.style.height = '18px';
+        btn.style.fontSize = '10px';
+        btn.style.cursor = 'pointer';
+        btn.onclick = function(e) {
+            e.stopPropagation();
+            selectedImagesList.splice(idx, 1);
+            renderImagePreviews();
+        };
+
+        div.appendChild(img);
+        div.appendChild(btn);
+        container.appendChild(div);
+    });
+}
+
+function handleVideoSelection(file) {
+    if (!file) return;
+    selectedVideoFile = file;
+    const vidEl = document.getElementById('r2v-vid-element');
+    vidEl.src = URL.createObjectURL(file);
+    document.getElementById('r2v-vid-preview-box').style.display = 'block';
+    document.getElementById('r2v-video-dropzone').style.display = 'none';
+}
+
+function clearSelectedVideo() {
+    selectedVideoFile = null;
+    const vidEl = document.getElementById('r2v-vid-element');
+    vidEl.src = '';
+    document.getElementById('r2v-vid-preview-box').style.display = 'none';
+    document.getElementById('r2v-video-dropzone').style.display = 'block';
+    document.getElementById('r2v-vid-file-input').value = '';
+}
+
+function handleAudioSelection(file) {
+    if (!file) return;
+    selectedAudioFile = file;
+    const audEl = document.getElementById('r2v-aud-element');
+    audEl.src = URL.createObjectURL(file);
+    document.getElementById('r2v-aud-name').innerText = file.name;
+    document.getElementById('r2v-aud-preview-box').style.display = 'flex';
+    document.getElementById('r2v-audio-dropzone').style.display = 'none';
+}
+
+function clearSelectedAudio() {
+    selectedAudioFile = null;
+    const audEl = document.getElementById('r2v-aud-element');
+    audEl.src = '';
+    document.getElementById('r2v-aud-preview-box').style.display = 'none';
+    document.getElementById('r2v-audio-dropzone').style.display = 'block';
+    document.getElementById('r2v-aud-file-input').value = '';
+}
+
 function handleR2VSubmit() {
-    const prompt = document.getElementById('r2v-prompt').value;
-    const charUrl = document.getElementById('r2v-char-url').value;
-    const styleUrl = document.getElementById('r2v-style-url').value;
+    const prompt = document.getElementById('r2v-prompt').value.trim();
+    if (!prompt) {
+        if (window.showStudioNotification) {
+            window.showStudioNotification('يرجى إدخال وصف المشهد وتفاعل المراجع أولاً', 'error');
+        } else {
+            alert('يرجى إدخال وصف المشهد أولاً');
+        }
+        return;
+    }
+
+    const model = document.getElementById('r2v-model').value;
     const fidelity = document.getElementById('r2v-fidelity').value;
+    const duration = document.getElementById('r2v-duration-slider').value;
+    const resRadio = document.querySelector('input[name="res"]:checked');
+    const resolution = resRadio ? resRadio.value : '1080p';
+    const negPrompt = document.getElementById('r2v-neg-prompt').value.trim();
 
     const fd = new FormData();
+    fd.append('tool_type', 'reference_to_video');
     fd.append('prompt', prompt);
-    fd.append('char_url', charUrl);
-    fd.append('style_url', styleUrl);
+    fd.append('model', model);
     fd.append('fidelity', fidelity);
+    fd.append('duration', duration);
+    fd.append('resolution', resolution);
+    if (negPrompt) {
+        fd.append('negative_prompt', negPrompt);
+    }
 
-    submitGeneration(fd, 'reference_to_video');
+    // Append Images
+    selectedImagesList.forEach((file, idx) => {
+        fd.append('reference_image_' + idx, file);
+    });
+    fd.append('images_count', selectedImagesList.length);
+
+    // Append Video
+    if (selectedVideoFile) {
+        fd.append('reference_video', selectedVideoFile);
+    }
+
+    // Append Audio
+    if (selectedAudioFile) {
+        fd.append('reference_audio', selectedAudioFile);
+    }
+
+    if (typeof submitGeneration === 'function') {
+        submitGeneration(fd, 'reference_to_video');
+    } else {
+        fetch('/api/generate/', {
+            method: 'POST',
+            body: fd
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.status === 'success') {
+                if (window.showStudioNotification) {
+                    window.showStudioNotification('تم إرسال مهمة الفيديو المرجعي إلى طابور المعالجة بنجاح', 'success');
+                }
+            } else {
+                if (window.showStudioNotification) {
+                    window.showStudioNotification(res.message || 'حدث خطأ أثناء الإرسال', 'error');
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        });
+    }
 }
+
+// Initial binding
+document.addEventListener('DOMContentLoaded', function() {
+    onR2VModelChanged();
+});
 </script>
 {% endblock %}
