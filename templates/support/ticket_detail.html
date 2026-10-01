@@ -13,15 +13,15 @@
                 <span id="ticket-status-badge" class="chat-status-pill status-{{ ticket.status|lower }}">
                     {{ ticket.get_status_display }}
                 </span>
-                <span id="live-indicator" class="chat-live-pulse" title="متصل بالبث اللحظي">
+                <span id="live-indicator" class="chat-live-pulse" title="متصل بالبث المباشر">
                     <span class="live-dot"></span>
-                    <span>مباشر (SSE)</span>
+                    <span>مباشر</span>
                 </span>
             </div>
             <div class="chat-subtitle">
                 <span>تاريخ الإنشاء: {{ ticket.created_at|date:"d M Y • H:i" }}</span>
                 <span>•</span>
-                <span>الطرف الآخر: <strong>فريق الدعم الفني الملكي</strong></span>
+                <span>الطرف الآخر: <strong>فريق الدعم الفني</strong></span>
             </div>
         </div>
 

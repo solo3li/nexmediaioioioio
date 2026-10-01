@@ -35,7 +35,7 @@
 
         <!-- Section Label -->
         <div class="sidebar-section-divider">
-            <span>أدوات الإنتاج الذكية (9)</span>
+            <span>أدوات الإنتاج (9)</span>
         </div>
 
         <nav class="studio-tools-nav">
@@ -132,14 +132,14 @@
             <section class="tool-output-panel">
                 <div class="output-viewport-card">
                     <div class="viewport-header">
-                        <span class="viewport-title">شاشة العرض المباشرة (Live Viewport)</span>
-                        <span class="viewport-specs" id="viewport-specs-badge">تصدير فائق الدقة 4K</span>
+                        <span class="viewport-title">معاينة النتيجة (Live Viewport)</span>
+                        <span class="viewport-specs" id="viewport-specs-badge">دقة 4K</span>
                     </div>
 
                     <div class="viewport-media-stage" id="viewport-media-stage">
                         <div class="viewport-idle-state" id="viewport-idle">
                             <div class="idle-icon">{{ current_tool.icon }}</div>
-                            <div class="idle-title">جاهز لبدء التوليد الإبداعي</div>
+                            <div class="idle-title">جاهز لبدء الإنتاج</div>
                             <div class="idle-desc">قم بضبط الإعدادات في اللوحة المجاورة ثم اضغط على زر بدء التوليد.</div>
                         </div>
 
@@ -863,7 +863,7 @@ async function submitGeneration(formData, toolType) {
     actionsEl.style.display = 'none';
     overlayEl.style.display = 'flex';
     progressFill.style.width = '15%';
-    progressLog.innerText = 'إرسال المعطيات والأمر العصبي إلى السحابة...';
+    progressLog.innerText = 'جاري إرسال الطلب وبدء المعالجة...';
 
     try {
         formData.append('tool_type', toolType);
@@ -883,7 +883,7 @@ async function submitGeneration(formData, toolType) {
 
         const historyId = data.history_id;
         progressFill.style.width = '45%';
-        progressLog.innerText = 'جاري التوليد العصبي ومحاكاة المعالجة الخلفية...';
+        progressLog.innerText = 'جاري المعالجة وتوليد الوسائط...';
 
         // Poll for completion
         let pollCount = 0;

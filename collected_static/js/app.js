@@ -440,21 +440,21 @@ function initPlaygroundStudio() {
 
     const styleMeta = {
         andalusian: {
-            tag: 'طراز سينمائي واقعي 8K',
+            tag: 'طراز فوتوغرافي واقعي',
             title: 'بورتريه فوتوغرافي واقعي',
-            desc: 'تم التوليد بنموذج فوتوغرافي متقدم مع إضاءة درامية وعمق ميدان احترافي بدقة 8K.',
+            desc: 'تم التوليد بنموذج فوتوغرافي متقدم مع إضاءة درامية وعمق ميدان احترافي.',
             className: 'style-andalusian'
         },
         cinema4k: {
             tag: 'سينمائي 4K UHD',
-            title: 'مشهد إعلاني سينمائي فاخر',
-            desc: 'تجسيد فوتوغرافي واقعي فائق الوضوح 4K مع تدرجات إضاءة الشفق الذهبي والظلال الناعمة.',
+            title: 'مشهد إعلاني سينمائي',
+            desc: 'تجسيد فوتوغرافي واقعي بدقة 4K مع تدرجات إضاءة وتفاصيل دقيقة.',
             className: 'style-cinema4k'
         },
         gilded: {
-            tag: 'طراز فني وتصميم إعلاني',
-            title: 'تصميم إعلاني ثلاثي الأبعاد',
-            desc: 'توليد تشكيلي إعلاني معاصر بإضاءة استوديو متقنة وتفاصيل فائقة الجودة.',
+            tag: 'تصميم إعلاني وفني',
+            title: 'تصميم ثلاثي الأبعاد',
+            desc: 'تصميم إعلاني معاصر بإضاءة استوديو متقنة وتفاصيل عالية الدقة.',
             className: 'style-gilded'
         }
     };
@@ -559,9 +559,9 @@ function initShowcaseGalleryAndModal() {
                 modalViewport.innerHTML = `
                     <div class="modal-viewport-scene" style="background: radial-gradient(circle, rgba(212,175,55,0.2), #0B0705);">
                         <div style="font-size: 3rem; color: #D4AF37;">🎬</div>
-                        <h4 style="font-size: 1.25rem; color: #FAF7F0;">معاينة البث السينمائي 4K UHD</h4>
+                        <h4 style="font-size: 1.25rem; color: #FAF7F0;">معاينة الفيديو 4K UHD</h4>
                         <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); max-width: 480px;">
-                            يتم سحب تدفق الفيديو من مستودع MinIO S3 المشفر بمعدل نقل 48 Mbps وبترميز HEVC / H.265.
+                            عرض جودة الإخراج السينمائي بمعدل إطارات 60 FPS ودقة فائقة الوضوح.
                         </p>
                         <div style="width: 80%; height: 6px; background: rgba(255,255,255,0.15); border-radius: 3px; position: relative; margin-top: 10px;">
                             <div style="width: 65%; height: 100%; background: #D4AF37; border-radius: 3px;"></div>
@@ -572,7 +572,7 @@ function initShowcaseGalleryAndModal() {
                 modalViewport.innerHTML = `
                     <div class="modal-viewport-scene" style="background: radial-gradient(circle, rgba(46,204,113,0.2), #0B0705);">
                         <div style="font-size: 3rem; color: #4ADE80;">🎙️</div>
-                        <h4 style="font-size: 1.25rem; color: #FAF7F0;">مشغل الأكوستيك والصوتيات النقي</h4>
+                        <h4 style="font-size: 1.25rem; color: #FAF7F0;">معاينة الصوت عالي النقاء</h4>
                         <div class="audio-mini-bars" style="position: static; height: 36px; gap: 6px; margin: 8px 0;">
                             <span style="width: 5px; height: 70%;"></span>
                             <span style="width: 5px; height: 100%;"></span>
@@ -588,10 +588,10 @@ function initShowcaseGalleryAndModal() {
             } else {
                 modalViewport.innerHTML = `
                     <div class="modal-viewport-scene" style="background: radial-gradient(circle, rgba(197,160,89,0.3), #0B0705);">
-                        <div style="font-size: 3rem; color: #C5A059;">۞</div>
-                        <h4 style="font-size: 1.25rem; color: #FAF7F0;">التشكيل البصري عالي الدقة</h4>
+                        <div style="font-size: 3rem; color: #C5A059;">🎨</div>
+                        <h4 style="font-size: 1.25rem; color: #FAF7F0;">معاينة الصورة عالية الدقة</h4>
                         <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); max-width: 480px;">
-                            دقة 3840×2160 معززة بنموذج استكمال التفاصيل الدقيقة وحفظ ألوان ورق البردي والذهب.
+                            دقة 3840×2160 مع تفاصيل لونية واقعية وإضاءة استوديو احترافية.
                         </p>
                     </div>
                 `;
@@ -707,16 +707,16 @@ function initLanguageSwitcher() {
 
     const translations = {
         ar: {
-            title: 'إِشْرَاقُ البَصَرِيَّاتِ وَالصَّوْتِيَّاتِ',
-            desc: 'المنصة السيادية الأولى لتوحيد وتطوير نماذج الصوتيات والفيديو والصور فائقة الدقة، مستلهمة من عراقة بيت الحكمة وعلوم ابن الهيثم في البصريات والفارابي في الأكوستيك.',
-            btnCta: 'ابدأ رحلتك مجاناً',
-            btnExplore: 'استكشف البوابات الثلاث'
+            title: 'استوديو الإنتاج الإبداعي',
+            desc: 'منصة موحدة لصناع المحتوى والإنتاج الإعلامي: توليد الفيديو، التعليق الصوتي الواقعي، وتصميم الصور بأعلى جودة.',
+            btnCta: 'ابدأ مجاناً',
+            btnExplore: 'استكشف أدوات الإنتاج'
         },
         en: {
-            title: 'THE ALCHEMY OF SIGHT, SOUND & CINEMA',
-            desc: 'The premier sovereign studio unifying cutting-edge generative neural models for 4K video, lossless acoustic engineering, and fine visual synthesis.',
-            btnCta: 'Start Sovereign Trial',
-            btnExplore: 'Explore 3 Portals'
+            title: 'CREATIVE PRODUCTION STUDIO',
+            desc: 'A unified platform for content creators: video generation, natural voiceover, and high-resolution image design.',
+            btnCta: 'Get Started Free',
+            btnExplore: 'Explore Tools'
         }
     };
 

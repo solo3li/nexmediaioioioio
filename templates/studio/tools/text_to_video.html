@@ -6,7 +6,7 @@
     <!-- Model Selection -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            النموذج العصبي (Neural Engine)
+            نموذج الفيديو (Video Model)
         </label>
         <select id="t2v-model" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
             {% for m in models %}
@@ -21,7 +21,7 @@
     <!-- Prompt Area -->
     <div style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #C5A059; font-weight: bold;">الوصف السينمائي (Prompt)</label>
+            <label style="font-size: 13px; color: #C5A059; font-weight: bold;">وصف المشهد (Prompt)</label>
             <span style="font-size: 11px; color: #8EBA9A;">ادعم المشهد بتفاصيل الإضاءة والزوايا</span>
         </div>
         <textarea id="t2v-prompt" required rows="4" placeholder="مثال: لقطة سينمائية بدقة 4K لسيارة رياضية حديثة تسير بسرعة على طريق ساحلي متعرج أثناء الغروب، انعكاسات الإضاءة الذهبية على الهيكل الخارجي، حركة كاميرا درون سلسة وديناميكية..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical; line-height: 1.5;"></textarea>
@@ -97,7 +97,7 @@
 
     <!-- Submit Button -->
     <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35); transition: transform 0.2s;">
-        🎬 بدء توليد الفيديو السينمائي (Generate Video)
+        توليد الفيديو
     </button>
 
 </form>

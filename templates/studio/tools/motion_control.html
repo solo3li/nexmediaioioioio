@@ -22,14 +22,14 @@
     <!-- Motion Match Scale -->
     <div style="margin-bottom: 25px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label style="font-size: 13px; color: #FAF7F0;">دقة نقل الهيكل العظمي الحركي (Pose Tracking)</label>
+            <label style="font-size: 13px; color: #FAF7F0;">دقة مطابقة الحركة (Pose Tracking)</label>
             <span id="pose-label" style="color: #C5A059; font-weight: bold; font-size: 14px;">95%</span>
         </div>
         <input type="range" id="mot-scale" min="50" max="100" value="95" oninput="document.getElementById('pose-label').innerText = this.value + '%'" style="width: 100%; accent-color: #C5A059; cursor: pointer;">
     </div>
 
     <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        🕺 بدء نقل وتطبيق الحركة (Retarget Motion)
+        بدء تطبيق الحركة
     </button>
 
 </form>

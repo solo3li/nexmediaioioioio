@@ -6,7 +6,7 @@
     <!-- Model Selection -->
     <div style="margin-bottom: 20px;">
         <label style="display: block; font-size: 13px; color: #C5A059; margin-bottom: 8px; font-weight: bold;">
-            محرك التوليد البصري (Image Engine)
+            نموذج الصور (Image Model)
         </label>
         <select id="t2i-model" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px;">
             {% for m in models %}
@@ -26,7 +26,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;">
             <label style="background: rgba(197,160,89,0.2); border: 1px solid #C5A059; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #FFF; font-size: 12.5px; font-weight: bold;">
                 <input type="radio" name="art_style" value="ultra_realistic" checked style="display: none;">
-                ✨ واقعي فائق 8K
+                واقعي عالي الدقة
             </label>
             <label style="background: rgba(0,0,0,0.3); border: 1px solid rgba(197,160,89,0.3); padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; color: #FFF; font-size: 12.5px;">
                 <input type="radio" name="art_style" value="cinematic_photo" style="display: none;">
@@ -64,7 +64,7 @@
     </div>
 
     <button type="submit" style="width: 100%; background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; font-size: 16px; padding: 16px; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 20px rgba(197,160,89,0.35);">
-        🎨 توليد الصورة الآن (Generate Image)
+        توليد الصورة
     </button>
 
 </form>
