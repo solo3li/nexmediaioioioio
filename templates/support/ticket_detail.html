@@ -12,23 +12,28 @@
                 <h1 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 24px; color: #C5A059; margin: 0;">
                     تذكرة #{{ ticket.id }}: {{ ticket.subject }}
                 </h1>
-                <span style="display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; {% if ticket.status == 'Open' %}background: rgba(33,150,243,0.2); color: #2196F3; border: 1px solid #2196F3;{% elif ticket.status == 'InProgress' %}background: rgba(255,193,7,0.2); color: #FFC107; border: 1px solid #FFC107;{% else %}background: rgba(76,175,80,0.2); color: #4CAF50; border: 1px solid #4CAF50;{% endif %}">
+                <span id="ticket-status-badge" style="display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; {% if ticket.status == 'Open' %}background: rgba(33,150,243,0.2); color: #2196F3; border: 1px solid #2196F3;{% elif ticket.status == 'InProgress' %}background: rgba(255,193,7,0.2); color: #FFC107; border: 1px solid #FFC107;{% else %}background: rgba(76,175,80,0.2); color: #4CAF50; border: 1px solid #4CAF50;{% endif %}">
                     {{ ticket.get_status_display }}
+                </span>
+                <!-- Real-time Live Connection Dot -->
+                <span id="live-indicator" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: #2ECC71; background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.25); padding: 2px 8px; border-radius: 20px;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: #2ECC71; display: inline-block; box-shadow: 0 0 6px #2ECC71;"></span>
+                    تحديث لحظي نشط (SSE)
                 </span>
             </div>
             <p style="color: #A0B2A6; font-size: 13px; margin: 0;">
                 تاريخ الإنشاء: {{ ticket.created_at|date:"d M Y H:i" }}
             </p>
         </div>
-        <a href="{% url 'support_list' %}" style="text-decoration: none; border: 1px solid rgba(197,160,89,0.4); color: #C5A059; padding: 8px 16px; border-radius: 8px; font-size: 13px;">
+        <a href="{% url 'support_list' %}" style="text-decoration: none; border: 1px solid rgba(197,160,89,0.4); color: #C5A059; padding: 8px 16px; border-radius: 8px; font-size: 13px; transition: all 0.2s ease;">
             ← قائمة التذاكر
         </a>
     </div>
 
     <!-- Messages Conversation Thread -->
-    <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 35px;">
+    <div id="messages-thread" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 35px;">
         {% for msg in messages %}
-        <div style="background: {% if msg.is_admin_message %}rgba(197, 160, 89, 0.08); border-right: 4px solid #C5A059;{% else %}rgba(255, 255, 255, 0.04); border-left: 4px solid #4CAF50;{% endif %} border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div data-msg-id="{{ msg.id }}" style="background: {% if msg.is_admin_message %}rgba(197, 160, 89, 0.08); border-right: 4px solid #C5A059;{% else %}rgba(255, 255, 255, 0.04); border-left: 4px solid #4CAF50;{% endif %} border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease;">
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px;">
                 <div style="font-weight: bold; display: flex; align-items: center; gap: 8px;">
@@ -60,23 +65,141 @@
     <!-- Reply Box -->
     <div style="background: rgba(14, 25, 20, 0.95); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 16px; padding: 25px;">
         <h3 style="font-family: 'Amiri', 'Cinzel', serif; font-size: 18px; color: #C5A059; margin-top: 0; margin-bottom: 14px;">
-            إضافة رد جديد (Reply)
+            إضافة رد فوري (Reply)
         </h3>
 
-        <form method="POST">
+        <form id="reply-form" method="POST">
             {% csrf_token %}
             <div style="margin-bottom: 14px;">
-                <textarea name="content" required rows="3" placeholder="اكتب ردك هنا..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box;"></textarea>
+                <textarea id="reply-textarea" name="content" required rows="3" placeholder="اكتب ردك هنا..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(197,160,89,0.4); border-radius: 8px; color: #FFF; font-size: 14px; box-sizing: border-box; resize: vertical;"></textarea>
             </div>
 
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                <input type="url" name="attachment_url" placeholder="رابط مرفق إضافي (اختياري)" style="flex: 1; min-width: 250px; padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
-                <button type="submit" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">
-                    إرسال الرد
+                <input id="reply-attachment" type="url" name="attachment_url" placeholder="رابط مرفق إضافي (اختياري)" style="flex: 1; min-width: 250px; padding: 10px 14px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #FFF; font-size: 13px; box-sizing: border-box;">
+                <button id="reply-submit-btn" type="submit" style="background: linear-gradient(135deg, #C5A059, #9E7D3B); color: #0E2218; font-weight: bold; padding: 11px 26px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s ease;">
+                    إرسال الرد ✦
                 </button>
             </div>
         </form>
     </div>
 
 </div>
+
+<!-- Real-Time SSE Client Script -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const thread = document.getElementById('messages-thread');
+    const statusBadge = document.getElementById('ticket-status-badge');
+    const replyForm = document.getElementById('reply-form');
+    const replyBtn = document.getElementById('reply-submit-btn');
+    const replyTextarea = document.getElementById('reply-textarea');
+
+    // 1. Establish resilient Server-Sent Events (SSE) stream
+    const sseUrl = "{% url 'ticket_events' ticket.id %}";
+    let eventSource = null;
+
+    function connectSSE() {
+        eventSource = new EventSource(sseUrl);
+
+        eventSource.onopen = () => {
+            const indicator = document.getElementById('live-indicator');
+            if (indicator) indicator.style.opacity = '1';
+        };
+
+        eventSource.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (!data || !data.id) return;
+
+                // Check if message is already rendered
+                if (document.querySelector(`[data-msg-id="${data.id}"]`)) return;
+
+                // Build message element dynamically
+                const isStaff = data.is_admin;
+                const msgCard = document.createElement('div');
+                msgCard.setAttribute('data-msg-id', data.id);
+                msgCard.style.cssText = `background: ${isStaff ? 'rgba(197, 160, 89, 0.08); border-right: 4px solid #C5A059;' : 'rgba(255, 255, 255, 0.04); border-left: 4px solid #4CAF50;'} border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: fadeInMsg 0.4s ease-out;`;
+
+                msgCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 13px;">
+                        <div style="font-weight: bold; display: flex; align-items: center; gap: 8px;">
+                            ${isStaff ? '<span style="color: #C5A059;">🛡️ الدعم الفني الملكي (NexMedia Support)</span>' : '<span style="color: #4CAF50;">👤 ' + data.sender + '</span>'}
+                        </div>
+                        <div style="color: #A0B2A6; font-size: 12px;">${data.created_at}</div>
+                    </div>
+                    <div style="line-height: 1.7; font-size: 15px; color: #FAF7F0; white-space: pre-wrap;">${data.content}</div>
+                    ${data.attachment_url ? `
+                        <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08);">
+                            <a href="${data.attachment_url}" target="_blank" style="color: #C5A059; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                📎 عرض المرفق المرفق بالتذكرة
+                            </a>
+                        </div>
+                    ` : ''}
+                `;
+
+                thread.appendChild(msgCard);
+                msgCard.scrollIntoView({ behavior: 'smooth' });
+
+                // Update ticket status badge if modified
+                if (data.status_display && statusBadge) {
+                    statusBadge.textContent = data.status_display;
+                }
+            } catch(e) {
+                // Ignore parse errors from ping comments
+            }
+        };
+
+        eventSource.onerror = () => {
+            const indicator = document.getElementById('live-indicator');
+            if (indicator) indicator.style.opacity = '0.4';
+        };
+    }
+
+    connectSSE();
+
+    // 2. Seamless AJAX Reply Submission (without page reload)
+    replyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const contentVal = replyTextarea.value.trim();
+        if (!contentVal) return;
+
+        replyBtn.disabled = true;
+        replyBtn.textContent = 'جاري الإرسال...';
+
+        const formData = new FormData(replyForm);
+
+        try {
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                replyTextarea.value = '';
+                const attachInput = document.getElementById('reply-attachment');
+                if (attachInput) attachInput.value = '';
+            } else {
+                replyForm.submit(); // fallback
+            }
+        } catch(err) {
+            replyForm.submit(); // fallback
+        } finally {
+            replyBtn.disabled = false;
+            replyBtn.textContent = 'إرسال الرد ✦';
+            replyTextarea.focus();
+        }
+    });
+});
+</script>
+
+<style>
+@keyframes fadeInMsg {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 {% endblock %}
