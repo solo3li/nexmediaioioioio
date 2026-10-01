@@ -23,32 +23,8 @@
     <!-- Subtle Ambient Islamic Arabesque Watermark Overlay -->
     <div class="arabesque-watermark" aria-hidden="true"></div>
 
-    <!-- Announcement Top Ribbon -->
-    <div class="royal-ribbon" id="royal-ribbon">
-        <div class="container ribbon-inner">
-            <div class="ribbon-headline">
-                <svg class="svg-sparkle-inline" viewBox="0 0 24 24" width="14" height="14" fill="#C5A059"><path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5Z"/></svg>
-                <span class="ribbon-text">إشراق البصريات والصوتيات في العصر الرقمي | Welcome to the House of AI Media Wisdom</span>
-                <svg class="svg-sparkle-inline" viewBox="0 0 24 24" width="14" height="14" fill="#C5A059"><path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5Z"/></svg>
-            </div>
-            
-            <div class="ribbon-tools">
-                <!-- Synthesized Web Audio Haptic Toggle -->
-                <button type="button" class="sound-fx-toggle" id="sound-fx-toggle" aria-label="تفعيل النغمات الصوتية التفاعلية" title="تشغيل/كتم النغمات التفاعلية">
-                    <svg class="icon-sound-off" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
-                    <svg class="icon-sound-on" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
-                    <span class="sound-label" id="sound-toggle-label">النغمات: مكتومة</span>
-                </button>
-
-                <div class="ribbon-status">
-                    <span class="status-pulse"></span>
-                    <span class="status-label">المنظومة نشطة</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Navigation Header -->
+    {% block header %}
+    <!-- Navigation Header: Floating Luxury Glassmorphism -->
     <header class="royal-header" id="main-header">
         <div class="container header-inner">
             <!-- Brand Logo -->
@@ -68,7 +44,6 @@
                 </div>
             </a>
 
-            <!-- Nav Links -->
             <!-- Nav Links -->
             <nav class="nav-menu" aria-label="Main Navigation">
                 <a href="/studio/" class="nav-item" style="color: #D4AF37; font-weight: 700;">استوديو التوليد ✦</a>
@@ -105,7 +80,9 @@
             </div>
         </div>
     </header>
+    {% endblock header %}
 
+    {% block mobile_drawer %}
     <!-- Mobile Drawer Navigation -->
     <div class="mobile-nav-drawer" id="mobile-drawer" aria-hidden="true">
         <div class="drawer-header">
@@ -127,12 +104,14 @@
             {% endif %}
         </nav>
     </div>
+    {% endblock mobile_drawer %}
 
     <!-- Main Content -->
     <main id="main-content">
         {% block content %}{% endblock %}
     </main>
 
+    {% block footer %}
     <!-- Royal Footer -->
     <footer class="royal-footer">
         <div class="container footer-inner">
@@ -189,6 +168,7 @@
             </div>
         </div>
     </footer>
+    {% endblock footer %}
 
     <!-- Cinematic Showcase Modal Dialog -->
     <div class="cinematic-modal-overlay" id="showcase-modal" aria-hidden="true" role="dialog" aria-modal="true">

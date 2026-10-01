@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block header %}{% endblock header %}
+{% block mobile_drawer %}{% endblock mobile_drawer %}
+{% block footer %}{% endblock footer %}
+
 {% block title %}{{ current_tool.name_ar }} | NexMedia Royal Studio{% endblock %}
 
 {% block content %}
@@ -8,12 +12,30 @@
     
     <!-- ================= PERSISTENT STUDIO SIDEBAR ================= -->
     <aside class="studio-sidebar" id="studio-sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-emblem">✦</div>
-            <div class="sidebar-titles">
-                <h3 class="sidebar-title">أدوات التوليد</h3>
-                <span class="sidebar-subtitle">9 AI Autonomous Portals</span>
-            </div>
+        <!-- Studio Brand Header -->
+        <div class="studio-brand-header">
+            <a href="/" class="studio-brand-anchor" title="العودة إلى الصفحة الرئيسية">
+                <div class="studio-logo-emblem">
+                    <svg viewBox="0 0 100 100" class="star-rosette" aria-hidden="true">
+                        <polygon points="50,0 64,36 100,50 64,64 50,100 36,64 0,50 36,36" fill="none" stroke="currentColor" stroke-width="3"/>
+                        <polygon points="50,10 60,40 90,50 60,60 50,90 40,60 10,50 40,40" fill="none" stroke="#C5A059" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="14" fill="#0F381E" stroke="#C5A059" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="5" fill="#C5A059"/>
+                    </svg>
+                </div>
+                <div class="studio-brand-text">
+                    <span class="studio-brand-title">nexmedia<span class="ai-badge">ai</span></span>
+                    <span class="studio-brand-subtitle">استوديو الإبداع الأندلسي</span>
+                </div>
+            </a>
+            <a href="/" class="btn-home-shortcut" title="العودة للرئيسية">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </a>
+        </div>
+
+        <!-- Section Label -->
+        <div class="sidebar-section-divider">
+            <span>بوابات الذكاء الاصطناعي (9)</span>
         </div>
 
         <nav class="studio-tools-nav">
@@ -51,9 +73,32 @@
                 </div>
             </div>
 
-            <a href="/#pricing" class="btn-recharge-credits">
+            <a href="/#pricing-calculator" class="btn-recharge-credits">
                 + ترقية وشحن الرصيد
             </a>
+        </div>
+
+        <!-- Sidebar User Footer -->
+        <div class="sidebar-user-footer">
+            <a href="{% url 'profile' %}" class="sidebar-user-card" title="الملف الشخصي والمحفظة">
+                <div class="user-avatar-crown">👑</div>
+                <div class="user-details">
+                    <span class="user-display-name">{{ request.user.username|default:"الضيف" }}</span>
+                    <span class="user-status-pill">{% if request.user.is_authenticated %}عضو نشط{% else %}غير مسجل{% endif %}</span>
+                </div>
+            </a>
+            <div class="sidebar-action-buttons">
+                <a href="{% url 'profile' %}" class="btn-sidebar-icon" title="الإعدادات والمحفظة">⚙</a>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="btn-sidebar-icon logout" title="تسجيل الخروج">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn-sidebar-icon login" title="تسجيل الدخول">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                </a>
+                {% endif %}
+            </div>
         </div>
     </aside>
 
@@ -167,7 +212,9 @@
 <style>
 .studio-layout-wrapper {
     display: flex;
-    min-height: calc(100vh - 120px);
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
     background: #08140E;
     color: #FAF7F0;
     direction: rtl;
@@ -175,51 +222,210 @@
 
 /* Sidebar */
 .studio-sidebar {
-    width: 320px;
+    width: 310px;
+    height: 100vh;
     background: #0B1A12;
-    border-left: 1px solid rgba(197, 160, 89, 0.25);
+    border-left: 1px solid rgba(197, 160, 89, 0.22);
     display: flex;
     flex-direction: column;
-    padding: 24px 16px;
+    padding: 16px 14px;
     flex-shrink: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
 }
-.sidebar-header {
+
+.studio-brand-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding-bottom: 20px;
-    margin-bottom: 16px;
-    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+    justify-content: space-between;
+    padding: 4px 6px 14px 6px;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.18);
+    margin-bottom: 8px;
 }
-.sidebar-emblem {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(197, 160, 89, 0.15);
-    border: 1px solid #C5A059;
+
+.studio-brand-anchor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.studio-logo-emblem {
+    width: 36px;
+    height: 36px;
     color: #C5A059;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.studio-brand-anchor:hover .studio-logo-emblem {
+    transform: rotate(22.5deg);
+}
+
+.studio-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.studio-brand-title {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #FFFDF9;
+    letter-spacing: 0.5px;
+}
+
+.studio-brand-title .ai-badge {
+    background: #C5A059;
+    color: #0E3A1F;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+    font-weight: 800;
+}
+
+.studio-brand-subtitle {
+    font-family: 'Amiri', serif;
+    font-size: 11px;
+    color: #C5A059;
+}
+
+.btn-home-shortcut {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-}
-.sidebar-title {
-    margin: 0;
-    font-family: 'Amiri', 'Cinzel', serif;
-    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(197, 160, 89, 0.1);
+    border: 1px solid rgba(197, 160, 89, 0.22);
     color: #C5A059;
+    transition: all 0.2s ease;
 }
-.sidebar-subtitle {
-    font-size: 11px;
-    color: #8EBA9A;
+
+.btn-home-shortcut:hover {
+    background: #C5A059;
+    color: #0E3A1F;
+}
+
+.sidebar-section-divider {
+    font-size: 10.5px;
+    color: rgba(197, 160, 89, 0.7);
     text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 4px 8px 8px 8px;
+    font-weight: 700;
 }
+
 .studio-tools-nav {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     flex: 1;
     overflow-y: auto;
+    padding-right: 2px;
+}
+
+.studio-tools-nav::-webkit-scrollbar {
+    width: 4px;
+}
+.studio-tools-nav::-webkit-scrollbar-thumb {
+    background: rgba(197, 160, 89, 0.2);
+    border-radius: 4px;
+}
+
+.sidebar-user-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(197, 160, 89, 0.2);
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.sidebar-user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+.user-avatar-crown {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(197, 160, 89, 0.15);
+    border: 1px solid #C5A059;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.user-display-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #FFF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-status-pill {
+    font-size: 9.5px;
+    color: #2ECC71;
+}
+
+.sidebar-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-sidebar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(197, 160, 89, 0.2);
+    color: #C5A059;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-sidebar-icon:hover {
+    background: rgba(197, 160, 89, 0.2);
+    color: #FFF;
+}
+
+.btn-sidebar-icon.logout:hover {
+    background: rgba(255, 87, 87, 0.2);
+    color: #FF7676;
+    border-color: rgba(255, 87, 87, 0.4);
+}
+
+.studio-workspace-area {
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 .studio-tool-link {
     display: flex;
